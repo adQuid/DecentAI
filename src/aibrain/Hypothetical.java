@@ -57,7 +57,7 @@ public class Hypothetical {
 		allOptions.add(noOp);//we don't do getOptimalActions here because this assumes we do nothing
 		
 		//check paths where I do act this turn (horizontal simulation)
-		if(ttl > 1){
+		if(ttl > 0){
 			for(Action current: game.returnActions()){
 				if(Math.random() * 0.0 < ttl && actionHasEffect(game,actions,current)){//randomly ignore options later in the tree, since things are uncertain at this point
 					List<Action> tempActions = new ArrayList<Action>(actions);
@@ -115,6 +115,9 @@ public class Hypothetical {
 	}
 		
 	private boolean actionHasEffect(Game game, List<Action> currentActions, Action newAction){
+		if(HypotheticalFactory.shouldPrint && currentActions.size() == 1 && currentActions.get(0).getType() == ActionType.developPower && newAction.getType() == ActionType.developPower){
+			//System.out.println("flag");
+		}
 		Game noChange = GameCloner.cloneGame(game);
 		Game withChange = GameCloner.cloneGame(game);
 		
@@ -123,6 +126,7 @@ public class Hypothetical {
 		noChange.setActionsForEmpire(myActions, noChange.fetchCurrentEmpire());
 		noChange.endRound();
 		
+		myActions = new ArrayList<Action>(myActions);
 		myActions.add(newAction);
 		withChange.setActionsForEmpire(myActions, withChange.fetchCurrentEmpire());
 		withChange.endRound();

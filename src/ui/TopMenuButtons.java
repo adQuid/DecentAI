@@ -12,30 +12,32 @@ import javax.swing.JPanel;
 import actions.Action;
 import actions.ActionType;
 import aibrain.AIBrain;
+import aibrain.BrainThread;
+import model.Colony;
+import model.Empire;
 import model.Game;
 import testers.GameRunTestser;
 
 public class TopMenuButtons {
 
+	static JButton endTurn = new JButton("Turn "+Mainmenu.currentTurn+" (End Turn)");
+	static boolean processing = false;
+	
 	public static JPanel generateButtons(Game game){
 		JPanel buttonsDisplay;
-		
-		JButton endTurn = new JButton("Turn "+Mainmenu.currentTurn+" (End Turn)");
-		
+				
 		endTurn.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-								
-				AIBrain brain = new AIBrain();
-				
-				List<Action> actions = brain.runAI(game, game.fetchCurrentEmpire(), 15);
-				
-				game.setActionsForEmpire(actions, game.fetchCurrentEmpire());
-				
-				game.endRound();
-				
-				Mainmenu.currentTurn++;
-				endTurn.setText("Turn "+Mainmenu.currentTurn+" (End Turn)");
+				if(!processing){
+					processing = true;
+					endTurn.setText("Ending turn "+Mainmenu.currentTurn);
+					
+					for(Empire current: Mainmenu.liveGame.getEmpires()){
+						Thread brain = new Thread(new BrainThread(Mainmenu.liveGame,current,12));
+						brain.start();
+					}
+				}
 			}
 		});
 		
@@ -46,6 +48,11 @@ public class TopMenuButtons {
 		buttonsDisplay.add(endTurn);
 		
 		return buttonsDisplay;
+	}
+	
+	public static void updateTurn(){
+		endTurn.setText("Turn "+Mainmenu.currentTurn+" (End Turn)");
+		processing = false;
 	}
 	
 }

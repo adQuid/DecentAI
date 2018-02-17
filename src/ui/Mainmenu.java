@@ -4,6 +4,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,6 +20,7 @@ public class Mainmenu {
 
 	public static Game liveGame = null;
 	public static int currentTurn = 1;
+	public static HashSet<String> playersReady = new HashSet<String>();
 	
 	public static void main(String[] args){
 		
