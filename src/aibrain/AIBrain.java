@@ -11,18 +11,11 @@ import model.Game;
 import testers.GameRunTestser;
 
 public class AIBrain {
-		
-	HypotheticalFactory factory = new HypotheticalFactory();
-
-	public HypotheticalFactory getFactory(){
-		return factory;
-	}
-	
+			
 	public List<Action> runAI(Game trueGame, Empire self, int lookAhead){
 		//factory = new HypotheticalFactory();
-		Hypothetical root = new Hypothetical(trueGame, this, new ArrayList<Action>(), lookAhead, self).getOptimalActions(false);
-		
-		return root.getActions();
+		Hypothetical root = new Hypothetical(trueGame, this, new ArrayList<Action>(), new ArrayList<Action>(), lookAhead, self);
+		return root.calculate().getActions();
 	}
 		
 	public boolean valueIsValid(double value){

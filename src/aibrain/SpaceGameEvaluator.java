@@ -9,6 +9,22 @@ import model.Tile;
 
 public class SpaceGameEvaluator {
 
+	//Given a game state, how good do I find this outcome?
+	public static double getValue(Game game, Empire empire){
+		double retval = game.findMatchingEmpire(empire).getMinerals()*1.0;
+		retval += game.findMatchingEmpire(empire).getEnergy() * 1.0;
+
+		for(Tile[] row: game.getMap().getGrid()){
+			for(Tile currentTile: row){
+				if(currentTile.getObject() != null && currentTile.getObject() instanceof Planet && ((Planet)currentTile.getObject()).fetchColonyForEmpire(game.fetchCurrentEmpire()) != null){
+					retval += 0.1 * ((Planet)currentTile.getObject()).fetchColonyForEmpire(game.fetchCurrentEmpire()).getIndustry();
+				}
+			}
+		}
+
+		return retval;
+	}
+	
 	public static boolean gamesSignificantlyDifferent(Game hyp1, Game hyp2, Empire empire){
 
 		if(hyp1.findMatchingEmpire(empire).getActionsThisTurn().size() != hyp2.findMatchingEmpire(empire).getActionsThisTurn().size()){
