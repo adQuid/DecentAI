@@ -27,9 +27,9 @@ public class SpaceGameIdeaGenerator {
 				retval.add(toAdd);
 			}
 			
-			//List<Action> defaultIdea = new ArrayList<Action>();
-			//defaultIdea.add(current);
-			//retval.add(defaultIdea);
+			List<Action> defaultIdea = new ArrayList<Action>();
+			defaultIdea.add(current);
+			retval.add(defaultIdea);
 		}
 		
 		return retval;

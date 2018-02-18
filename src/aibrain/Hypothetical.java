@@ -38,6 +38,8 @@ public class Hypothetical {
 	public HypotheticalResult calculate() {
 		
 		List<Action> possibleActions = game.returnActions();
+		List<Action> passdownActions = game.returnActions();
+		passdownActions.addAll(parentActions);
 		List<HypotheticalResult> allOptions = new ArrayList<HypotheticalResult>();
 		
 		//base case where I'm out of time
@@ -51,7 +53,7 @@ public class Hypothetical {
 			Game futureGame = GameCloner.cloneGame(game);
 			futureGame.setActionsForEmpire(current, empire);
 			futureGame.endRound();
-			allOptions.add(packResult(new Hypothetical(futureGame,parent,possibleActions, new ArrayList<Action>(),ttl-1,empire).calculate(),current));	
+			allOptions.add(packResult(new Hypothetical(futureGame,parent,passdownActions, new ArrayList<Action>(),ttl-1,empire).calculate(),current));	
 		}
 		
 		//pick best option
