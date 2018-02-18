@@ -5,6 +5,7 @@ import java.util.List;
 
 import actions.Action;
 import actions.ActionType;
+import cloners.GameCloner;
 
 public class Game {
 
@@ -74,6 +75,10 @@ public class Game {
 		return null;
 	}
 	
+	public Empire findMatchingEmpire(int oldEmp){
+		return empires.get(oldEmp);
+	}
+	
 	public Empire fetchCurrentEmpire(){
 		return empires.get(0);
 	}
@@ -99,5 +104,11 @@ public class Game {
 		for(Empire current: empires){
 			current.setActionsThisTurn(new ArrayList<Action>());
 		}
+	}
+	
+	public Game nextRound() {
+		Game retval = GameCloner.cloneGame(this);
+		retval.endRound();
+		return retval;
 	}
 }
