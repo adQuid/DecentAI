@@ -53,7 +53,8 @@ public class Hypothetical {
 			Game futureGame = GameCloner.cloneGame(game);
 			futureGame.setActionsForEmpire(current, empire);
 			futureGame.endRound();
-			allOptions.add(packResult(new Hypothetical(futureGame,parent,passdownActions, new ArrayList<Action>(),ttl-1,empire).calculate(),current));	
+			List<Action> toPass = current.size()==0?passdownActions:futureGame.returnActions();
+			allOptions.add(packResult(new Hypothetical(futureGame,parent,toPass, new ArrayList<Action>(),ttl-1,empire).calculate(),current));	
 		}
 		
 		//pick best option

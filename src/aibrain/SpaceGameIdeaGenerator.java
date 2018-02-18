@@ -16,6 +16,10 @@ public class SpaceGameIdeaGenerator {
 		retval.add(emptyIdea);
 		
 		for(Action current: possibilities) {
+			List<Action> defaultIdea = new ArrayList<Action>();
+			defaultIdea.add(current);
+			retval.add(defaultIdea);
+			
 			if(current.getType() == ActionType.develop) {
 				List<Object> params = new ArrayList<Object>();
 				params.add(current.getParams().get(0));
@@ -25,11 +29,7 @@ public class SpaceGameIdeaGenerator {
 				toAdd.add(current);
 				toAdd.add(getPower);
 				retval.add(toAdd);
-			}
-			
-			List<Action> defaultIdea = new ArrayList<Action>();
-			defaultIdea.add(current);
-			retval.add(defaultIdea);
+			}			
 		}
 		
 		return retval;

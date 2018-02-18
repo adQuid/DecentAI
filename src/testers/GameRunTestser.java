@@ -23,7 +23,7 @@ public class GameRunTestser {
 		
 		for(int i = 0; i<totalTurns; i++){
 			
-			System.out.println("minerals "+testGame.getEmpires().get(0).getMinerals()+", energy "+testGame.getEmpires().get(0).getEnergy()+", industry "+((Planet)testGame.getMap().getGrid()[5][8].getObject()).getActiveColonies().get(0).getIndustry()+"/"+((Planet)testGame.getMap().getGrid()[5][9].getObject()).getActiveColonies().get(0).getIndustry());
+			System.out.println("minerals "+testGame.getEmpires().get(0).getMinerals()+", energy "+testGame.getEmpires().get(0).getEnergy()+", industry "+((Planet)testGame.getMap().getGrid()[5][8].getObject()).getActiveColonies().get(0).getIndustry()+"/"+((Planet)testGame.getMap().getGrid()[5][8].getObject()).getActiveColonies().get(0).getPower()+","+((Planet)testGame.getMap().getGrid()[5][9].getObject()).getActiveColonies().get(0).getIndustry()+"/"+((Planet)testGame.getMap().getGrid()[5][9].getObject()).getActiveColonies().get(0).getIndustry());
 			List<Action> actions = brain.runAI(testGame, testGame.fetchCurrentEmpire(), lookAhead);
 			System.out.println("Actions this turn (ttl "+Math.min(12,totalTurns-i)+"):");
 			for(Action current: actions){
@@ -37,7 +37,7 @@ public class GameRunTestser {
 			testGame.setActionsForEmpire(actions, testGame.fetchCurrentEmpire());
 			testGame.endRound();
 		}
-		System.out.println("minerals "+testGame.getEmpires().get(0).getMinerals()+", energy "+testGame.getEmpires().get(0).getEnergy()+", industry "+((Planet)testGame.getMap().getGrid()[5][8].getObject()).getActiveColonies().get(0).getIndustry()+"/"+((Planet)testGame.getMap().getGrid()[5][9].getObject()).getActiveColonies().get(0).getIndustry());
+		System.out.println("minerals "+testGame.getEmpires().get(0).getMinerals()+", energy "+testGame.getEmpires().get(0).getEnergy()+", industry "+((Planet)testGame.getMap().getGrid()[5][8].getObject()).getActiveColonies().get(0).getIndustry()+"/"+((Planet)testGame.getMap().getGrid()[5][8].getObject()).getActiveColonies().get(0).getPower()+","+((Planet)testGame.getMap().getGrid()[5][9].getObject()).getActiveColonies().get(0).getIndustry()+"/"+((Planet)testGame.getMap().getGrid()[5][9].getObject()).getActiveColonies().get(0).getIndustry());
 	}
 		
 }
