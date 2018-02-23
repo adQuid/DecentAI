@@ -24,8 +24,10 @@ public class Hypothetical {
 	//actions this hypothetical is already commited to taking
 	private List<Action> actions;
 
+	private double scoreAccumulator;
+	private final double DECAY_RATE = 0.7;
 	
-	public Hypothetical(Game game, AIBrain parent, List<Action> parentActions, List<Action> actions, int ttl, Empire empire){
+	public Hypothetical(Game game, AIBrain parent, List<Action> parentActions, List<Action> actions, int ttl, Empire empire, double scoreAccumulator){
 		
 		this.game = GameCloner.cloneGame(game);
 		this.parent = parent;
@@ -33,6 +35,7 @@ public class Hypothetical {
 		this.actions = actions;
 		this.ttl = ttl;
 		this.empire = empire;
+		this.scoreAccumulator = scoreAccumulator;
 	}
 	
 	public HypotheticalResult calculate() {
@@ -42,19 +45,32 @@ public class Hypothetical {
 		passdownActions.addAll(parentActions);
 		List<HypotheticalResult> allOptions = new ArrayList<HypotheticalResult>();
 		
-		//base case where I'm out of time
-		if(ttl == 0) {
-			return new HypotheticalResult(game,actions,empire);
+		HypotheticalResult thisLevelResult = new HypotheticalResult(game,actions,empire);
+		
+		possibleActions.removeAll(parentActions);
+		List<List<Action>> ideas = SpaceGameIdeaGenerator.generateIdeas(possibleActions, game);
+		
+		//base case where I'm a top level hypothetical, and I can't even do anything this turn
+		if(parent.getMaxTtl() == ttl && ideas.size() == 1) {
+			return thisLevelResult;
 		}
 		
+		//base case where I'm out of time
+		if(ttl == 0) {
+			thisLevelResult.setScore(thisLevelResult.getScore()+scoreAccumulator);
+			return thisLevelResult;
+		}
+		
+		//add score from this round
+		scoreAccumulator += thisLevelResult.getScore();
+		
 		//try adding a new action
-		possibleActions.removeAll(parentActions);
-		for(List<Action> current: SpaceGameIdeaGenerator.generateIdeas(possibleActions, game)) {
+		for(List<Action> current: ideas) {
 			Game futureGame = GameCloner.cloneGame(game);
 			futureGame.setActionsForEmpire(current, empire);
 			futureGame.endRound();
 			List<Action> toPass = current.size()==0?passdownActions:futureGame.returnActions();
-			allOptions.add(packResult(new Hypothetical(futureGame,parent,toPass, new ArrayList<Action>(),ttl-1,empire).calculate(),current));	
+			allOptions.add(packResult(new Hypothetical(futureGame,parent,toPass, new ArrayList<Action>(),ttl-1,empire, scoreAccumulator*DECAY_RATE).calculate(),current));	
 		}
 		
 		//pick best option

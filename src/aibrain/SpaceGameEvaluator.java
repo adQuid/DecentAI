@@ -17,7 +17,7 @@ public class SpaceGameEvaluator {
 		for(Tile[] row: game.getMap().getGrid()){
 			for(Tile currentTile: row){
 				if(currentTile.getObject() != null && currentTile.getObject() instanceof Planet && ((Planet)currentTile.getObject()).fetchColonyForEmpire(game.fetchCurrentEmpire()) != null){
-					retval += 0.1 * ((Planet)currentTile.getObject()).fetchColonyForEmpire(game.fetchCurrentEmpire()).getIndustry();
+					retval += 2 * ((Planet)currentTile.getObject()).fetchColonyForEmpire(game.fetchCurrentEmpire()).getIndustry();
 				}
 			}
 		}

@@ -158,7 +158,7 @@ public class Colony {
 				((Colony)(current.getParams().get(0))).equals(this)){
 			try{
 				fetchedOwner.addMinerals(-5);
-				fetchedOwner.addEnergy(5);
+				fetchedOwner.addEnergy(6);
 			}catch(IllegalActionException e){
 				//Do nothing, you just can't afford this
 			}

@@ -20,7 +20,8 @@ public class SpaceGameIdeaGenerator {
 			defaultIdea.add(current);
 			retval.add(defaultIdea);
 			
-			if(current.getType() == ActionType.develop) {
+			switch(current.getType()) {
+			case develop:
 				List<Object> params = new ArrayList<Object>();
 				params.add(current.getParams().get(0));
 				Action getPower = new Action(ActionType.developPower,params);
@@ -29,7 +30,19 @@ public class SpaceGameIdeaGenerator {
 				toAdd.add(current);
 				toAdd.add(getPower);
 				retval.add(toAdd);
-			}			
+				break;
+			case cashNow:
+				params = new ArrayList<Object>();
+				params.add(current.getParams().get(0));
+				Action secondCashNow = new Action(ActionType.cashNow,params);
+				
+				toAdd = new ArrayList<Action>();
+				toAdd.add(current);
+				toAdd.add(secondCashNow);
+				retval.add(toAdd);
+				break;
+			
+			}
 		}
 		
 		return retval;

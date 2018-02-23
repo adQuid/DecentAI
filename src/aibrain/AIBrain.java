@@ -11,14 +11,20 @@ import model.Game;
 import testers.GameRunTestser;
 
 public class AIBrain {
-			
+	
+	private int maxTtl = 0;
+	
 	public List<Action> runAI(Game trueGame, Empire self, int lookAhead){
-		//factory = new HypotheticalFactory();
-		Hypothetical root = new Hypothetical(trueGame, this, new ArrayList<Action>(), new ArrayList<Action>(), lookAhead, self);
+		maxTtl = lookAhead;
+		Hypothetical root = new Hypothetical(trueGame, this, new ArrayList<Action>(), new ArrayList<Action>(), lookAhead, self, 0.0);
 		return root.calculate().getActions();
 	}
 		
 	public boolean valueIsValid(double value){
 		return true;
+	}
+	
+	public int getMaxTtl() {
+		return maxTtl;
 	}
 }
