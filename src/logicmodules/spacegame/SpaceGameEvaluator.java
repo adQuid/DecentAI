@@ -1,4 +1,4 @@
-package aibrain;
+package logicmodules.spacegame;
 
 import model.Colony;
 import model.Empire;

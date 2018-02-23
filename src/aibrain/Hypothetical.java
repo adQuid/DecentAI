@@ -6,6 +6,7 @@ import java.util.List;
 import actions.Action;
 import actions.ActionType;
 import cloners.GameCloner;
+import logicmodules.spacegame.SpaceGameIdeaGenerator;
 import model.Empire;
 import model.Game;
 import model.Planet;
@@ -25,7 +26,7 @@ public class Hypothetical {
 	private List<Action> actions;
 
 	private double scoreAccumulator;
-	private final double DECAY_RATE = 0.7;
+	private final double DECAY_RATE = 0.8;
 	
 	public Hypothetical(Game game, AIBrain parent, List<Action> parentActions, List<Action> actions, int ttl, Empire empire, double scoreAccumulator){
 		

@@ -3,6 +3,7 @@ package aibrain;
 import java.util.List;
 
 import actions.Action;
+import logicmodules.spacegame.SpaceGameEvaluator;
 import model.Empire;
 import model.Game;
 

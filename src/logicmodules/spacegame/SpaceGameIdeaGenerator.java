@@ -1,4 +1,4 @@
-package aibrain;
+package logicmodules.spacegame;
 
 import java.util.ArrayList;
 import java.util.List;
