@@ -7,7 +7,6 @@ import java.util.List;
 import actions.Action;
 import actions.ActionType;
 import model.Empire;
-import model.Game;
 import testers.GameRunTestser;
 
 public class AIBrain {

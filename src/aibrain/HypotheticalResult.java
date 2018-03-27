@@ -3,9 +3,9 @@ package aibrain;
 import java.util.List;
 
 import actions.Action;
-import logicmodules.spacegame.SpaceGameEvaluator;
 import model.Empire;
-import model.Game;
+import aibrain.Game;
+import spacegame.SpaceGameEvaluator;
 
 public class HypotheticalResult {
 
@@ -13,7 +13,7 @@ public class HypotheticalResult {
 	private List<Action> actions;
 	
 	public HypotheticalResult(Game game, List<Action> actions, Empire empire) {
-		this.score = SpaceGameEvaluator.getValue(game, empire);
+		this.score = SpaceGameEvaluator.getValue((model.Game)game, empire);
 		this.actions = actions;
 	}
 	public HypotheticalResult(double score, List<Action> actions) {

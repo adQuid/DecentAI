@@ -1,4 +1,4 @@
-package logicmodules.spacegame;
+package spacegame;
 
 import java.util.ArrayList;
 import java.util.List;

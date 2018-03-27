@@ -21,6 +21,7 @@ public class GameLoader {
 			ObjectMapper mapper = new ObjectMapper();
 			
 			Game retval = mapper.reader(Game.class).readValue(new File("saves/"+name+".gam"));
+			retval.setLive(true);
 			
 			return retval;
 		}catch(Exception e){

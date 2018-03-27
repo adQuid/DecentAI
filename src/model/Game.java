@@ -5,9 +5,11 @@ import java.util.List;
 
 import actions.Action;
 import actions.ActionType;
+import aibrain.Event;
 import cloners.GameCloner;
+import spacegame.PowerOverload;
 
-public class Game {
+public class Game implements aibrain.Game{
 
 	private Map map;
 	
@@ -15,11 +17,18 @@ public class Game {
 	
 	private List<Empire> empires = new ArrayList<Empire>();
 	
-	public Game(){		
+	private List<Event> events = new ArrayList<Event>();
+	
+	private boolean live;
+	
+	public Game() {		
+		live = true;
 		this.empires = new ArrayList<Empire>();
 		for(int i=0; i<10; i++){
 			empires.add(new Empire("test empire "+i));
 		}
+		
+		events.add(new PowerOverload(0.1));
 		
 		this.map = new Map(this);
 	}
@@ -45,6 +54,22 @@ public class Game {
 
 	public void setEmpires(List<Empire> empires) {
 		this.empires = empires;
+	}
+	
+	public List<Event> getEvents() {
+		return events;
+	}
+	
+	public void setEvents(List<Event> events) {
+		this.events = events;
+	}
+	
+	public boolean isLive() {
+		return live;
+	}
+	
+	public void setLive(boolean live) {
+		this.live = live;
 	}
 	
 	public void setGame(){
@@ -99,6 +124,9 @@ public class Game {
 				this.map.processActions(curAction);
 			}
 		}
+		for(Event current: events) {
+			current.applyTo(this,live);
+		}
 		this.map.getResourceProfile();
 		this.map.endRound();
 		for(Empire current: empires){
@@ -107,7 +135,7 @@ public class Game {
 	}
 	
 	public Game nextRound() {
-		Game retval = GameCloner.cloneGame(this);
+		Game retval = (Game) GameCloner.cloneGame(this);
 		retval.endRound();
 		return retval;
 	}

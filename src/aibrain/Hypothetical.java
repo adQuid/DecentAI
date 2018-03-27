@@ -6,11 +6,10 @@ import java.util.List;
 import actions.Action;
 import actions.ActionType;
 import cloners.GameCloner;
-import logicmodules.spacegame.SpaceGameIdeaGenerator;
 import model.Empire;
-import model.Game;
 import model.Planet;
 import model.Tile;
+import spacegame.SpaceGameIdeaGenerator;
 
 public class Hypothetical {
 
@@ -49,7 +48,7 @@ public class Hypothetical {
 		HypotheticalResult thisLevelResult = new HypotheticalResult(game,actions,empire);
 		
 		possibleActions.removeAll(parentActions);
-		List<List<Action>> ideas = SpaceGameIdeaGenerator.generateIdeas(possibleActions, game);
+		List<List<Action>> ideas = SpaceGameIdeaGenerator.generateIdeas(possibleActions, (model.Game)game);
 		
 		//base case where I'm a top level hypothetical, and I can't even do anything this turn
 		if(parent.getMaxTtl() == ttl && ideas.size() == 1) {

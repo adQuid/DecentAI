@@ -1,16 +1,23 @@
 package cloners;
 
-import model.Game;
 import model.Map;
+import aibrain.Game;
 
 public class GameCloner {
 
 	public static Game cloneGame(Game other){
-		Game retval = new Game(other);
-		
-		retval.setMap(new Map(other.getMap(), retval));
-		
-		return retval;
+		if(other instanceof model.Game) {
+			model.Game converted = (model.Game)other;
+			model.Game retval = new model.Game(converted);
+
+			retval.setMap(new Map(converted.getMap(), retval));
+			retval.setEvents(converted.getEvents());
+
+			retval.setLive(false);
+
+			return retval;
+		}
+		return null;
 	}
 	
 }

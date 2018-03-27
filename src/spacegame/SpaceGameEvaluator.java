@@ -1,4 +1,4 @@
-package logicmodules.spacegame;
+package spacegame;
 
 import model.Colony;
 import model.Empire;
