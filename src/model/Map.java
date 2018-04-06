@@ -54,6 +54,18 @@ public class Map {
 		}
 	}
 	
+	public void populateQuickRefrenceLists(List<Colony> colonies) {
+		for(int x=0; x<SIZE; x++){
+			for(int y=0; y<SIZE; y++){
+				if(grid[x][y].getObject() instanceof Planet) {
+					for(Colony current: ((Planet)grid[x][y].getObject()).getActiveColonies()) {
+						colonies.add(current);
+					}
+				}
+			}
+		}
+	}
+	
 	public List<Action> returnActions(){
 		List<Action> retval = new ArrayList<Action>();
 		for(int x=0; x<SIZE; x++){

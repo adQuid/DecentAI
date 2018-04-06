@@ -2,6 +2,7 @@ package spacegame;
 
 import aibrain.Event;
 import exceptions.IllegalActionException;
+import model.Colony;
 import model.Empire;
 import model.Game;
 
@@ -13,27 +14,23 @@ public class PowerOverload extends Event{
 
 	@Override
 	public Game applyTo(Game game, boolean live) {
-		for(Empire current: game.getEmpires()) {
+		for(Colony current: game.fetchAllColonies()) {
 			if(live) {
-				if(Math.random() < probability && current.getMinerals() >= 1) {
-					try {
-						current.addMinerals(-1);
-						if(current.getName().contains("0")) {
-							System.out.println("Power overload!");
+				if(Math.random() < probability && current.getPower() >= 1) {
+					if(current.getPower() < 3) {
+					current.setPower(current.getPower()-1);
+					if(current.getOwner().getName().contains("0")) {
+						System.out.println("Power overload!");
+					}
+					}else {
+						if(current.getOwner().getName().contains("0")) {
+							System.out.println("Power overload blocked!");
 						}
-					} catch (IllegalActionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					}
 				}
 			}else {
-				if(current.getMinerals() >= 1) {
-					try {
-						current.addMinerals(-1 * probability);
-					} catch (IllegalActionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+				if(current.getPower() >= 1 && current.getPower() < 3) {
+					current.setPower(current.getPower()-(1 * probability));
 				}
 			}
 		}

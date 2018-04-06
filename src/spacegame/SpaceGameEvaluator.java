@@ -11,8 +11,8 @@ public class SpaceGameEvaluator {
 
 	//Given a game state, how good do I find this outcome?
 	public static double getValue(Game game, Empire empire){
-		double retval = game.findMatchingEmpire(empire).getMinerals()*1.0;
-		retval += game.findMatchingEmpire(empire).getEnergy() * 1.0;
+		double retval = Math.pow(game.findMatchingEmpire(empire).getMinerals()*1.0,0.75);
+		retval += Math.pow(game.findMatchingEmpire(empire).getEnergy() * 1.0,0.75);
 
 		for(Tile[] row: game.getMap().getGrid()){
 			for(Tile currentTile: row){

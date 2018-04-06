@@ -13,6 +13,9 @@ public class Game implements aibrain.Game{
 
 	private Map map;
 	
+	//these are quick refrence lists. the map is the source of truth
+	private List<Colony> allColonies = new ArrayList<Colony>();
+	
 	private int nextId=0;
 	
 	private List<Empire> empires = new ArrayList<Empire>();
@@ -28,9 +31,11 @@ public class Game implements aibrain.Game{
 			empires.add(new Empire("test empire "+i));
 		}
 		
-		events.add(new PowerOverload(0.1));
+		events.add(new PowerOverload(0.3));
 		
 		this.map = new Map(this);
+		
+		map.populateQuickRefrenceLists(allColonies);
 	}
 
 	public Game(Game other){
@@ -72,6 +77,10 @@ public class Game implements aibrain.Game{
 		this.live = live;
 	}
 	
+	public List<Colony> fetchAllColonies(){
+		return this.allColonies;
+	}
+	
 	public void setGame(){
 		this.map.setGame(this);
 	}
@@ -107,6 +116,8 @@ public class Game implements aibrain.Game{
 	public Empire fetchCurrentEmpire(){
 		return empires.get(0);
 	}
+	
+	
 	
 	public List<Action> returnActions(){
 		List<Action> retval = map.returnActions();

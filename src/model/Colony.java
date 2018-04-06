@@ -173,7 +173,7 @@ public class Colony {
 	public void endRound() {
 		Empire fetchedOwner = this.game.findMatchingEmpire(owner);
 		try{
-			fetchedOwner.addMinerals(Math.min(this.industry,this.power));
+			fetchedOwner.addMinerals(Math.max(Math.min(this.industry,this.power),0));
 		}catch(IllegalActionException e){
 			System.out.println("COLONY FOR "+fetchedOwner.getName()+" has negative industry!");
 		}
