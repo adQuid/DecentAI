@@ -16,7 +16,7 @@ public class PowerOverload extends Event{
 	public Game applyTo(Game game, boolean live) {
 		for(Colony current: game.fetchAllColonies()) {
 			if(live) {
-				if(Math.random() < probability && current.getPower() >= 1) {
+				if(Math.random() < probability && current.getPower() > 0) {
 					if(current.getPower() < 3) {
 					current.setPower(current.getPower()-1);
 					if(current.getOwner().getName().contains("0")) {
@@ -29,7 +29,7 @@ public class PowerOverload extends Event{
 					}
 				}
 			}else {
-				if(current.getPower() >= 1 && current.getPower() < 3) {
+				if(current.getPower() > 0 && current.getPower() < 3) {
 					current.setPower(current.getPower()-(1 * probability));
 				}
 			}

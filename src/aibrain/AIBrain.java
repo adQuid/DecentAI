@@ -15,7 +15,7 @@ public class AIBrain {
 	
 	public List<Action> runAI(Game trueGame, Empire self, int lookAhead){
 		maxTtl = lookAhead;
-		Hypothetical root = new Hypothetical(trueGame, this, new ArrayList<Action>(), new ArrayList<Action>(), lookAhead, self, 0.0);
+		Hypothetical root = new Hypothetical(trueGame, new ArrayList<Modifier>(), this, new ArrayList<Action>(), new ArrayList<Action>(), lookAhead, self, 0.0);
 		return root.calculate().getActions();
 	}
 		

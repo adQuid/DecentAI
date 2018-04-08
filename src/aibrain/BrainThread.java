@@ -48,7 +48,7 @@ public class BrainThread implements Runnable{
 				}
 				System.out.println();
 			}
-			System.out.println("minerals "+game.getEmpires().get(0).getMinerals()+", energy "+game.getEmpires().get(0).getEnergy()+", industry "+((Planet)game.getMap().getGrid()[5][8].getObject()).getActiveColonies().get(0).getIndustry()+"/"+((Planet)game.getMap().getGrid()[5][9].getObject()).getActiveColonies().get(0).getIndustry());
+			System.out.println("minerals "+game.getEmpires().get(0).getMinerals()+", energy "+game.getEmpires().get(0).getCurrency()+", industry "+((Planet)game.getMap().getGrid()[5][8].getObject()).getActiveColonies().get(0).getIndustry()+"/"+((Planet)game.getMap().getGrid()[5][9].getObject()).getActiveColonies().get(0).getIndustry());
 		}
 	}
 

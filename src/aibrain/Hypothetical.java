@@ -19,6 +19,7 @@ public class Hypothetical {
 	private Empire empire;
 	private int ttl;
 	private Game game;
+	private List<Modifier> modifiers;
 	//this is a list of the actions the parent COULD have taken, not what it did
 	private List<Action> parentActions;
 	//actions this hypothetical is already commited to taking
@@ -27,9 +28,10 @@ public class Hypothetical {
 	private double scoreAccumulator;
 	private final double DECAY_RATE = 0.8;
 	
-	public Hypothetical(Game game, AIBrain parent, List<Action> parentActions, List<Action> actions, int ttl, Empire empire, double scoreAccumulator){
+	public Hypothetical(Game game, List<Modifier> modifiers, AIBrain parent, List<Action> parentActions, List<Action> actions, int ttl, Empire empire, double scoreAccumulator){
 		
 		this.game = GameCloner.cloneGame(game);
+		this.modifiers = modifiers;
 		this.parent = parent;
 		this.parentActions = parentActions;
 		this.actions = actions;
@@ -70,7 +72,7 @@ public class Hypothetical {
 			futureGame.setActionsForEmpire(current, empire);
 			futureGame.endRound();
 			List<Action> toPass = current.size()==0?passdownActions:futureGame.returnActions();
-			allOptions.add(packResult(new Hypothetical(futureGame,parent,toPass, new ArrayList<Action>(),ttl-1,empire, scoreAccumulator*DECAY_RATE).calculate(),current));	
+			allOptions.add(packResult(new Hypothetical(futureGame,modifiers,parent,toPass, new ArrayList<Action>(),ttl-1,empire, scoreAccumulator*DECAY_RATE).calculate(),current));	
 		}
 		
 		//pick best option

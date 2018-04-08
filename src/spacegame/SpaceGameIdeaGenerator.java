@@ -25,10 +25,29 @@ public class SpaceGameIdeaGenerator {
 				List<Object> params = new ArrayList<Object>();
 				params.add(current.getParams().get(0));
 				Action getPower = new Action(ActionType.developPower,params);
+				Action fortify1 = new Action(ActionType.developPower,params);
 				
 				List<Action> toAdd = new ArrayList<Action>();
 				toAdd.add(current);
 				toAdd.add(getPower);
+				retval.add(new ArrayList<Action>(toAdd));
+				toAdd.add(fortify1);
+				retval.add(toAdd);
+				break;
+			case developPower:
+				params = new ArrayList<Object>();
+				params.add(current.getParams().get(0));
+				Action fortify3 = new Action(ActionType.developPower,params);
+				Action fortify4 = new Action(ActionType.developPower,params);
+				Action develop = new Action(ActionType.develop,params);
+				
+				toAdd = new ArrayList<Action>();
+				toAdd.add(current);
+				toAdd.add(fortify3);
+				retval.add(new ArrayList<Action>(toAdd));
+				toAdd.add(fortify4);
+				retval.add(new ArrayList<Action>(toAdd));
+				toAdd.add(develop);
 				retval.add(toAdd);
 				break;
 			case cashNow:

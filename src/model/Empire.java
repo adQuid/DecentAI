@@ -10,7 +10,7 @@ public class Empire {
 
 	private String name;
 	private double minerals;
-	private double energy;
+	private double currency;
 	private List<Action> actionsThisTurn = new ArrayList<Action>();
 	
 	public Empire(){
@@ -19,14 +19,14 @@ public class Empire {
 	
 	public Empire(String name){
 		this.name = name;
-		this.minerals = 6;
-		this.energy = 0;
+		this.minerals = 11;
+		this.currency = 0;
 	}
 	
 	public Empire(Empire other){
 		this.name = other.name;
 		this.minerals = other.minerals;
-		this.energy = other.energy;
+		this.currency = other.currency;
 		for(Action current: other.actionsThisTurn){
 			actionsThisTurn.add(new Action(current));
 		}
@@ -48,12 +48,12 @@ public class Empire {
 		this.minerals = minerals;
 	}
 		
-	public double getEnergy() {
-		return energy;
+	public double getCurrency() {
+		return currency;
 	}
 
-	public void setEnergy(double energy) {
-		this.energy = energy;
+	public void setCurrency(double energy) {
+		this.currency = energy;
 	}
 
 	public List<Action> getActionsThisTurn() {
@@ -72,10 +72,10 @@ public class Empire {
 	}
 	
 	public void addEnergy(double energy) throws IllegalActionException{
-		if(this.energy + energy < 0){
+		if(this.currency + energy < 0){
 			throw new IllegalActionException();
 		}
-		this.energy += energy;
+		this.currency += energy;
 	}
 
 	@Override

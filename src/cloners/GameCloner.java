@@ -12,7 +12,7 @@ public class GameCloner {
 
 			retval.setMap(new Map(converted.getMap(), retval));
 			retval.setEvents(converted.getEvents());
-
+			
 			retval.setLive(false);
 
 			return retval;
