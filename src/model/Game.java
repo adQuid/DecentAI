@@ -31,7 +31,7 @@ public class Game implements aibrain.Game{
 			empires.add(new Empire("test empire "+i));
 		}
 		
-		events.add(new PowerOverload(0.100));
+		events.add(new PowerOverload(0.1));
 		
 		this.map = new Map(this);
 		map.populateQuickRefrenceLists(allColonies);

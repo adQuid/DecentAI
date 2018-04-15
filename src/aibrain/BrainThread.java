@@ -16,18 +16,20 @@ public class BrainThread implements Runnable{
 	private Game game;
 	private Empire empire;
 	private int lookahead;
+	private int tail;
 	
-	public BrainThread(Game game, Empire empire, int lookahead){
+	public BrainThread(Game game, Empire empire, int lookahead, int tail){
 		this.empire = empire;
 		this.game = game;
 		this.lookahead = lookahead;
+		this.tail = tail;
 	}
 	
 	@Override
 	public void run() {
 		AIBrain brain = new AIBrain();
 		
-		List<Action> actions = brain.runAI(game, empire, this.lookahead);
+		List<Action> actions = brain.runAI(game, empire, this.lookahead, this.tail);
 		
 		game.setActionsForEmpire(actions, empire);
 		

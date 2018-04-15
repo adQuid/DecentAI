@@ -44,7 +44,6 @@ public class SpaceGameIdeaGenerator {
 				toAdd = new ArrayList<Action>();
 				toAdd.add(current);
 				toAdd.add(fortify3);
-				retval.add(new ArrayList<Action>(toAdd));
 				toAdd.add(fortify4);
 				retval.add(new ArrayList<Action>(toAdd));
 				toAdd.add(develop);
