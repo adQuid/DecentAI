@@ -13,10 +13,10 @@ public class AIBrain {
 	
 	private int maxTtl = 0;
 	
-	public List<Action> runAI(Game trueGame, Empire self, int lookAhead, int lookAheadTail){
+	public List<Action> runAI(Game trueGame, Empire self, int lookAhead, int lookAheadSecondary, int lookAheadTail){
 		maxTtl = lookAhead;
-		Hypothetical root = new Hypothetical(trueGame, new ArrayList<Modifier>(), this, new ArrayList<Action>(), new ArrayList<Action>(), new ArrayList<Action>(), lookAhead, lookAheadTail, self, 0.0);
-		return root.calculate().getActions();
+		Hypothetical root = new Hypothetical(trueGame, new ArrayList<Modifier>(), this, new ArrayList<Action>(), new ArrayList<Action>(), new ArrayList<Action>(), lookAhead, lookAheadSecondary, lookAheadTail, self, 0.0);
+		return root.calculate().getImmediateActions();
 	}
 		
 	public boolean valueIsValid(double value){

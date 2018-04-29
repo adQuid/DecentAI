@@ -19,14 +19,15 @@ public class GameRunTestser {
 		AIBrain brain = new AIBrain();
 		
 		final int totalTurns = 30;
-		final int lookAhead = 8;
+		final int lookAhead = 4;
+		final int lookAheadSecondary = 4;
 		final int tailLength = 5;
 		long time = System.currentTimeMillis();
 		
 		for(int i = 0; i<totalTurns; i++){
 			time = System.currentTimeMillis();
 			System.out.println("minerals "+testGame.getEmpires().get(0).getMinerals()+", credits "+testGame.getEmpires().get(0).getCurrency()+", industry "+((Planet)testGame.getMap().getGrid()[5][8].getObject()).getActiveColonies().get(0).getIndustry()+"/"+((Planet)testGame.getMap().getGrid()[5][8].getObject()).getActiveColonies().get(0).getPower()+","+((Planet)testGame.getMap().getGrid()[5][9].getObject()).getActiveColonies().get(0).getIndustry()+"/"+((Planet)testGame.getMap().getGrid()[5][9].getObject()).getActiveColonies().get(0).getPower());
-			List<Action> actions = brain.runAI(testGame, testGame.fetchCurrentEmpire(), lookAhead, tailLength);
+			List<Action> actions = brain.runAI(testGame, testGame.fetchCurrentEmpire(), lookAhead, lookAheadSecondary, tailLength);
 			System.out.println("Actions this turn (ttl "+Math.min(lookAhead,totalTurns-i)+"):");
 			for(Action current: actions){
 				System.out.print(""+current.getType());

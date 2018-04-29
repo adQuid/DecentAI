@@ -15,8 +15,10 @@ public interface Game {
 	
 	public void setActionsForEmpire(List<Action> actions, Empire empire);
 	
+	//clears out all actions for each empire
 	public void endRound();
 	
+	//returns a new game based on the results of endRound
 	public Game nextRound();
 	
 }

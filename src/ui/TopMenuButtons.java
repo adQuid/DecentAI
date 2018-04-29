@@ -34,7 +34,7 @@ public class TopMenuButtons {
 					endTurn.setText("Ending turn "+Mainmenu.currentTurn);
 					
 					for(Empire current: Mainmenu.liveGame.getEmpires()){
-						Thread brain = new Thread(new BrainThread(Mainmenu.liveGame,current,8,8));
+						Thread brain = new Thread(new BrainThread(Mainmenu.liveGame,current,4,4,8));
 						brain.start();
 					}
 				}

@@ -16,12 +16,14 @@ public class BrainThread implements Runnable{
 	private Game game;
 	private Empire empire;
 	private int lookahead;
+	private int lookAheadSecondary;
 	private int tail;
 	
-	public BrainThread(Game game, Empire empire, int lookahead, int tail){
+	public BrainThread(Game game, Empire empire, int lookahead, int lookAheadSecondary, int tail){
 		this.empire = empire;
 		this.game = game;
 		this.lookahead = lookahead;
+		this.lookAheadSecondary = lookAheadSecondary;
 		this.tail = tail;
 	}
 	
@@ -29,7 +31,7 @@ public class BrainThread implements Runnable{
 	public void run() {
 		AIBrain brain = new AIBrain();
 		
-		List<Action> actions = brain.runAI(game, empire, this.lookahead, this.tail);
+		List<Action> actions = brain.runAI(game, empire, this.lookahead, this.lookAheadSecondary, this.tail);
 		
 		game.setActionsForEmpire(actions, empire);
 		
