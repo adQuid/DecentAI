@@ -27,7 +27,7 @@ public class Hypothetical {
 	private List<Action> possibleParentActions;
 	//this is a list of the actions actually selected by the parent step, and avalible to try again
 	private List<Action> usedParentActions;
-	//actions this hypothetical is already commited to taking
+	//actions this hypothetical is already committed to taking
 	private List<Action> actions;
 
 	private Score scoreAccumulator;
@@ -70,17 +70,8 @@ public class Hypothetical {
 		HypotheticalResult thisLevelResult = new HypotheticalResult(game,actions,empire);
 		
 		//remove all actions that the parent could have done, but didn't do
-		possibleParentActions.removeAll(usedParentActions);
-		//possibleActions.removeAll(possibleParentActions);
-		
-		List<Action> list = new ArrayList<Action>();
-		for(Action current: possibleParentActions) {
-			if(current.getType() == ActionType.cashNow) {
-				list.add(current);
-			}
-		}
+		possibleParentActions.removeAll(usedParentActions);		
 		possibleActions.removeAll(possibleParentActions);
-		//possibleActions.addAll(list);
 		
 		List<List<Action>> ideas = SpaceGameIdeaGenerator.instance().generateIdeas(possibleActions, (model.Game)game);
 		
