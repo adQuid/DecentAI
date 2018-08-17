@@ -10,24 +10,24 @@ import spacegame.SpaceGameEvaluator;
 
 public class HypotheticalResult {
 
-	private double score;
-	private List<List<Action>> actions;
+	private Score score;
+	private List<List<Action>> actions;	
 	
 	public HypotheticalResult(Game game, List<Action> actions, Empire empire) {
-		this.score = SpaceGameEvaluator.getValue((model.Game)game, empire);
+		this.score = SpaceGameEvaluator.getInstance().getValue((model.Game)game, empire);
 		this.actions = new ArrayList<List<Action>>();
 		this.actions.add(actions);
 	}
-	public HypotheticalResult(double score, List<Action> actions) {
+	public HypotheticalResult(Score score, List<Action> actions) {
 		super();
 		this.score = score;
 		this.actions = new ArrayList<List<Action>>();
 		this.actions.add(actions);
 	}
-	public double getScore() {
+	public Score getScore() {
 		return score;
 	}
-	public void setScore(double score) {
+	public void setScore(Score score) {
 		this.score = score;
 	}
 	public List<List<Action>> getActions() {

@@ -1,6 +1,7 @@
 package aibrain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import actions.Action;
@@ -29,10 +30,10 @@ public class Hypothetical {
 	//actions this hypothetical is already commited to taking
 	private List<Action> actions;
 
-	private double scoreAccumulator;
+	private Score scoreAccumulator;
 	private final double DECAY_RATE = 0.8;
 	
-	public Hypothetical(Game game, List<Modifier> modifiers, AIBrain parent, List<Action> possibleParentActions, List<Action> usedParentActions, List<Action> actions, int tightForcastLength, int looseForcastLength, int tail, Empire empire, double scoreAccumulator){
+	public Hypothetical(Game game, List<Modifier> modifiers, AIBrain parent, List<Action> possibleParentActions, List<Action> usedParentActions, List<Action> actions, int tightForcastLength, int looseForcastLength, int tail, Empire empire, Score scoreAccumulator){
 		
 		this.game = GameCloner.cloneGame(game);
 		this.modifiers = modifiers;
@@ -54,10 +55,10 @@ public class Hypothetical {
 			Game futureGame = GameCloner.cloneGame(game);
 			for(int turn = 0; turn < tail; turn++) {
 				futureGame.endRound();
-				scoreAccumulator += new HypotheticalResult(game, actions, empire).getScore();
+				scoreAccumulator.addTo(new HypotheticalResult(game, actions, empire).getScore());
 			}
 			HypotheticalResult retval = new HypotheticalResult(game,actions,empire);
-			retval.setScore(retval.getScore() + scoreAccumulator);
+			retval.setScore(retval.getScore().addTo(scoreAccumulator));
 			return retval;
 		}
 		
@@ -89,7 +90,7 @@ public class Hypothetical {
 		}
 				
 		//add score from this round
-		scoreAccumulator += thisLevelResult.getScore();
+		scoreAccumulator.addTo(thisLevelResult.getScore());
 		
 		//try adding a new action
 		for(List<Action> current: ideas) {
@@ -97,21 +98,21 @@ public class Hypothetical {
 			futureGame.setActionsForEmpire(current, empire);
 			futureGame.endRound();
 			if(isInLooseForcastPhase()) {
-				scoreAccumulator += new HypotheticalResult(game, actions, empire).getScore();
+				scoreAccumulator.addTo(new HypotheticalResult(game, actions, empire).getScore());
 				futureGame.endRound();
 			}
 			List<Action> toPass = current.size()==0?passdownActions:futureGame.returnActions();
 			allOptions.add(packResult((tightForcastLength == 0?
-					new Hypothetical(futureGame,modifiers,parent,toPass,new ArrayList<Action>(current), new ArrayList<Action>(),tightForcastLength,looseForcastLength-1,tail,empire, scoreAccumulator*DECAY_RATE).calculate()
-					:new Hypothetical(futureGame,modifiers,parent,toPass,new ArrayList<Action>(current), new ArrayList<Action>(),tightForcastLength-1,looseForcastLength,tail,empire, scoreAccumulator*DECAY_RATE).calculate()),current));	
+					new Hypothetical(futureGame,modifiers,parent,toPass,new ArrayList<Action>(current), new ArrayList<Action>(),tightForcastLength,looseForcastLength-1,tail,empire, scoreAccumulator.decay(DECAY_RATE)).calculate()
+					:new Hypothetical(futureGame,modifiers,parent,toPass,new ArrayList<Action>(current), new ArrayList<Action>(),tightForcastLength-1,looseForcastLength,tail,empire, scoreAccumulator.decay(DECAY_RATE)).calculate()),current));	
 		}
 		
 		//pick best option
 		double bestScore = 0;
 		HypotheticalResult retval = null;
 		for(HypotheticalResult current: allOptions) {
-			if(retval == null || current.getScore() > bestScore) {
-				bestScore = current.getScore();
+			if(retval == null || current.getScore().totalScore() > bestScore) {
+				bestScore = current.getScore().totalScore();
 				retval = current;
 			}
 		}
@@ -129,27 +130,29 @@ public class Hypothetical {
 		}
 		
 		for(HypotheticalResult current: variations) {
-			if(retval == null || current.getScore() > bestScore) {
-				bestScore = current.getScore();
+			if(retval == null || current.getScore().totalScore() > bestScore) {
+				bestScore = current.getScore().totalScore();
 				retval = current;
 			}
 		}
 		
 		return retval;
 	}
+	
 	private HypotheticalResult runPath(Game game, List<List<Action>> actions) {
-		double scoreAccumulator = 0;
+		Score scoreAccumulator = new Score(new HashMap<String,Double>());
 		for(List<Action> current: actions) {
-			scoreAccumulator *= DECAY_RATE;
+			scoreAccumulator.decay(DECAY_RATE);
 			game.setActionsForEmpire(current, empire);
 			game.endRound();
-			scoreAccumulator += new HypotheticalResult(game, current, empire).getScore();
+			scoreAccumulator.addTo(new HypotheticalResult(game, current, empire).getScore());
 		}
 		
 		HypotheticalResult retval = new HypotheticalResult(game,actions.get(0),empire);
-		retval.setScore(retval.getScore() + scoreAccumulator);
+		retval.setScore(retval.getScore().addTo(scoreAccumulator));
 		return retval;
 	}
+	
 	private HypotheticalResult packResult(HypotheticalResult result, List<Action> actions) {
 		if(isInLooseForcastPhase()) {
 			result.appendActionsFront(new ArrayList<Action>());
@@ -157,6 +160,7 @@ public class Hypothetical {
 		result.appendActionsFront(actions);
 		return result;
 	}
+	
 	private boolean isInLooseForcastPhase() {
 		return tightForcastLength == 0;
 	}
