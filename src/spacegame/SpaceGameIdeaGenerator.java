@@ -5,11 +5,18 @@ import java.util.List;
 
 import actions.Action;
 import actions.ActionType;
+import aibrain.IdeaGenerator;
 import model.Game;
 
-public class SpaceGameIdeaGenerator {
+public class SpaceGameIdeaGenerator implements IdeaGenerator{
 
-	public static List<List<Action>> generateIdeas(List<Action> possibilities, Game game){
+	public static SpaceGameIdeaGenerator instance = new SpaceGameIdeaGenerator();
+	
+	public static SpaceGameIdeaGenerator instance() {
+		return instance;
+	}
+	
+	public List<List<Action>> generateIdeas(List<Action> possibilities, Game game){
 		List<List<Action>> retval = new ArrayList<List<Action>>();
 		
 		List<Action> emptyIdea = new ArrayList<Action>();

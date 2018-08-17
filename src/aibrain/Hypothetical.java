@@ -82,7 +82,7 @@ public class Hypothetical {
 		possibleActions.removeAll(possibleParentActions);
 		//possibleActions.addAll(list);
 		
-		List<List<Action>> ideas = SpaceGameIdeaGenerator.generateIdeas(possibleActions, (model.Game)game);
+		List<List<Action>> ideas = SpaceGameIdeaGenerator.instance().generateIdeas(possibleActions, (model.Game)game);
 		
 		//base case where I'm a top level hypothetical, and I can't even do anything this turn
 		if(parent.getMaxTtl() == tightForcastLength && ideas.size() == 1) {//a size one list of actions will only have the "do nothing" action
