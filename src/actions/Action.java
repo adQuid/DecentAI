@@ -56,4 +56,7 @@ public class Action {
 		return true;
 	}
 	
+	public String toString() {
+		return type.name();
+	}
 }
