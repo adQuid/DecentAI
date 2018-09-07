@@ -105,7 +105,7 @@ public class Hypothetical {
 			List<Action> toPass = current.size()==0?passdownActions:futureGame.returnActions();
 			Plan planToPass = new Plan(plan);
 			planToPass.addReasoning(new Reasoning("adding actions "+Arrays.toString(current.toArray())));
-			planToPass.addActionList(current);
+			planToPass.addActionListToEnd(current);
 			allOptions.add(packResult((tightForcastLength == 0?
 					new Hypothetical(futureGame,modifiers,parent,toPass,
 							new ArrayList<Action>(current), new ArrayList<Action>(),tightForcastLength,

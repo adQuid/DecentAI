@@ -25,7 +25,11 @@ public class Plan {
 		return plannedActions;
 	}
 
-	public void addActionList(List<Action> plannedActions) {
+	public void addActionListFront(List<Action> plannedActions) {
+		this.plannedActions.add(0, plannedActions);
+	}
+	
+	public void addActionListToEnd(List<Action> plannedActions) {
 		this.plannedActions.add(plannedActions);
 	}
 
