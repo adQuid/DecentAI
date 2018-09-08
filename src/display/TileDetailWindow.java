@@ -11,7 +11,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import gameload.GameLoader;
 import model.Game;
 import model.Planet;
 import model.Tile;
