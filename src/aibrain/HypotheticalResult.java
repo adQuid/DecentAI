@@ -57,13 +57,6 @@ public class HypotheticalResult {
 	
 	public void setScore(Score score) {
 		this.score = score;
-		
-		if(plan.getPlannedActions().size() > 0 && plan.getPlannedActions().get(0).hashCode() == -644102700 && plan.getPlannedActions().get(plan.getPlannedActions().size()-1).hashCode() == 1012742614) {
-			System.out.println("scores:");
-			for(Double current: score.addAmounts) {
-				System.out.println(">"+current);
-			}
-		}
 	}
 	
 	public List<List<Action>> getActions() {
