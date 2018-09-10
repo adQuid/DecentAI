@@ -56,20 +56,28 @@ public class SpaceGameIdeaGenerator implements IdeaGenerator{
 				toAdd.add(develop);
 				retval.add(toAdd);
 				break;
-			case cashNow:
+			case develop2:
 				params = new ArrayList<Object>();
 				params.add(current.getParams().get(0));
-				Action secondCashNow = new Action(ActionType.cashNow,params);
 				
 				toAdd = new ArrayList<Action>();
 				toAdd.add(current);
-				toAdd.add(secondCashNow);
+				retval.add(new ArrayList<Action>(toAdd));
+				break;
+			case cashNow:
+				params = new ArrayList<Object>();
+				params.add(current.getParams().get(0));
+				
+				toAdd = new ArrayList<Action>();
+				toAdd.add(current);
+				for(int i = 1; i < game.fetchCurrentEmpire().getMinerals()/5; i++) {
+					toAdd.add(new Action(ActionType.cashNow,params));
+				}
 				retval.add(toAdd);
 				break;
 			
 			}
 		}
-		
 		return retval;
 	}
 	

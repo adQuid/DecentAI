@@ -29,9 +29,9 @@ public class BrainThread implements Runnable{
 	
 	@Override
 	public void run() {
-		AIBrain brain = new AIBrain();
+		AIBrain brain = new AIBrain(empire, this.lookahead, this.lookAheadSecondary, this.tail);
 		
-		List<Action> actions = brain.runAI(game, empire, this.lookahead, this.lookAheadSecondary, this.tail).getImmediateActions();
+		List<Action> actions = brain.runAI(game).getImmediateActions();
 		
 		game.setActionsForEmpire(actions, empire);
 		
