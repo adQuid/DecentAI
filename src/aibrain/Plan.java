@@ -27,12 +27,28 @@ public class Plan {
 
 	public void addActionListFront(List<Action> plannedActions) {
 		this.plannedActions.add(0, plannedActions);
+		if(this.plannedActions.size() > this.reasonings.size()) {
+			System.err.println("???");
+		}
 	}
 	
 	public void addActionListToEnd(List<Action> plannedActions) {
 		this.plannedActions.add(plannedActions);
+		if(this.plannedActions.size() > this.reasonings.size()) {
+			System.err.println("???");
+		}
+	}
+	
+	public void removeActionListFromFront() {
+		this.plannedActions.remove(0);
+		this.reasonings.remove(0);
 	}
 
+	public void removeActionListFromEnd() {
+		this.plannedActions.remove(this.plannedActions.size()-1);
+		this.reasonings.remove(this.plannedActions.size()-1);
+	}
+	
 	public List<Reasoning> getReasonings() {
 		return reasonings;
 	}

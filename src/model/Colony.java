@@ -108,13 +108,13 @@ public class Colony {
 		if(fetchedEmpire.equals(this.getOwner())){
 			List<Object> params = new ArrayList<Object>();
 			params.add(this);
-			if(fetchedEmpire.getMinerals() >= 3 + (1*industry)){
+			if(fetchedEmpire.getMinerals() >= 2 + (1*industry)){
 				retval.add(new Action(ActionType.develop,params));
 			}
-			if(fetchedEmpire.getMinerals() >= 12 + (1*industry)){
+			if(fetchedEmpire.getMinerals() >= 6 + (1*industry)){
 				retval.add(new Action(ActionType.develop2,params));
 			}
-			if(fetchedEmpire.getMinerals() >= 3){
+			if(fetchedEmpire.getMinerals() >= 2){
 				retval.add(new Action(ActionType.developPower,params));
 			}
 			if(fetchedEmpire.getMinerals() >= 5){
@@ -130,7 +130,7 @@ public class Colony {
 		if(current.getType() == ActionType.develop&&
 				((Colony)(current.getParams().get(0))).equals(this)){
 			try{
-				fetchedOwner.addMinerals(-3 - (1*industry));
+				fetchedOwner.addMinerals(-2 - (1*industry));
 				this.industry++;
 			}catch(IllegalActionException e){
 				//Do nothing, you just can't afford this
@@ -139,7 +139,7 @@ public class Colony {
 		if(current.getType() == ActionType.develop2&&
 				((Colony)(current.getParams().get(0))).equals(this)){
 			try{
-				fetchedOwner.addMinerals(-12 - (1*industry));
+				fetchedOwner.addMinerals(-6 - (1*industry));
 				this.industry+=7;
 			}catch(IllegalActionException e){
 				//Do nothing, you just can't afford this
@@ -148,7 +148,7 @@ public class Colony {
 		if(current.getType() == ActionType.developPower&&
 				((Colony)(current.getParams().get(0))).equals(this)){
 			try{
-				fetchedOwner.addMinerals(-3);
+				fetchedOwner.addMinerals(-2);
 				this.power+=1;
 			}catch(IllegalActionException e){
 				//Do nothing, you just can't afford this

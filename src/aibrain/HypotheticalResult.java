@@ -14,10 +14,19 @@ public class HypotheticalResult {
 	private Plan plan = new Plan();
 	
 	//keeps no logs or reasonings. Only for quickly determining the value of a game state
-	public HypotheticalResult(Game game, List<Action> actions, Empire empire) {
+	public HypotheticalResult(Game game, Empire empire) {
 		this.score = SpaceGameEvaluator.getInstance().getValue((model.Game)game, empire);
-		this.plan.addActionListToEnd(actions);
 	}
+	
+	//keeps no logs or reasonings. Only for quickly determining the value of a game state
+	public HypotheticalResult(Game game, Empire empire, Plan plan) {
+		this.score = SpaceGameEvaluator.getInstance().getValue((model.Game)game, empire);
+		this.plan = plan;		
+		
+		if(plan.getPlannedActions().size() > 0 && plan.getPlannedActions().get(0).hashCode() == -644102700 && plan.getPlannedActions().get(plan.getPlannedActions().size()-1).hashCode() == 1012742614) {
+			System.out.println("starting score: "+score.totalScore());
+		}
+	}	
 	
 	public HypotheticalResult(Game game, List<Action> actions, Empire empire, List<Action> nextActions, Reasoning reason) {
 		this.score = SpaceGameEvaluator.getInstance().getValue((model.Game)game, empire);
@@ -26,11 +35,7 @@ public class HypotheticalResult {
 		this.plan.addReasoning(reason);
 	}
 
-	public HypotheticalResult(Game game, List<Action> actions, Empire empire, Plan plan) {
-		this.score = SpaceGameEvaluator.getInstance().getValue((model.Game)game, empire);
-		this.plan.addActionListToEnd(actions);
-		this.plan = plan;
-	}	
+
 	
 	public HypotheticalResult(Game game, List<Action> actions, Empire empire, Plan plan, List<Action> nextActions, Reasoning newReason) {
 		this.score = SpaceGameEvaluator.getInstance().getValue((model.Game)game, empire);
@@ -52,6 +57,13 @@ public class HypotheticalResult {
 	
 	public void setScore(Score score) {
 		this.score = score;
+		
+		if(plan.getPlannedActions().size() > 0 && plan.getPlannedActions().get(0).hashCode() == -644102700 && plan.getPlannedActions().get(plan.getPlannedActions().size()-1).hashCode() == 1012742614) {
+			System.out.println("scores:");
+			for(Double current: score.addAmounts) {
+				System.out.println(">"+current);
+			}
+		}
 	}
 	
 	public List<List<Action>> getActions() {
@@ -75,6 +87,11 @@ public class HypotheticalResult {
 		this.plan.addActionListToEnd(actions);;
 	}
 
+	public void appendActionsEnd(List<Action> actions, Reasoning reasonings) {
+		this.plan.addReasoning(reasonings);
+		this.plan.addActionListToEnd(actions);
+	}
+	
 	public Plan getPlan() {
 		return plan;
 	}

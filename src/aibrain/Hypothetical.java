@@ -33,7 +33,6 @@ public class Hypothetical {
 	private Plan plan;
 	
 	private Score scoreAccumulator;
-	private final double DECAY_RATE = 0.8;
 	
 	public Hypothetical(Game game, List<Modifier> modifiers, AIBrain parent, List<Action> possibleParentActions, List<Action> usedParentActions, List<Action> actions, int tightForcastLength, int looseForcastLength, int tail, Empire empire, Score scoreAccumulator){
 		this(game, modifiers, parent, possibleParentActions, usedParentActions, actions, tightForcastLength, looseForcastLength, tail, empire,scoreAccumulator, new Plan());
@@ -56,13 +55,15 @@ public class Hypothetical {
 	}
 	
 	public HypotheticalResult calculate() {
-				
+		
+		//these are the actions I look at when trying out new actions this turn
 		List<Action> possibleActions = game.returnActions();
+		//these are the actions I pass down to the next level to not consider if I don't do them at this level
 		List<Action> passdownActions = game.returnActions();
 		passdownActions.addAll(possibleParentActions);
 		List<HypotheticalResult> allOptions = new ArrayList<HypotheticalResult>();
 		
-		HypotheticalResult thisLevelResult = new HypotheticalResult(game,actions,empire,plan);
+		HypotheticalResult thisLevelResult = new HypotheticalResult(game,empire,plan);
 		
 		//remove all actions that the parent could have done, but didn't do
 		possibleParentActions.removeAll(usedParentActions);		
@@ -75,31 +76,25 @@ public class Hypothetical {
 			Game futureGame = GameCloner.cloneGame(game);
 			for(int turn = 0; turn < tail; turn++) {
 				futureGame.endRound();
-				scoreAccumulator.addTo(new HypotheticalResult(game, actions, empire,
-						new ArrayList<Action>(), new Reasoning("I am supposing no actions because this is a tail forecast.")).getScore());
+				scoreAccumulator.add(new HypotheticalResult(futureGame, empire).getScore());
 			}
-			HypotheticalResult retval = new HypotheticalResult(game,actions,empire, plan);
-			retval.setScore(retval.getScore().addTo(scoreAccumulator));
+			HypotheticalResult retval = new HypotheticalResult(futureGame,empire, plan);
+			retval.setScore(retval.getScore().add(scoreAccumulator));
 			return retval;
-		}
-		
-		//base case where I'm a top level hypothetical, and I can't even do anything this turn
-		if(parent.getMaxTtl() == tightForcastLength && ideas.size() == 1) {//a size one list of actions will only have the "do nothing" action
-			return thisLevelResult;
 		}
 				
 		//add score from this round
-		scoreAccumulator.addTo(thisLevelResult.getScore());
+		scoreAccumulator.add(thisLevelResult.getScore());
 		
 		//try adding a new action
 		for(List<Action> current: ideas) {
+			Score scoreToPass = new Score(scoreAccumulator);
 			Game futureGame = GameCloner.cloneGame(game);
 			futureGame.setActionsForEmpire(current, empire);
 			futureGame.endRound();
 			//skip a round when we are in loose forecasting
 			if(isInLooseForcastPhase()) {
-				scoreAccumulator.addTo(new HypotheticalResult(game, actions, empire,
-						new ArrayList<Action>(), new Reasoning("skipping a round because I'm in loose forecast")).getScore());
+				scoreToPass.add(new HypotheticalResult(futureGame, empire).getScore().decay(parent.getDecayRate()));
 				futureGame.endRound();
 			}
 			List<Action> toPass = current.size()==0?passdownActions:futureGame.returnActions();
@@ -110,36 +105,23 @@ public class Hypothetical {
 					new Hypothetical(futureGame,modifiers,parent,toPass,
 							new ArrayList<Action>(current), new ArrayList<Action>(),tightForcastLength,
 							looseForcastLength-1,tail,empire, 
-							scoreAccumulator.decay(DECAY_RATE),planToPass).calculate()
+							scoreToPass.decay(parent.getDecayRate()),planToPass).calculate()
 					:new Hypothetical(futureGame,modifiers,parent,toPass,
 							new ArrayList<Action>(current), new ArrayList<Action>(),tightForcastLength-1,
 							looseForcastLength,tail,empire,
-							scoreAccumulator.decay(DECAY_RATE),planToPass).calculate()),current));	
+							scoreToPass.decay(parent.getDecayRate()),planToPass).calculate()),current));	
 		}
 		
 		//pick best option
 		double bestScore = 0;
 		HypotheticalResult retval = null;
 		for(HypotheticalResult current: allOptions) {
-			if(retval == null || current.getScore().totalScore() > bestScore) {
-				bestScore = current.getScore().totalScore();
-				retval = current;
+			//warning for debugging
+			if(isAtTopOfForecast() && current.getScore().totalScore() != parent.runPath(parent.getParentGame(), current.getPlan()).getScore().totalScore()) {
+				System.out.println(current.getPlan().getPlannedActions());
+				double result = parent.runPath(parent.getParentGame(), current.getPlan()).getScore().totalScore();
+				System.err.println("rates as "+current.getScore().totalScore()+" vs "+result);
 			}
-		}
-		
-		//as a second pass, try replacing the first action in the list with alternatives
-		List<HypotheticalResult> variations = new ArrayList<HypotheticalResult>();
-		if(isAtTopOfForecast()) {			
-			variations.add(retval);
-			List<List<Action>> actions = new ArrayList<List<Action>>(retval.getActions());
-			/*for(List<Action> current: ideas) {
-				actions.set(0, current);
-				Game futureGame = GameCloner.cloneGame(game);
-				variations.add(runPath(futureGame, actions));
-			}*/
-		}
-		
-		for(HypotheticalResult current: variations) {
 			if(retval == null || current.getScore().totalScore() > bestScore) {
 				bestScore = current.getScore().totalScore();
 				retval = current;
@@ -148,26 +130,8 @@ public class Hypothetical {
 		
 		return retval;
 	}
-	
-	private HypotheticalResult runPath(Game game, List<List<Action>> actions) {
-		Score scoreAccumulator = new Score(new HashMap<String,Double>());
-		for(List<Action> current: actions) {
-			scoreAccumulator.decay(DECAY_RATE);
-			game.setActionsForEmpire(current, empire);
-			game.endRound();
-			scoreAccumulator.addTo(new HypotheticalResult(game, current, empire).getScore());
-		}
 		
-		HypotheticalResult retval = new HypotheticalResult(game,actions.get(0),empire, plan, new ArrayList<Action>(), new Reasoning("running last step of path"));
-		retval.setScore(retval.getScore().addTo(scoreAccumulator));
-		return retval;
-	}
-	
 	private HypotheticalResult packResult(HypotheticalResult result, List<Action> actions) {
-		if(isInLooseForcastPhase()) {
-			result.appendActionsFront(new ArrayList<Action>());
-		}
-		result.appendActionsFront(actions);
 		return result;
 	}
 	
