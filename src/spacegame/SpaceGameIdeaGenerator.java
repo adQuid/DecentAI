@@ -6,6 +6,7 @@ import java.util.List;
 import actions.Action;
 import actions.ActionType;
 import aibrain.IdeaGenerator;
+import model.Colony;
 import model.Game;
 
 public class SpaceGameIdeaGenerator implements IdeaGenerator{
@@ -22,62 +23,78 @@ public class SpaceGameIdeaGenerator implements IdeaGenerator{
 		List<Action> emptyIdea = new ArrayList<Action>();
 		retval.add(emptyIdea);
 		
+		//idea 1: dump everything on an even build for one planet
 		for(Action current: possibilities) {
-			List<Action> defaultIdea = new ArrayList<Action>();
-			defaultIdea.add(current);
-			retval.add(defaultIdea);
-			
-			switch(current.getType()) {
-			case develop:
-				List<Object> params = new ArrayList<Object>();
-				params.add(current.getParams().get(0));
-				Action getPower = new Action(ActionType.developPower,params);
-				Action fortify1 = new Action(ActionType.developPower,params);
-				
+			if(current.getType() == ActionType.develop) {
 				List<Action> toAdd = new ArrayList<Action>();
-				toAdd.add(current);
-				toAdd.add(getPower);
-				retval.add(new ArrayList<Action>(toAdd));
-				toAdd.add(fortify1);
-				retval.add(toAdd);
-				break;
-			case developPower:
-				params = new ArrayList<Object>();
-				params.add(current.getParams().get(0));
-				Action fortify3 = new Action(ActionType.developPower,params);
-				Action fortify4 = new Action(ActionType.developPower,params);
-				Action develop = new Action(ActionType.develop,params);
-				
-				toAdd = new ArrayList<Action>();
-				toAdd.add(current);
-				toAdd.add(fortify3);
-				toAdd.add(fortify4);
-				retval.add(new ArrayList<Action>(toAdd));
-				toAdd.add(develop);
-				retval.add(toAdd);
-				break;
-			case develop2:
-				params = new ArrayList<Object>();
-				params.add(current.getParams().get(0));
-				
-				toAdd = new ArrayList<Action>();
-				toAdd.add(current);
-				retval.add(new ArrayList<Action>(toAdd));
-				break;
-			case cashNow:
-				params = new ArrayList<Object>();
-				params.add(current.getParams().get(0));
-				
-				toAdd = new ArrayList<Action>();
-				toAdd.add(current);
-				for(int i = 1; i < game.fetchCurrentEmpire().getMinerals()/5; i++) {
-					toAdd.add(new Action(ActionType.cashNow,params));
+				for(int i = 0; i < game.fetchCurrentEmpire().getMinerals(); i+=4) {
+					toAdd.add(current);
+					toAdd.add(new Action(ActionType.developPower,current.getParams()));
 				}
 				retval.add(toAdd);
-				break;
-			
 			}
 		}
+		
+		//idea 2: just make a develop 2 and support it best you can
+		for(Action current: possibilities) {
+			if(current.getType() == ActionType.develop2) {
+				Colony colony = (Colony)current.getParams().get(0);
+				List<Action> toAdd = new ArrayList<Action>();
+				toAdd.add(current);
+				for(int i = 6; i < Math.min(game.fetchCurrentEmpire().getMinerals(),12); i+=2) {
+					toAdd.add(new Action(ActionType.developPower,current.getParams()));
+				}
+				retval.add(toAdd);
+			}
+		}
+		
+		//idea 2b: just make a develop 2 and compensate for gaps
+				for(Action current: possibilities) {
+					if(current.getType() == ActionType.develop2) {
+						Colony colony = (Colony)current.getParams().get(0);
+						List<Action> toAdd = new ArrayList<Action>();
+						toAdd.add(current);
+						for(int i = 6; i < Math.min(game.fetchCurrentEmpire().getMinerals(),colony.getIndustry()-colony.getPower() + 12); i+=2) {
+							toAdd.add(new Action(ActionType.developPower,current.getParams()));
+						}
+						retval.add(toAdd);
+					}
+				}
+		
+		//idea 3: make hella power to compensate for other development for something else
+		for(Action current: possibilities) {
+			if(current.getType() == ActionType.developPower) {
+				List<Action> toAdd = new ArrayList<Action>();
+				for(int i = 0; i < game.fetchCurrentEmpire().getMinerals(); i+=2) {
+					toAdd.add(current);
+				}
+				retval.add(toAdd);
+			}
+		}
+		
+		//idea 4: cash out
+		for(Action current: possibilities) {
+			if(current.getType() == ActionType.cashNow) {
+				List<Action> toAdd = new ArrayList<Action>();
+				for(int i = 1; i < game.fetchCurrentEmpire().getMinerals()/5; i++) {
+					toAdd.add(current);
+				}
+				retval.add(toAdd);
+			}
+		}
+	
+		//idea 5: make enough power to compensate a gap
+		for(Action current: possibilities) {
+			if(current.getType() == ActionType.developPower) {
+				Colony colony = (Colony)current.getParams().get(0);
+				List<Action> toAdd = new ArrayList<Action>();
+				for(int i = 0; i < colony.getIndustry()-colony.getPower(); i++) {
+					toAdd.add(current);
+				}
+				retval.add(toAdd);
+			}
+		}
+		
 		return retval;
 	}
 	

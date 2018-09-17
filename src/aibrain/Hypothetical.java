@@ -55,6 +55,10 @@ public class Hypothetical {
 	}
 	
 	public HypotheticalResult calculate() {
+		return calculate(false);
+	}
+	
+	public HypotheticalResult calculate(boolean debug) {
 		
 		//these are the actions I look at when trying out new actions this turn
 		List<Action> possibleActions = game.returnActions();
@@ -73,13 +77,20 @@ public class Hypothetical {
 		
 		//base case where I'm out of time
 		if(tightForcastLength == 0 && looseForcastLength == 0) {
+			//if(scoreAccumulator.totalScore() > 1000) System.out.print("recursive [");
 			Game futureGame = GameCloner.cloneGame(game);
+			//debug
+			double preTailScore = scoreAccumulator.totalScore();
 			for(int turn = 0; turn < tail; turn++) {
 				futureGame.endRound();
 				scoreAccumulator.add(new HypotheticalResult(futureGame, empire).getScore());
+				if(scoreAccumulator.totalScore() > 1000) {
+					//System.out.print(scoreAccumulator.totalScore()+",");
+				}
 			}
 			HypotheticalResult retval = new HypotheticalResult(futureGame,empire, plan);
 			retval.setScore(retval.getScore().add(scoreAccumulator));
+			//if(scoreAccumulator.totalScore() > 1000) System.out.println(retval.getScore().totalScore()+"]");
 			return retval;
 		}
 				
@@ -105,11 +116,11 @@ public class Hypothetical {
 					new Hypothetical(futureGame,modifiers,parent,toPass,
 							new ArrayList<Action>(current), new ArrayList<Action>(),tightForcastLength,
 							looseForcastLength-1,tail,empire, 
-							scoreToPass.decay(parent.getDecayRate()),planToPass).calculate()
+							scoreToPass.decay(parent.getDecayRate()),planToPass).calculate(debug)
 					:new Hypothetical(futureGame,modifiers,parent,toPass,
 							new ArrayList<Action>(current), new ArrayList<Action>(),tightForcastLength-1,
 							looseForcastLength,tail,empire,
-							scoreToPass.decay(parent.getDecayRate()),planToPass).calculate()),current));	
+							scoreToPass.decay(parent.getDecayRate()),planToPass).calculate(debug)),current));	
 		}
 		
 		//pick best option
@@ -117,10 +128,10 @@ public class Hypothetical {
 		HypotheticalResult retval = null;
 		for(HypotheticalResult current: allOptions) {
 			//warning for debugging
-			if(isAtTopOfForecast() && current.getScore().totalScore() != parent.runPath(parent.getParentGame(), current.getPlan()).getScore().totalScore()) {
-				System.out.println(current.getPlan().getPlannedActions());
+			if(!debug && isAtTopOfForecast() && current.getScore().totalScore() != parent.runPath(this.game, current.getPlan()).getScore().totalScore()) {
 				double result = parent.runPath(parent.getParentGame(), current.getPlan()).getScore().totalScore();
 				System.err.println("rates as "+current.getScore().totalScore()+" vs "+result);
+				new Hypothetical(this.game, this.modifiers, this.parent, new ArrayList<Action>(), new ArrayList<Action>(), new ArrayList<Action>(), tightForcastLength, looseForcastLength, tail, empire, new Score(), current.getPlan()).calculate(false);
 			}
 			if(retval == null || current.getScore().totalScore() > bestScore) {
 				bestScore = current.getScore().totalScore();

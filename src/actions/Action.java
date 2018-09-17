@@ -57,6 +57,6 @@ public class Action {
 	}
 	
 	public String toString() {
-		return type.name();
+		return type.name()+" "+params.get(0).toString();
 	}
 }

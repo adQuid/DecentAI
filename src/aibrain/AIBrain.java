@@ -39,12 +39,25 @@ public class AIBrain {
 			System.out.println("I have no plan");
 			Hypothetical root = new Hypothetical(trueGame, new ArrayList<Modifier>(), this, new ArrayList<Action>(), new ArrayList<Action>(), new ArrayList<Action>(), maxTtl, lookAheadSecondary, tailLength, self, new Score());
 			lastIdea = root.calculate();
-		}else {
+		} else {
 			//we presumably did the first round of the last idea, so lets remove it
 			lastIdea.getPlan().removeActionListFromFront();
 			//now we add a new final step to keep the same length
-			Hypothetical appendAction = new Hypothetical(runGame(trueGame,lastIdea.getPlan()), new ArrayList<Modifier>(), this, new ArrayList<Action>(), new ArrayList<Action>(), new ArrayList<Action>(), 2, 0, tailLength * 2, self, new Score());
+			Hypothetical appendAction = new Hypothetical(runGame(trueGame,lastIdea.getPlan()), new ArrayList<Modifier>(), this, new ArrayList<Action>(), new ArrayList<Action>(), new ArrayList<Action>(), maxTtl/2 + 1, lookAheadSecondary, tailLength, self, new Score());
 			HypotheticalResult appendResult = appendAction.calculate();
+
+			//more debug
+			System.err.println("what I got in mind...");
+			for(Reasoning current: appendResult.getPlan().getReasonings()) {
+				System.err.println(">"+current.toString());
+			}
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			lastIdea.appendActionsEnd(appendResult.getImmediateActions(),appendResult.getPlan().getReasonings().get(0));
 			//is my last idea still working?
 			double latestScore = runPath(GameCloner.cloneGame(trueGame), lastIdea.getPlan()).getScore().totalScore();
@@ -83,10 +96,9 @@ public class AIBrain {
 	public HypotheticalResult runPath(Game game, Plan plan) {
 		Game copyGame = GameCloner.cloneGame(game);
 		Score scoreAccumulator = new Score(new HashMap<String,Double>());
-
+		
 		for(int actionIndex = 0; actionIndex < maxTtl + lookAheadSecondary; actionIndex++) {
 			scoreAccumulator.add(new HypotheticalResult(copyGame,this.self,plan).getScore());
-			
 			copyGame.setActionsForEmpire(plan.getPlannedActions().get(actionIndex), this.self);
 			copyGame.endRound();
 			

@@ -100,6 +100,10 @@ public class Colony {
 		this.game = game;
 	}
 	
+	public String toString() {
+		return getName();
+	}
+	
 	public List<Action> returnActions(){
 		List<Action> retval = new ArrayList<Action>();
 		
