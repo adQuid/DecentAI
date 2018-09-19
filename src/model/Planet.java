@@ -72,10 +72,10 @@ public class Planet extends SpaceObject{
 	}
 	
 	@Override
-	public List<Action> returnActions(){
+	public List<Action> returnActions(Empire empire){
 		List<Action> retval = new ArrayList<Action>();
 		for(Colony current: activeColonies){
-			return current.returnActions();
+			return current.returnActions(empire);
 		}
 		return retval;
 	}

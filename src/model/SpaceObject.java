@@ -8,7 +8,7 @@ import actions.Action;
 public abstract class SpaceObject {
 
 	public abstract String getName();
-	public List<Action> returnActions(){
+	public List<Action> returnActions(Empire empire){
 		return new ArrayList<Action>();
 	}
 	

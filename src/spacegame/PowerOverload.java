@@ -1,18 +1,18 @@
 package spacegame;
 
-import aibrain.Event;
 import exceptions.IllegalActionException;
 import model.Colony;
 import model.Empire;
 import model.Game;
 
-public class PowerOverload extends Event{
+public class PowerOverload{
 
+	private double probability;
+	
 	public PowerOverload(double probability) {
-		super(probability);
+		this.probability = probability;
 	}
 
-	@Override
 	public Game applyTo(Game game, boolean live) {
 		for(Colony current: game.fetchAllColonies()) {
 			if(live) {

@@ -11,7 +11,6 @@ public class GameCloner {
 			model.Game retval = new model.Game(converted);
 
 			retval.setMap(new Map(converted.getMap(), retval));
-			retval.setEvents(converted.getEvents());
 			
 			retval.setLive(false);
 

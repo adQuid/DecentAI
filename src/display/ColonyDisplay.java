@@ -18,12 +18,14 @@ public class ColonyDisplay {
 	private static JLabel name = new JLabel();
 	private static JLabel population = new JLabel();
 	private static JLabel industry = new JLabel();
+	private static JLabel power = new JLabel();
 	
 	static{
-		GUI.setLayout(new GridLayout(3,1));
+		GUI.setLayout(new GridLayout(4,1));
 		GUI.add(name);
 		GUI.add(population);
 		GUI.add(industry);
+		GUI.add(power);
 		
 		GUI.setLocation(600, 300);
 	}
@@ -43,6 +45,7 @@ public class ColonyDisplay {
 			name.setText(colony.getOwner().getName()+" colony on "+planet.getName());
 			population.setText(colony.getPopulation()+" population");
 			industry.setText(colony.getIndustry()+" industry");
+			power.setText(colony.getIndustry()+" power");
 		}
 		
 		GUI.pack();

@@ -66,11 +66,11 @@ public class Map {
 		}
 	}
 	
-	public List<Action> returnActions(){
+	public List<Action> returnActions(Empire empire){
 		List<Action> retval = new ArrayList<Action>();
 		for(int x=0; x<SIZE; x++){
 			for(int y=0; y<SIZE; y++){
-				retval.addAll(grid[x][y].returnActions());
+				retval.addAll(grid[x][y].returnActions(empire));
 			}
 		}
 		

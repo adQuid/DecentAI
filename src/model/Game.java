@@ -5,7 +5,6 @@ import java.util.List;
 
 import actions.Action;
 import actions.ActionType;
-import aibrain.Event;
 import cloners.GameCloner;
 import spacegame.PowerOverload;
 
@@ -20,19 +19,17 @@ public class Game implements aibrain.Game{
 	
 	private List<Empire> empires = new ArrayList<Empire>();
 	
-	private List<Event> events = new ArrayList<Event>();
+	PowerOverload event = new PowerOverload(0.4);
 	
 	private boolean live;
 	
 	public Game() {		
 		live = true;
 		this.empires = new ArrayList<Empire>();
-		for(int i=0; i<10; i++){
+		for(int i=0; i<2; i++){
 			empires.add(new Empire("test empire "+i));
 		}
-		
-		//events.add(new PowerOverload(0.2));
-		
+				
 		this.map = new Map(this);
 		map.populateQuickRefrenceLists(allColonies);
 	}
@@ -60,15 +57,7 @@ public class Game implements aibrain.Game{
 	public void setEmpires(List<Empire> empires) {
 		this.empires = empires;
 	}
-	
-	public List<Event> getEvents() {
-		return events;
-	}
-	
-	public void setEvents(List<Event> events) {
-		this.events = events;
-	}
-	
+		
 	public boolean isLive() {
 		return live;
 	}
@@ -119,8 +108,8 @@ public class Game implements aibrain.Game{
 	
 	
 	
-	public List<Action> returnActions(){
-		List<Action> retval = map.returnActions();
+	public List<Action> returnActions(Empire empire){
+		List<Action> retval = map.returnActions(empire);
 		return retval;
 	}
 	
@@ -135,9 +124,7 @@ public class Game implements aibrain.Game{
 				this.map.processActions(curAction);
 			}
 		}
-		for(Event current: events) {
-			current.applyTo(this,live);
-		}
+		event.applyTo(this,live);
 		this.map.getResourceProfile();
 		this.map.endRound();
 		for(Empire current: empires){

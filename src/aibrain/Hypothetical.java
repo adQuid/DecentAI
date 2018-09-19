@@ -64,9 +64,9 @@ public class Hypothetical {
 	public HypotheticalResult calculate(boolean debug) {
 				
 		//these are the actions I look at when trying out new actions this turn
-		List<Action> possibleActions = game.returnActions();
+		List<Action> possibleActions = game.returnActions(empire);
 		//these are the actions I pass down to the next level to not consider if I don't do them at this level
-		List<Action> passdownActions = game.returnActions();
+		List<Action> passdownActions = game.returnActions(empire);
 		passdownActions.addAll(possibleParentActions);
 		List<HypotheticalResult> allOptions = new ArrayList<HypotheticalResult>();
 		
@@ -110,7 +110,7 @@ public class Hypothetical {
 				scoreToPass.add(new HypotheticalResult(futureGame, empire).getScore().decay(parent.getDecayRate()));
 				futureGame.endRound();
 			}
-			List<Action> toPass = current.size()==0?passdownActions:futureGame.returnActions();
+			List<Action> toPass = current.size()==0?passdownActions:futureGame.returnActions(empire);
 			Plan planToPass = new Plan(plan);
 			planToPass.addReasoning(new Reasoning("adding actions "+Arrays.toString(combinedIdeas.toArray())));
 			planToPass.addActionListToEnd(combinedIdeas);

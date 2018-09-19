@@ -71,9 +71,9 @@ public class Tile {
 		}
 	}
 	
-	public List<Action> returnActions(){
+	public List<Action> returnActions(Empire empire){
 		if(this.object != null){
-			return this.object.returnActions();
+			return this.object.returnActions(empire);
 		}else{
 			return new ArrayList<Action>();
 		}

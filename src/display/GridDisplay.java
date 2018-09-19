@@ -36,7 +36,7 @@ public class GridDisplay {
 	public static void display(Game game) throws IOException{
 		GUI = new JFrame("Decent AI");
 		
-		buttonsDisplay = TopMenuButtons.generateButtons(game);
+		buttonsDisplay = TopMenuButtons.generateButtons();
 		
 		mapDisplay = new JPanel();
 		mapDisplay.setLayout(new GridLayout(Map.SIZE,Map.SIZE));

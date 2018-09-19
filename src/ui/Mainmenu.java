@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -12,18 +13,22 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 
+import actions.Action;
+import aibrain.AIBrain;
 import display.GridDisplay;
+import model.Empire;
 import model.Game;
 
 public class Mainmenu {
 
 	public static Game liveGame = null;
+	public static List<AIBrain> brains = new ArrayList<AIBrain>();
 	public static int currentTurn = 1;
 	public static HashSet<String> playersReady = new HashSet<String>();
 	
 	public static void main(String[] args){
 		
-		JFrame GUI = new JFrame("Decent AI");
+		JFrame GUI = new JFrame("Decent AI");		
 		
 		JButton newGame = new JButton("Create new Game");
 				
@@ -32,6 +37,10 @@ public class Mainmenu {
 			public void actionPerformed(ActionEvent e) {
 				liveGame = new Game();
 				
+				for(Empire current: liveGame.getEmpires()) {
+					brains.add(new AIBrain(current, 8, 0, 12));
+				}
+								
 				try {
 					GridDisplay.display(liveGame);
 				} catch (IOException e1) {

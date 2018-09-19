@@ -13,7 +13,7 @@ public interface Game {
 	
 	public void setLive(boolean live);
 	
-	public List<Action> returnActions();
+	public List<Action> returnActions(Empire empire);
 	
 	public void setActionsForEmpire(List<Action> actions, Empire empire);
 	

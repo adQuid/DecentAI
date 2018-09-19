@@ -140,7 +140,7 @@ public class SpaceGameIdeaGenerator implements IdeaGenerator{
 		if(me.getMinerals() < 2) {
 			return false;
 		}
-		if(futureGame.returnActions().size() == 0) {
+		if(iteration > 1 && futureGame.returnActions(empire).size() == 0) {
 			return false;
 		}
 		return true;

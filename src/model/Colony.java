@@ -104,24 +104,22 @@ public class Colony {
 		return getName();
 	}
 	
-	public List<Action> returnActions(){
+	public List<Action> returnActions(Empire empire){
 		List<Action> retval = new ArrayList<Action>();
 		
-		Empire fetchedEmpire = this.game.fetchCurrentEmpire();
-		
-		if(fetchedEmpire.equals(this.getOwner())){
+		if(empire.equals(this.getOwner())){
 			List<Object> params = new ArrayList<Object>();
 			params.add(this);
-			if(fetchedEmpire.getMinerals() >= 2 + (1*industry)){
+			if(empire.getMinerals() >= 2 + (1*industry)){
 				retval.add(new Action(ActionType.develop,params));
 			}
-			if(fetchedEmpire.getMinerals() >= 6 + (1*industry)){
+			if(empire.getMinerals() >= 12 + (1*industry)){
 				retval.add(new Action(ActionType.develop2,params));
 			}
-			if(fetchedEmpire.getMinerals() >= 2){
+			if(empire.getMinerals() >= 2){
 				retval.add(new Action(ActionType.developPower,params));
 			}
-			if(fetchedEmpire.getMinerals() >= 5){
+			if(empire.getMinerals() >= 5){
 				retval.add(new Action(ActionType.cashNow,params));
 			}
 		}
@@ -131,6 +129,8 @@ public class Colony {
 	public void processActions(Action current) {
 		Empire fetchedOwner = this.game.findMatchingEmpire(owner);		
 
+		
+		
 		if(current.getType() == ActionType.develop&&
 				((Colony)(current.getParams().get(0))).equals(this)){
 			try{
@@ -143,7 +143,7 @@ public class Colony {
 		if(current.getType() == ActionType.develop2&&
 				((Colony)(current.getParams().get(0))).equals(this)){
 			try{
-				fetchedOwner.addMinerals(-6 - (1*industry));
+				fetchedOwner.addMinerals(-12 - (1*industry));
 				this.industry+=7;
 			}catch(IllegalActionException e){
 				//Do nothing, you just can't afford this

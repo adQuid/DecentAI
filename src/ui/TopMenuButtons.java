@@ -21,9 +21,11 @@ import testers.GameRunTestser;
 public class TopMenuButtons {
 
 	static JButton endTurn = new JButton("Turn "+Mainmenu.currentTurn+" (End Turn)");
+	static JButton emp1 = new JButton("Empire 0 log");
+	static JButton emp2 = new JButton("Empire 1 log");
 	static boolean processing = false;
 	
-	public static JPanel generateButtons(Game game){
+	public static JPanel generateButtons(){
 		JPanel buttonsDisplay;
 				
 		endTurn.addActionListener(new ActionListener(){
@@ -32,19 +34,47 @@ public class TopMenuButtons {
 				if(!processing){
 					processing = true;
 					endTurn.setText("Ending turn "+Mainmenu.currentTurn);
-					
-					for(Empire current: Mainmenu.liveGame.getEmpires()){
-						Thread brain = new Thread(new BrainThread(Mainmenu.liveGame,current,4,4,8));
-						brain.start();
+										
+					for(AIBrain brain: Mainmenu.brains) {
+						List<Action> actions = brain.runAI(Mainmenu.liveGame).getImmediateActions();
+						
+						Mainmenu.liveGame.setActionsForEmpire(actions, brain.getSelf());
+						
+						Mainmenu.playersReady.add(brain.getSelf().getName());
 					}
+					
+					Mainmenu.liveGame.endRound();
+					Mainmenu.currentTurn++;		
+					TopMenuButtons.updateTurn();
+					Mainmenu.playersReady.clear();
+				}
+			}
+		});
+		
+		emp1.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Empire 0 logs");
+				for(String current: Mainmenu.brains.get(0).getLogs()) {
+					System.out.println(current);
+				}
+			}
+		});
+		
+		emp2.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Empire 1 logs");
+				for(String current: Mainmenu.brains.get(1).getLogs()) {
+					System.out.println(current);
 				}
 			}
 		});
 		
 		buttonsDisplay = new JPanel();
 		buttonsDisplay.setLayout(new GridLayout(1,3));
-		buttonsDisplay.add(new JButton("Some button"));
-		buttonsDisplay.add(new JButton("Some other button"));
+		buttonsDisplay.add(emp1);
+		buttonsDisplay.add(emp2);
 		buttonsDisplay.add(endTurn);
 		
 		return buttonsDisplay;

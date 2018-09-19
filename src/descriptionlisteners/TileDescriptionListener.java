@@ -45,7 +45,8 @@ public class TileDescriptionListener implements MouseListener{
 			if(object instanceof Planet){
 				Planet planet = (Planet)object;
 				for(Colony current: planet.getActiveColonies()){
-					retval += "<br>colony belonging to "+current.getOwner().getName();
+					retval += "<br>colony belonging to "+current.getOwner().getName()+
+							"<br> industry:"+current.getIndustry()+"/"+current.getPower();
 				}
 			}
 		}
