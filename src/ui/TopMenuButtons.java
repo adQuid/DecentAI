@@ -12,10 +12,11 @@ import javax.swing.JPanel;
 import actions.Action;
 import actions.ActionType;
 import aibrain.AIBrain;
-import aibrain.BrainThread;
 import model.Colony;
 import model.Empire;
 import model.Game;
+import model.Planet;
+import spacegame.SpaceGameEvaluator;
 import testers.GameRunTestser;
 
 public class TopMenuButtons {
@@ -35,18 +36,9 @@ public class TopMenuButtons {
 					processing = true;
 					endTurn.setText("Ending turn "+Mainmenu.currentTurn);
 										
-					for(AIBrain brain: Mainmenu.brains) {
-						List<Action> actions = brain.runAI(Mainmenu.liveGame).getImmediateActions();
-						
-						Mainmenu.liveGame.setActionsForEmpire(actions, brain.getSelf());
-						
-						Mainmenu.playersReady.add(brain.getSelf().getName());
-					}
+					Thread brainThread = new Thread(new BrainThread());
 					
-					Mainmenu.liveGame.endRound();
-					Mainmenu.currentTurn++;		
-					TopMenuButtons.updateTurn();
-					Mainmenu.playersReady.clear();
+					brainThread.start();
 				}
 			}
 		});
@@ -54,7 +46,10 @@ public class TopMenuButtons {
 		emp1.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Empire 0 logs");
+				System.out.println("Empire 0:");
+				System.out.println("Minerals: "+Mainmenu.liveGame.getEmpires().get(0).getMinerals());
+				System.out.println("Currency: "+Mainmenu.liveGame.getEmpires().get(0).getCurrency());
+				System.out.println("logs:");
 				for(String current: Mainmenu.brains.get(0).getLogs()) {
 					System.out.println(current);
 				}
@@ -64,7 +59,10 @@ public class TopMenuButtons {
 		emp2.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Empire 1 logs");
+				System.out.println("Empire 1:");
+				System.out.println("Minerals: "+Mainmenu.liveGame.getEmpires().get(1).getMinerals());
+				System.out.println("Currency: "+Mainmenu.liveGame.getEmpires().get(1).getCurrency());
+				System.out.println("logs:");
 				for(String current: Mainmenu.brains.get(1).getLogs()) {
 					System.out.println(current);
 				}

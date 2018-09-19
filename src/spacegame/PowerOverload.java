@@ -1,9 +1,11 @@
 package spacegame;
 
+import aibrain.AIBrain;
 import exceptions.IllegalActionException;
 import model.Colony;
 import model.Empire;
 import model.Game;
+import ui.Mainmenu;
 
 public class PowerOverload{
 
@@ -19,12 +21,20 @@ public class PowerOverload{
 				if(Math.random() < probability && current.getPower() > 0) {
 					if(current.getPower() < 3) {
 					current.setPower(current.getPower()-1);
-					if(current.getOwner().getName().contains("0")) {
-						System.out.println("Power overload!");
+					
+					//super dangerous and only for debug
+					if(Mainmenu.liveGame != null) {
+						for(AIBrain brain: Mainmenu.brains) {
+							brain.addLog("Power overload!");
+						}
 					}
+						
 					}else {
-						if(current.getOwner().getName().contains("0")) {
-							System.out.println("Power overload blocked!");
+						//super dangerous and only for debug
+						if(Mainmenu.liveGame != null) {
+							for(AIBrain brain: Mainmenu.brains) {
+								brain.addLog("Power overload blocked!");
+							}
 						}
 					}
 				}

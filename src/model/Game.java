@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import actions.Action;
-import actions.ActionType;
 import cloners.GameCloner;
 import spacegame.PowerOverload;
 
@@ -19,17 +18,17 @@ public class Game implements aibrain.Game{
 	
 	private List<Empire> empires = new ArrayList<Empire>();
 	
-	PowerOverload event = new PowerOverload(0.4);
+	PowerOverload event = new PowerOverload(0.0);
 	
 	private boolean live;
 	
 	public Game() {		
 		live = true;
 		this.empires = new ArrayList<Empire>();
-		for(int i=0; i<2; i++){
-			empires.add(new Empire("test empire "+i));
-		}
-				
+
+		empires.add(new Empire("Kolosed Empire"));
+		empires.add(new Empire("Torellite Imperium"));
+		
 		this.map = new Map(this);
 		map.populateQuickRefrenceLists(allColonies);
 	}
