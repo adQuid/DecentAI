@@ -13,6 +13,8 @@ public class NameList {
 
 	static Random die = new Random();
 	
+	static int index = 1;
+	
 	static List<String> humanColonyNames = new ArrayList<String>();
 	
 	static{
@@ -41,12 +43,13 @@ public class NameList {
 	}
 	
 	public static String randomColonyName(){
-		if(humanColonyNames.size() == 0){
+		return humanColonyNames.get(index++);
+		/*if(humanColonyNames.size() == 0){
 			return "Planet";
 		}else{
 			int index = die.nextInt(humanColonyNames.size());
 			return humanColonyNames.remove(index);
-		}
+		}*/
 	}
 	
 }

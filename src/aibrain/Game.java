@@ -9,6 +9,8 @@ public interface Game {
 
 	public boolean isLive();
 	
+	public List<Empire> getEmpires();
+	
 	public void setLive(boolean live);
 	
 	public List<Action> returnActions();

@@ -11,6 +11,15 @@ public class Plan {
 	private List<List<Action>> plannedActions;
 	private List<Reasoning> reasonings;
 	
+	public static Plan emptyPlan() {
+		Plan retval = new Plan();
+		for(int index=0; index<100; index++) {
+			retval.plannedActions.add(new ArrayList<Action>());
+			retval.reasonings.add(new Reasoning("empty action list"));
+		}
+		return retval;
+	}
+	
 	public Plan() {
 		plannedActions = new ArrayList<List<Action>>();
 		reasonings = new ArrayList<Reasoning>();
@@ -28,14 +37,14 @@ public class Plan {
 	public void addActionListFront(List<Action> plannedActions) {
 		this.plannedActions.add(0, plannedActions);
 		if(this.plannedActions.size() > this.reasonings.size()) {
-			System.err.println("???");
+			System.err.println("more steps in plan than reasonings");
 		}
 	}
 	
 	public void addActionListToEnd(List<Action> plannedActions) {
 		this.plannedActions.add(plannedActions);
 		if(this.plannedActions.size() > this.reasonings.size()) {
-			System.err.println("???");
+			System.err.println("more steps in plan than reasonings");
 		}
 	}
 	

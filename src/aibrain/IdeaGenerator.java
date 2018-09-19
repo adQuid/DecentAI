@@ -3,10 +3,13 @@ package aibrain;
 import java.util.List;
 
 import actions.Action;
-import model.Game;
+import model.Empire;
+import aibrain.Game;
 
 public interface IdeaGenerator {
 
-	public List<List<Action>> generateIdeas(List<Action> possibilities, Game game);
+	public List<List<Action>> generateIdeas(Game game, Empire empire, List<Action> possibilities, int iteration);
+	
+	public boolean hasFurtherIdeas(Game game, Empire empire, List<Action> possibilities, List<Action> committedActions, int iteration);
 	
 }

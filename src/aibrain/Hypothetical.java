@@ -2,21 +2,19 @@ package aibrain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import actions.Action;
-import actions.ActionType;
 import cloners.GameCloner;
 import model.Empire;
-import model.Planet;
-import model.Tile;
 import spacegame.SpaceGameIdeaGenerator;
+import utils.ListUtils;
 
 public class Hypothetical {
 
 	private static int numMade = 0;
 	
+	private int iteration;
 	private AIBrain parent;
 	private Empire empire;
 	private int tightForcastLength;
@@ -29,18 +27,23 @@ public class Hypothetical {
 	//this is a list of the actions actually selected by the parent step, and avalible to try again
 	private List<Action> usedParentActions;
 	//actions this hypothetical is already committed to taking
-	private List<Action> actions;
+	private List<List<Action>> actions;
 	private Plan plan;
 	
 	private Score scoreAccumulator;
 	
-	public Hypothetical(Game game, List<Modifier> modifiers, AIBrain parent, List<Action> possibleParentActions, List<Action> usedParentActions, List<Action> actions, int tightForcastLength, int looseForcastLength, int tail, Empire empire, Score scoreAccumulator){
-		this(game, modifiers, parent, possibleParentActions, usedParentActions, actions, tightForcastLength, looseForcastLength, tail, empire,scoreAccumulator, new Plan());
+	public Hypothetical(Game game, List<Modifier> modifiers, AIBrain parent, List<Action> possibleParentActions, 
+			List<Action> usedParentActions, List<List<Action>> actions, int tightForcastLength, int looseForcastLength, 
+			int tail, Empire empire, Score scoreAccumulator, int iteration){
+		this(game, modifiers, parent, possibleParentActions, usedParentActions, actions, tightForcastLength, looseForcastLength, tail, empire, scoreAccumulator, iteration, new Plan());
 	}
 	
-	public Hypothetical(Game game, List<Modifier> modifiers, AIBrain parent, List<Action> possibleParentActions, List<Action> usedParentActions, List<Action> actions, int tightForcastLength, int looseForcastLength, int tail, Empire empire, Score scoreAccumulator, Plan plan){
+	public Hypothetical(Game game, List<Modifier> modifiers, AIBrain parent, List<Action> possibleParentActions, 
+			List<Action> usedParentActions, List<List<Action>> actions, int tightForcastLength, int looseForcastLength, 
+			int tail, Empire empire, Score scoreAccumulator, int iteration, Plan plan){
 		
 		this.game = GameCloner.cloneGame(game);
+		this.iteration = iteration;
 		this.modifiers = modifiers;
 		this.parent = parent;
 		this.possibleParentActions = possibleParentActions;
@@ -59,7 +62,7 @@ public class Hypothetical {
 	}
 	
 	public HypotheticalResult calculate(boolean debug) {
-		
+				
 		//these are the actions I look at when trying out new actions this turn
 		List<Action> possibleActions = game.returnActions();
 		//these are the actions I pass down to the next level to not consider if I don't do them at this level
@@ -73,27 +76,25 @@ public class Hypothetical {
 		possibleParentActions.removeAll(usedParentActions);		
 		possibleActions.removeAll(possibleParentActions);
 		
-		List<List<Action>> ideas = SpaceGameIdeaGenerator.instance().generateIdeas(possibleActions, (model.Game)game);
+		List<List<Action>> ideas = SpaceGameIdeaGenerator.instance().generateIdeas((model.Game)game, empire, possibleActions, iteration);
 		
 		//base case where I'm out of time
 		if(tightForcastLength == 0 && looseForcastLength == 0) {
-			//if(scoreAccumulator.totalScore() > 1000) System.out.print("recursive [");
 			Game futureGame = GameCloner.cloneGame(game);
-			//debug
-			double preTailScore = scoreAccumulator.totalScore();
+
 			for(int turn = 0; turn < tail; turn++) {
 				futureGame.endRound();
 				scoreAccumulator.add(new HypotheticalResult(futureGame, empire).getScore());
-				if(scoreAccumulator.totalScore() > 1000) {
-					//System.out.print(scoreAccumulator.totalScore()+",");
-				}
 			}
 			HypotheticalResult retval = new HypotheticalResult(futureGame,empire, plan);
 			retval.setScore(retval.getScore().add(scoreAccumulator));
-			//if(scoreAccumulator.totalScore() > 1000) System.out.println(retval.getScore().totalScore()+"]");
 			return retval;
 		}
-				
+			
+		if(iteration > 1) {
+			//System.out.println("degub");
+		}
+		
 		//add score from this round
 		scoreAccumulator.add(thisLevelResult.getScore());
 		
@@ -101,7 +102,8 @@ public class Hypothetical {
 		for(List<Action> current: ideas) {
 			Score scoreToPass = new Score(scoreAccumulator);
 			Game futureGame = GameCloner.cloneGame(game);
-			futureGame.setActionsForEmpire(current, empire);
+			List<Action> combinedIdeas = ListUtils.combine(actions.get(0),current);
+			futureGame.setActionsForEmpire(combinedIdeas, empire);
 			futureGame.endRound();
 			//skip a round when we are in loose forecasting
 			if(isInLooseForcastPhase()) {
@@ -110,17 +112,18 @@ public class Hypothetical {
 			}
 			List<Action> toPass = current.size()==0?passdownActions:futureGame.returnActions();
 			Plan planToPass = new Plan(plan);
-			planToPass.addReasoning(new Reasoning("adding actions "+Arrays.toString(current.toArray())));
-			planToPass.addActionListToEnd(current);
+			planToPass.addReasoning(new Reasoning("adding actions "+Arrays.toString(combinedIdeas.toArray())));
+			planToPass.addActionListToEnd(combinedIdeas);
 			allOptions.add(packResult((tightForcastLength == 0?
-					new Hypothetical(futureGame,modifiers,parent,toPass,
-							new ArrayList<Action>(current), new ArrayList<Action>(),tightForcastLength,
-							looseForcastLength-1,tail,empire, 
-							scoreToPass.decay(parent.getDecayRate()),planToPass).calculate(debug)
-					:new Hypothetical(futureGame,modifiers,parent,toPass,
-							new ArrayList<Action>(current), new ArrayList<Action>(),tightForcastLength-1,
+						new Hypothetical(futureGame,modifiers,parent,toPass,
+							new ArrayList<Action>(current), actions.subList(1, actions.size()),tightForcastLength,
+							looseForcastLength-1,tail,empire,
+							scoreToPass.decay(parent.getDecayRate()),iteration,planToPass).calculate(debug)
+						:new Hypothetical(futureGame,modifiers,parent,toPass,
+							new ArrayList<Action>(current), actions.subList(1, actions.size()),tightForcastLength-1,
 							looseForcastLength,tail,empire,
-							scoreToPass.decay(parent.getDecayRate()),planToPass).calculate(debug)),current));	
+							scoreToPass.decay(parent.getDecayRate()), iteration, planToPass).calculate(debug))
+					,combinedIdeas));	
 		}
 		
 		//pick best option
@@ -131,7 +134,6 @@ public class Hypothetical {
 			if(!debug && isAtTopOfForecast() && current.getScore().totalScore() != parent.runPath(this.game, current.getPlan()).getScore().totalScore()) {
 				double result = parent.runPath(parent.getParentGame(), current.getPlan()).getScore().totalScore();
 				System.err.println("rates as "+current.getScore().totalScore()+" vs "+result);
-				new Hypothetical(this.game, this.modifiers, this.parent, new ArrayList<Action>(), new ArrayList<Action>(), new ArrayList<Action>(), tightForcastLength, looseForcastLength, tail, empire, new Score(), current.getPlan()).calculate(false);
 			}
 			if(retval == null || current.getScore().totalScore() > bestScore) {
 				bestScore = current.getScore().totalScore();

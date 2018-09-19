@@ -19,14 +19,8 @@ public class Action {
 	public ActionType getType() {
 		return type;
 	}
-	public void setType(ActionType type) {
-		this.type = type;
-	}
 	public List<Object> getParams() {
 		return params;
-	}
-	public void setParams(List<Object> params) {
-		this.params = params;
 	}
 	@Override
 	public int hashCode() {
@@ -57,6 +51,10 @@ public class Action {
 	}
 	
 	public String toString() {
-		return type.name()+" "+params.get(0).toString();
+		if(params.size() > 0) {
+			return type.name()+" "+params.get(0).toString();
+		}else {
+			return type.name();
+		}
 	}
 }

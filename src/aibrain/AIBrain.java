@@ -9,6 +9,7 @@ import actions.Action;
 import actions.ActionType;
 import cloners.GameCloner;
 import model.Empire;
+import spacegame.SpaceGameIdeaGenerator;
 import testers.GameRunTestser;
 
 public class AIBrain {
@@ -37,14 +38,14 @@ public class AIBrain {
 		
 		if(lastIdea == null) {
 			System.out.println("I have no plan");
-			Hypothetical root = new Hypothetical(trueGame, new ArrayList<Modifier>(), this, new ArrayList<Action>(), new ArrayList<Action>(), new ArrayList<Action>(), maxTtl, lookAheadSecondary, tailLength, self, new Score());
-			lastIdea = root.calculate();
+			//Hypothetical root = new Hypothetical(trueGame, new ArrayList<Modifier>(), this, new ArrayList<Action>(), new ArrayList<Action>(), Plan.emptyPlan().getPlannedActions(), maxTtl, lookAheadSecondary, tailLength, self, new Score(), 1);
+			lastIdea = runIterations(trueGame, maxTtl);
 		} else {
 			//we presumably did the first round of the last idea, so lets remove it
 			lastIdea.getPlan().removeActionListFromFront();
 			//now we add a new final step to keep the same length
-			Hypothetical appendAction = new Hypothetical(runGame(trueGame,lastIdea.getPlan()), new ArrayList<Modifier>(), this, new ArrayList<Action>(), new ArrayList<Action>(), new ArrayList<Action>(), maxTtl/2 + 1, lookAheadSecondary, tailLength, self, new Score());
-			HypotheticalResult appendResult = appendAction.calculate();
+			//Hypothetical appendAction = new Hypothetical(runGame(trueGame,lastIdea.getPlan()), new ArrayList<Modifier>(), this, new ArrayList<Action>(), new ArrayList<Action>(), Plan.emptyPlan().getPlannedActions(), maxTtl/2 + 1, lookAheadSecondary, tailLength, self, new Score(), 1);
+			HypotheticalResult appendResult = runIterations(runGame(trueGame,lastIdea.getPlan()),maxTtl/2 + 1);
 
 			//more debug
 			System.err.println("what I got in mind...");
@@ -64,7 +65,7 @@ public class AIBrain {
 			double assumedScore = lastIdea.getScore().totalScore();
 			if(latestScore < assumedScore) {
 				System.out.println("this plan got worse: "+latestScore+" vs "+assumedScore);
-				Hypothetical root = new Hypothetical(trueGame, new ArrayList<Modifier>(), this, new ArrayList<Action>(), new ArrayList<Action>(), new ArrayList<Action>(), maxTtl, lookAheadSecondary, tailLength, self, new Score());
+				Hypothetical root = new Hypothetical(trueGame, new ArrayList<Modifier>(), this, new ArrayList<Action>(), new ArrayList<Action>(), new ArrayList<List<Action>>(), maxTtl, lookAheadSecondary, tailLength, self, new Score(), 1);
 				lastIdea = root.calculate();
 			} else {
 			System.out.println("this plan is just as good or better: "+latestScore+" vs "+assumedScore);
@@ -72,6 +73,27 @@ public class AIBrain {
 		}
 
 		return lastIdea;
+	}
+	
+	private HypotheticalResult runIterations(Game game, int forcast) {
+		int iteration = 1;
+		HypotheticalResult result = null;//this SHOULD fail if the variable is not changed
+		List<Action> possibilities = game.returnActions();
+		List<Action> committedActions = new ArrayList<Action>();
+		Plan plan = Plan.emptyPlan();
+		while(SpaceGameIdeaGenerator.instance().hasFurtherIdeas(game, self, possibilities, committedActions, iteration)) {
+			Hypothetical hypothetical = new Hypothetical(game, new ArrayList<Modifier>(), 
+					this, new ArrayList<Action>(), new ArrayList<Action>(), plan.getPlannedActions(), forcast,
+                    lookAheadSecondary, tailLength, self, new Score(), iteration);
+			result = hypothetical.calculate();
+			committedActions = result.getImmediateActions();
+			possibilities = game.returnActions();
+			plan = result.getPlan();
+			
+			iteration++;
+		}
+		
+		return result;
 	}
 	
 	//like runPath, but it doesn't track score
