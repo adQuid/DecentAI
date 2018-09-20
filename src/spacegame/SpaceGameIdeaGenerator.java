@@ -1,7 +1,10 @@
 package spacegame;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import actions.Action;
 import actions.ActionType;
@@ -24,80 +27,98 @@ public class SpaceGameIdeaGenerator implements IdeaGenerator{
 
 		model.Game castGame = (model.Game)game;
 
+		List<SpaceGameAction> castPossibilities = new ArrayList<SpaceGameAction>();
+		
+		for(Action current: possibilities) {
+			castPossibilities.add((SpaceGameAction)current);
+		}
+		
 		//debug
-		List<Object> dummyParams = new ArrayList<Object>();
-		dummyParams.add("iter "+iteration);
+		Map<String,Object> dummyParams = new TreeMap<String,Object>();//this is debug; treemap is for lols
+		dummyParams.put("iteration",iteration);
 		
 		List<Action> emptyIdea = new ArrayList<Action>();
 		retval.add(emptyIdea);
 
 		if(iteration % 2 == 0) {
 			//idea 1: dump everything on an even build for one planet
-			for(Action current: possibilities) {
+			for(SpaceGameAction current: castPossibilities) {
 				if(current.getType() == ActionType.develop) {
 					List<Action> toAdd = new ArrayList<Action>();
 					for(int i = 0; i < castGame.fetchCurrentEmpire().getMinerals(); i+=4) {
 						toAdd.add(current);
-						toAdd.add(new Action(ActionType.developPower,current.getParams()));
+						toAdd.add(new SpaceGameAction(ActionType.developPower,current.getParams()));
 					}
-					toAdd.add(new Action(ActionType.dummy, dummyParams));
+					toAdd.add(new SpaceGameAction(ActionType.dummy, dummyParams));
 					retval.add(toAdd);
 				}
 			}
 
 			//idea 2: just make a develop 2 and support it best you can
-			for(Action current: possibilities) {
+			for(SpaceGameAction current: castPossibilities) {
 				if(current.getType() == ActionType.develop2) {
 					Colony colony = (Colony)current.getParams().get(0);
 					List<Action> toAdd = new ArrayList<Action>();
 					toAdd.add(current);
 					for(int i = 6; i < Math.min(castGame.fetchCurrentEmpire().getMinerals(),12); i+=2) {
-						toAdd.add(new Action(ActionType.developPower,current.getParams()));
+						toAdd.add(new SpaceGameAction(ActionType.developPower,current.getParams()));
 					}
-					toAdd.add(new Action(ActionType.dummy, dummyParams));
+					toAdd.add(new SpaceGameAction(ActionType.dummy, dummyParams));
 					retval.add(toAdd);
 				}
 			}
 
 			//idea 3: make hella power to compensate for other development for something else
-			for(Action current: possibilities) {
+			for(SpaceGameAction current: castPossibilities) {
 				if(current.getType() == ActionType.developPower) {
 					List<Action> toAdd = new ArrayList<Action>();
 					for(int i = 0; i < castGame.fetchCurrentEmpire().getMinerals(); i+=2) {
 						toAdd.add(current);
 					}
-					toAdd.add(new Action(ActionType.dummy, dummyParams));
+					toAdd.add(new SpaceGameAction(ActionType.dummy, dummyParams));
 					retval.add(toAdd);
 				}
 			}
 
 			//idea 4: cash out
-			for(Action current: possibilities) {
+			for(SpaceGameAction current: castPossibilities) {
 				if(current.getType() == ActionType.cashNow) {
 					List<Action> toAdd = new ArrayList<Action>();
 					for(int i = 1; i < castGame.fetchCurrentEmpire().getMinerals()/5; i++) {
 						toAdd.add(current);
 					}
-					toAdd.add(new Action(ActionType.dummy, dummyParams));
+					toAdd.add(new SpaceGameAction(ActionType.dummy, dummyParams));
 					retval.add(toAdd);
 				}
 			}
 		}
 		for(Colony current: castGame.fetchAllColonies()) {
 			if(current.getOwner().equals(empire)) {
-				List<Action> toAdd = new ArrayList<Action>();
+				if(current.getIndustry() > current.getPower()) {
+					List<Action> toAdd = new ArrayList<Action>();
 
-				List<Object> params = new ArrayList<Object>();
-				params.add(current);
-								
-				for(int i=0; i < current.getIndustry()-current.getPower(); i++) {
-					toAdd.add(new Action(ActionType.developPower,params));
-				}
-				toAdd.add(new Action(ActionType.dummy,dummyParams));
-				if(retval.size()>0) {
+					Map<String,Object> params = new HashMap<String,Object>();
+					params.put("colony",current);
+
+					for(int i=0; i < current.getIndustry()-current.getPower(); i++) {
+						toAdd.add(new SpaceGameAction(ActionType.developPower,params));
+					}
+					toAdd.add(new SpaceGameAction(ActionType.dummy,dummyParams));
 					retval.add(toAdd);
 				}
-			}
+				if(current.getIndustry() < current.getPower()) {
+					List<Action> toAdd = new ArrayList<Action>();
+
+					Map<String,Object> params = new HashMap<String,Object>();
+					params.put("colony",current);
+
+					for(int i=0; i < current.getPower()-current.getIndustry(); i++) {
+						toAdd.add(new SpaceGameAction(ActionType.develop,params));
+					}
+					toAdd.add(new SpaceGameAction(ActionType.dummy,dummyParams));
+					retval.add(toAdd);
+				}
+			}				
 		}
 		
 		//debug

@@ -18,7 +18,7 @@ public class Game implements aibrain.Game{
 	
 	private List<Empire> empires = new ArrayList<Empire>();
 	
-	PowerOverload event = new PowerOverload(0.0);
+	PowerOverload event = new PowerOverload(0.3);
 	
 	private boolean live;
 	

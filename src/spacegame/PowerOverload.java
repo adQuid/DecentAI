@@ -27,6 +27,7 @@ public class PowerOverload{
 						for(AIBrain brain: Mainmenu.brains) {
 							brain.addLog("Power overload!");
 						}
+						System.out.println("power overload for "+current.getOwner().getName());
 					}
 						
 					}else {

@@ -2,59 +2,14 @@ package actions;
 
 import java.util.List;
 
-public class Action {
-
-	private ActionType type;
-	private List<Object> params;
+public interface Action {
 	
-	public Action(ActionType type, List<Object> params) {
-		super();
-		this.type = type;
-		this.params = params;
-	}
-	public Action(Action other){
-		this.type = other.type;
-		this.params = other.params;//somewhat dangerous
-	}
-	public ActionType getType() {
-		return type;
-	}
-	public List<Object> getParams() {
-		return params;
-	}
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((params == null) ? 0 : params.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		return result;
-	}
+	public ActionType getType();
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Action other = (Action) obj;
-		if (params == null) {
-			if (other.params != null)
-				return false;
-		} else if (!params.equals(other.params))
-			return false;
-		if (type != other.type)
-			return false;
-		return true;
-	}
+	public boolean equals(Object obj);
 	
-	public String toString() {
-		if(params.size() > 0) {
-			return type.name()+" "+params.get(0).toString();
-		}else {
-			return type.name();
-		}
-	}
+	public Object getParam(String param);
+	
+	public String toString();
+	
 }

@@ -35,7 +35,7 @@ public class GameRunTestser {
 				System.out.print(""+current.getType());
 				if(current.getType() == ActionType.develop ||
 						current.getType() == ActionType.developPower){
-					System.out.print(" "+((Colony)current.getParams().get(0)).getName());
+					System.out.print(" "+((Colony)current.getParam("colony")).getName());
 				}
 				System.out.println();
 			}

@@ -28,7 +28,7 @@ public class Empire {
 		this.minerals = other.minerals;
 		this.currency = other.currency;
 		for(Action current: other.actionsThisTurn){
-			actionsThisTurn.add(new Action(current));
+			actionsThisTurn.add(current);
 		}
 	}
 

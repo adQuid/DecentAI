@@ -1,12 +1,15 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import actions.Action;
 import actions.ActionType;
 import exceptions.IllegalActionException;
 import refdata.NameList;
+import spacegame.SpaceGameAction;
 
 public class Colony {
 
@@ -108,19 +111,19 @@ public class Colony {
 		List<Action> retval = new ArrayList<Action>();
 		
 		if(empire.equals(this.getOwner())){
-			List<Object> params = new ArrayList<Object>();
-			params.add(this);
+			Map<String,Object> params = new HashMap<String,Object>();
+			params.put("colony", this);
 			if(empire.getMinerals() >= 2 + (1*industry)){
-				retval.add(new Action(ActionType.develop,params));
+				retval.add(new SpaceGameAction(ActionType.develop,params));
 			}
 			if(empire.getMinerals() >= 12 + (1*industry)){
-				retval.add(new Action(ActionType.develop2,params));
+				retval.add(new SpaceGameAction(ActionType.develop2,params));
 			}
 			if(empire.getMinerals() >= 2){
-				retval.add(new Action(ActionType.developPower,params));
+				retval.add(new SpaceGameAction(ActionType.developPower,params));
 			}
 			if(empire.getMinerals() >= 5){
-				retval.add(new Action(ActionType.cashNow,params));
+				retval.add(new SpaceGameAction(ActionType.cashNow,params));
 			}
 		}
 		return retval;
@@ -129,10 +132,11 @@ public class Colony {
 	public void processActions(Action current) {
 		Empire fetchedOwner = this.game.findMatchingEmpire(owner);		
 
-		
+		//it BETTER be this type of action...
+		SpaceGameAction action = (SpaceGameAction)current;
 		
 		if(current.getType() == ActionType.develop&&
-				((Colony)(current.getParams().get(0))).equals(this)){
+				((Colony)(action.getParams().get("colony"))).equals(this)){
 			try{
 				fetchedOwner.addMinerals(-2 - (1*industry));
 				this.industry++;
@@ -141,7 +145,7 @@ public class Colony {
 			}
 		}
 		if(current.getType() == ActionType.develop2&&
-				((Colony)(current.getParams().get(0))).equals(this)){
+				((Colony)(action.getParams().get("colony"))).equals(this)){
 			try{
 				fetchedOwner.addMinerals(-12 - (1*industry));
 				this.industry+=7;
@@ -150,7 +154,7 @@ public class Colony {
 			}
 		}
 		if(current.getType() == ActionType.developPower&&
-				((Colony)(current.getParams().get(0))).equals(this)){
+				((Colony)(action.getParams().get("colony"))).equals(this)){
 			try{
 				fetchedOwner.addMinerals(-2);
 				this.power+=1;
@@ -159,7 +163,7 @@ public class Colony {
 			}
 		}
 		if(current.getType() == ActionType.cashNow&&
-				((Colony)(current.getParams().get(0))).equals(this)){
+				((Colony)(action.getParams().get("colony"))).equals(this)){
 			try{
 				fetchedOwner.addMinerals(-5);
 				fetchedOwner.addEnergy(6);
