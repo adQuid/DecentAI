@@ -7,10 +7,12 @@ import java.util.List;
 
 import actions.Action;
 import cloners.GameCloner;
-import model.Colony;
+import model.ActionType;
 import model.Empire;
+
+//theses SHOULD NOT exist in final version
 import spacegame.SpaceGameIdeaGenerator;
-import testers.GameRunTestser;
+import spacegame.SpaceGameAction;
 
 public class AIBrain {
 	
@@ -41,13 +43,11 @@ public class AIBrain {
 		
 		if(lastIdea == null) {
 			addLog("I have no plan");
-			//Hypothetical root = new Hypothetical(trueGame, new ArrayList<Modifier>(), this, new ArrayList<Action>(), new ArrayList<Action>(), Plan.emptyPlan().getPlannedActions(), maxTtl, lookAheadSecondary, tailLength, self, new Score(), 1);
 			lastIdea = runIterations(trueGame, maxTtl);
 		} else {
 			//we presumably did the first round of the last idea, so lets remove it
 			lastIdea.getPlan().removeActionListFromFront();
 			//now we add a new final step to keep the same length
-			//Hypothetical appendAction = new Hypothetical(runGame(trueGame,lastIdea.getPlan()), new ArrayList<Modifier>(), this, new ArrayList<Action>(), new ArrayList<Action>(), Plan.emptyPlan().getPlannedActions(), maxTtl/2 + 1, lookAheadSecondary, tailLength, self, new Score(), 1);
 			HypotheticalResult appendResult = runIterations(runGame(trueGame,lastIdea.getPlan()),maxTtl/2 + 1);
 
 			//more debug
@@ -70,11 +70,41 @@ public class AIBrain {
 				addLog("this plan got worse: "+latestScore.totalScore()+" vs "+assumedScore);
 				lastIdea = runIterations(trueGame, maxTtl);
 			} else {
-				addLog("this plan is just as good or better: "+latestScore.totalScore()+" vs "+assumedScore);
+				addLog("this plan is just as good or better: "+latestScore.totalScore()+" vs "+assumedScore);				
 				lastIdea.setScore(latestScore);
+				
+				//just in case, let's see if there are any last minute opportunities or problems that came up just this turn
+				HypotheticalResult opportunityResult = immediateIteration(trueGame, lastIdea.getImmediateActions(), lastIdea.getPlan());
+				
+				if(opportunityResult != null) {
+					addLog("...but I'm ammending the immedate actions");
+					lastIdea.getPlan().getPlannedActions().set(0, opportunityResult.getImmediateActions());
+				}
 			}	
 		}
 
+		//finally, try removing any of the actions from this turn and see if things end up better without them
+		boolean shouldContinue = true;
+		while(shouldContinue) {
+			shouldContinue = false;
+			innerLoop: for(int index=0; index < lastIdea.getImmediateActions().size(); index++) { //in case people duplicate actions I want to remove by index
+							
+				List<Action> ammendedActions = new ArrayList<Action>(lastIdea.getImmediateActions());
+				ammendedActions.remove(index);
+				
+				Plan ammendedPlan = new Plan(lastIdea.getPlan());
+				ammendedPlan.getPlannedActions().set(0, ammendedActions);
+				
+				HypotheticalResult ammendedResult = runPath(trueGame, ammendedPlan);
+				if(ammendedResult.getScore().totalScore() >= lastIdea.getScore().totalScore()) {
+					//this is safe because I immediately get out of the loop
+					lastIdea.getPlan().getPlannedActions().set(0, ammendedResult.getImmediateActions());
+					shouldContinue = true;
+					break innerLoop;
+				}
+			}
+		}
+		
 		//pure debugging here
 		addLog("Reasoning this turn:");
 		for(Reasoning current: lastIdea.getPlan().getReasonings()) {
@@ -112,6 +142,25 @@ public class AIBrain {
 		}
 		
 		return result;
+	}
+	
+	//TODO: merge this with the one above
+	private HypotheticalResult immediateIteration(Game game, List<Action> committedActions, Plan plan) {
+		
+		List<Action> possibilities = game.returnActions(self);
+		if(SpaceGameIdeaGenerator.instance().hasFurtherIdeas(game, self, possibilities, committedActions, 1)) {
+			Hypothetical hypothetical = new Hypothetical(game, new ArrayList<Modifier>(), 
+					this, new ArrayList<Action>(), new ArrayList<Action>(), plan.getPlannedActions(), maxTtl/2 + 1,
+                    lookAheadSecondary, tailLength, self, new Score(), 1);
+			HypotheticalResult result = hypothetical.calculate();
+			committedActions = result.getImmediateActions();
+			possibilities = game.returnActions(self);
+			plan = result.getPlan();
+			
+			return result;
+		}else {
+			return null; //is this a good use of a null? Is anything?
+		}
 	}
 	
 	//like runPath, but it doesn't track score

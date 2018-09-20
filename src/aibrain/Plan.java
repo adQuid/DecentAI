@@ -26,7 +26,10 @@ public class Plan {
 	}
 
 	public Plan(Plan other) {
-		this.plannedActions = new ArrayList<List<Action>>(other.plannedActions);
+		this();
+		for(List<Action> current: other.plannedActions) {
+			this.plannedActions.add(new ArrayList<Action>(current));
+		}
 		this.reasonings = new ArrayList<Reasoning>(other.reasonings);
 	}
 	

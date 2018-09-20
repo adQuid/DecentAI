@@ -213,7 +213,7 @@ public class Colony {
 				
 				//debug
 				if(game.isLive()) {
-					System.out.println(owner.getName()+" attacked");
+					System.out.println(owner.getName()+" attacked "+action.getParam("target").toString());
 				}
 				
 				fetchedOwner.addMinerals(-5);
@@ -222,6 +222,11 @@ public class Colony {
 					target.industry = Math.max(0, target.industry - 5);
 				}
 			}catch(IllegalActionException e){
+				//debug
+				if(game.isLive()) {
+					System.out.println("...but it failed");
+				}
+				
 				//Do nothing, you just can't afford this
 			}
 		}
