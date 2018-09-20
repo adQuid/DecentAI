@@ -16,6 +16,7 @@ public class Colony {
 	String name;
 	Empire owner;
 	int population;
+	int defense;
 	double industry;
 	double power;
 	int id;
@@ -32,6 +33,7 @@ public class Colony {
 		population = 0;
 		industry = 0;
 		power = 0;
+		defense = 0;
 	}
 	
 	@Override
@@ -56,6 +58,7 @@ public class Colony {
 		this.population = other.population;
 		this.industry = other.industry;
 		this.power = other.power;
+		this.defense = other.defense;
 	}
 
 	public Empire getOwner() {
@@ -124,6 +127,20 @@ public class Colony {
 			if(empire.getMinerals() >= 5){
 				retval.add(new SpaceGameAction(ActionType.cashNow,params));
 			}
+			if(empire.getMinerals() >= 3) {
+				retval.add(new SpaceGameAction(ActionType.defend,params));
+			}
+			if(empire.getMinerals() >= 5) {
+				for(Colony current: game.fetchAllColonies()) {
+					if(!current.getOwner().equals(this.owner)) {
+						Map<String,Object> attackParams = new HashMap<String,Object>();
+						attackParams.put("from", this);
+						attackParams.put("target", current);
+						
+						retval.add(new SpaceGameAction(ActionType.pillage,attackParams));
+					}
+				}
+			}
 		}
 		return retval;
 	}
@@ -166,6 +183,44 @@ public class Colony {
 			try{
 				fetchedOwner.addMinerals(-5);
 				fetchedOwner.addEnergy(6);
+			}catch(IllegalActionException e){
+				//Do nothing, you just can't afford this
+			}
+		}
+		if(action.getType() == ActionType.defend&&
+				((Colony)(action.getParams().get("colony"))).equals(this)){
+			try{
+				fetchedOwner.addMinerals(-3);
+				this.defense++;
+			}catch(IllegalActionException e){
+				//Do nothing, you just can't afford this
+			}
+		}
+		if(action.getType() == ActionType.pillage&&
+				((Colony)(action.getParams().get("from"))).equals(this)){
+			try{
+				Colony target = null;
+				
+				for(Colony col: game.fetchAllColonies()) {
+					if(col.equals(action.getParam("target"))) {
+						target = col;
+					}
+				}
+				
+				if(target == null) {
+					throw new IllegalActionException();
+				}
+				
+				//debug
+				if(game.isLive()) {
+					System.out.println(owner.getName()+" attacked");
+				}
+				
+				fetchedOwner.addMinerals(-5);
+				if(target.defense < 1) {
+					fetchedOwner.addEnergy(target.industry*2);
+					target.industry = Math.max(0, target.industry - 5);
+				}
 			}catch(IllegalActionException e){
 				//Do nothing, you just can't afford this
 			}

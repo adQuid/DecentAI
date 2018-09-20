@@ -84,13 +84,24 @@ public class SpaceGameIdeaGenerator implements IdeaGenerator{
 			for(SpaceGameAction current: castPossibilities) {
 				if(current.getType() == ActionType.cashNow) {
 					List<Action> toAdd = new ArrayList<Action>();
-					for(int i = 1; i < castGame.fetchCurrentEmpire().getMinerals()/5; i++) {
 						toAdd.add(current);
-					}
+
 					toAdd.add(new SpaceGameAction(ActionType.dummy, dummyParams));
 					retval.add(toAdd);
 				}
 			}
+			
+			//idea 5: defend yourself or attack someone
+			for(SpaceGameAction current: castPossibilities) {
+				if(current.getType() == ActionType.defend ||
+						current.getType() == ActionType.pillage) {
+					List<Action> toAdd = new ArrayList<Action>();
+					toAdd.add(current);
+					toAdd.add(new SpaceGameAction(ActionType.dummy, dummyParams));
+					retval.add(toAdd);
+				}
+			}
+			
 		}
 		for(Colony current: castGame.fetchAllColonies()) {
 			if(current.getOwner().equals(empire)) {
@@ -127,7 +138,10 @@ public class SpaceGameIdeaGenerator implements IdeaGenerator{
 	@Override
 	public boolean hasFurtherIdeas(Game game, Empire empire, List<Action> possibilities, List<Action> committedActions, int iteration) {
 		
-		if(iteration > 5) {
+		if(iteration == 1) {
+			return true;
+		}
+		if(iteration > 7) {
 			return false;
 		}
 		
@@ -144,7 +158,7 @@ public class SpaceGameIdeaGenerator implements IdeaGenerator{
 		if(me.getMinerals() < 2) {
 			return false;
 		}
-		if(iteration > 1 && futureGame.returnActions(empire).size() == 0) {
+		if(futureGame.returnActions(empire).size() == 0) {
 			return false;
 		}
 		return true;

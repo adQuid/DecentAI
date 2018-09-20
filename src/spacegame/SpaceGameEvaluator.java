@@ -28,8 +28,8 @@ public class SpaceGameEvaluator implements GameEvaluator{
 		double productionPotentialScore = 0;
 		for(Tile[] row: game.getMap().getGrid()){
 			for(Tile currentTile: row){
-				if(currentTile.getObject() != null && currentTile.getObject() instanceof Planet && ((Planet)currentTile.getObject()).fetchColonyForEmpire(game.fetchCurrentEmpire()) != null){
-					productionPotentialScore += 3 * (Math.min(((Planet)currentTile.getObject()).fetchColonyForEmpire(game.fetchCurrentEmpire()).getIndustry(),((Planet)currentTile.getObject()).fetchColonyForEmpire(game.fetchCurrentEmpire()).getPower()));
+				if(currentTile.getObject() != null && currentTile.getObject() instanceof Planet && ((Planet)currentTile.getObject()).fetchColonyForEmpire(empire) != null){
+					productionPotentialScore += 3 * (Math.min(((Planet)currentTile.getObject()).fetchColonyForEmpire(empire).getIndustry(),((Planet)currentTile.getObject()).fetchColonyForEmpire(empire).getPower()));
 				}
 			}
 		}

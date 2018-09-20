@@ -55,7 +55,7 @@ public class Empire {
 	public void setCurrency(double energy) {
 		this.currency = energy;
 	}
-
+	
 	public List<Action> getActionsThisTurn() {
 		return actionsThisTurn;
 	}
