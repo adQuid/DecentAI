@@ -10,7 +10,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import actions.Action;
-import actions.ActionType;
 import aibrain.AIBrain;
 import model.Colony;
 import model.Empire;

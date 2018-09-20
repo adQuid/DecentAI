@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import actions.Action;
-import actions.ActionType;
 import exceptions.IllegalActionException;
 import refdata.NameList;
 import spacegame.SpaceGameAction;
@@ -135,7 +134,7 @@ public class Colony {
 		//it BETTER be this type of action...
 		SpaceGameAction action = (SpaceGameAction)current;
 		
-		if(current.getType() == ActionType.develop&&
+		if(action.getType() == ActionType.develop&&
 				((Colony)(action.getParams().get("colony"))).equals(this)){
 			try{
 				fetchedOwner.addMinerals(-2 - (1*industry));
@@ -144,7 +143,7 @@ public class Colony {
 				//Do nothing, you just can't afford this
 			}
 		}
-		if(current.getType() == ActionType.develop2&&
+		if(action.getType() == ActionType.develop2&&
 				((Colony)(action.getParams().get("colony"))).equals(this)){
 			try{
 				fetchedOwner.addMinerals(-12 - (1*industry));
@@ -153,7 +152,7 @@ public class Colony {
 				//Do nothing, you just can't afford this
 			}
 		}
-		if(current.getType() == ActionType.developPower&&
+		if(action.getType() == ActionType.developPower&&
 				((Colony)(action.getParams().get("colony"))).equals(this)){
 			try{
 				fetchedOwner.addMinerals(-2);
@@ -162,7 +161,7 @@ public class Colony {
 				//Do nothing, you just can't afford this
 			}
 		}
-		if(current.getType() == ActionType.cashNow&&
+		if(action.getType() == ActionType.cashNow&&
 				((Colony)(action.getParams().get("colony"))).equals(this)){
 			try{
 				fetchedOwner.addMinerals(-5);

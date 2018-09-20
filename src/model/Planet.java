@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import actions.Action;
-import actions.ActionType;
 import refdata.NameList;
 
 public class Planet extends SpaceObject{

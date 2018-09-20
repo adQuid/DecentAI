@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import actions.Action;
-import actions.ActionType;
 import aibrain.IdeaGenerator;
 import cloners.GameCloner;
+import model.ActionType;
 import model.Colony;
 import model.Empire;
 import aibrain.Game;
@@ -120,24 +120,7 @@ public class SpaceGameIdeaGenerator implements IdeaGenerator{
 				}
 			}				
 		}
-		
-		//debug
-		for(List<Action> current: retval) {
-			if(current.size() == 6 &&
-					current.get(0).getType() == ActionType.developPower &&
-					current.get(1).getType() == ActionType.developPower &&
-					current.get(2).getType() == ActionType.developPower &&
-					current.get(3).getType() == ActionType.developPower &&
-					current.get(4).getType() == ActionType.developPower &&
-					castGame.fetchAllColonies().get(0).getIndustry() == 7 &&
-					castGame.fetchAllColonies().get(0).getPower() == 5 &&
-					castGame.fetchAllColonies().get(1).getIndustry() == 7 &&
-					castGame.fetchAllColonies().get(1).getPower() == 7) {
-				System.out.println("aha!");
-			}
 				
-		}
-		
 		return retval;
 	}
 

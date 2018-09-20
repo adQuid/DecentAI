@@ -3,8 +3,8 @@ package ui;
 import java.util.List;
 
 import actions.Action;
-import actions.ActionType;
 import aibrain.AIBrain;
+import model.ActionType;
 import model.Colony;
 import model.Empire;
 import model.Game;

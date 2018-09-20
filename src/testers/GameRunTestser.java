@@ -3,13 +3,14 @@ package testers;
 import java.util.List;
 
 import actions.Action;
-import actions.ActionType;
 import aibrain.AIBrain;
 import aibrain.HypotheticalResult;
 import aibrain.Reasoning;
+import model.ActionType;
 import model.Colony;
 import model.Game;
 import model.Planet;
+import spacegame.SpaceGameAction;
 import spacegame.SpaceGameEvaluator;
 
 public class GameRunTestser {
@@ -32,9 +33,9 @@ public class GameRunTestser {
 			List<Action> actions = result.getImmediateActions();
 			System.out.println("Actions this turn:");
 			for(Action current: actions){
-				System.out.print(""+current.getType());
-				if(current.getType() == ActionType.develop ||
-						current.getType() == ActionType.developPower){
+				System.out.print(""+((SpaceGameAction)current).getType());
+				if(((SpaceGameAction)current).getType() == ActionType.develop ||
+						((SpaceGameAction)current).getType() == ActionType.developPower){
 					System.out.print(" "+((Colony)current.getParam("colony")).getName());
 				}
 				System.out.println();

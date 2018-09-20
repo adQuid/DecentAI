@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import actions.Action;
-import actions.ActionType;
+import model.ActionType;
 
 public class SpaceGameAction implements Action{
 
