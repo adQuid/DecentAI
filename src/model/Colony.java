@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import actions.Action;
+import aibrain.Action;
 import exceptions.IllegalActionException;
 import refdata.NameList;
 import spacegame.SpaceGameAction;
@@ -105,6 +105,10 @@ public class Colony {
 		this.game = game;
 	}
 	
+	public int getDefense() {
+		return defense;
+	}
+	
 	public String toString() {
 		return getName();
 	}
@@ -190,6 +194,9 @@ public class Colony {
 		if(action.getType() == ActionType.defend&&
 				((Colony)(action.getParams().get("colony"))).equals(this)){
 			try{
+				if(this.game.isLive()) {
+					System.out.println("Someone defended!");
+				}
 				fetchedOwner.addMinerals(-3);
 				this.defense++;
 			}catch(IllegalActionException e){
@@ -212,7 +219,7 @@ public class Colony {
 				}
 				
 				//debug
-				if(game.isLive()) {
+				if(game.isLive() && !action.isContingency()) {
 					System.out.println(owner.getName()+" attacked "+action.getParam("target").toString());
 				}
 				
@@ -220,6 +227,10 @@ public class Colony {
 				if(target.defense < 1) {
 					fetchedOwner.addEnergy(target.industry*2);
 					target.industry = Math.max(0, target.industry - 5);
+				}else {
+					if(game.isLive()) {
+						System.out.println("...but it was defended!");
+					}
 				}
 			}catch(IllegalActionException e){
 				//debug

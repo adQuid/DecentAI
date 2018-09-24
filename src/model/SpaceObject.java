@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-import actions.Action;
+import aibrain.Action;
 
 public abstract class SpaceObject {
 

@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import actions.Action;
-
 public class Score {
 
 	private Map<String,Double> categories;

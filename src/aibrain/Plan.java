@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import actions.Action;
-
 public class Plan {
 
 	private List<List<Action>> plannedActions;

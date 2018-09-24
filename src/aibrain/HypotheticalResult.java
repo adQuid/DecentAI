@@ -3,7 +3,6 @@ package aibrain;
 import java.util.ArrayList;
 import java.util.List;
 
-import actions.Action;
 import model.Empire;
 import aibrain.Game;
 import spacegame.SpaceGameEvaluator;

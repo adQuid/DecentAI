@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import actions.Action;
 import cloners.GameCloner;
 import model.Empire;
+import spacegame.SpaceGameContingencyGenerator;
+import spacegame.SpaceGameEvaluator;
 import spacegame.SpaceGameIdeaGenerator;
 import utils.ListUtils;
 
@@ -24,7 +25,7 @@ public class Hypothetical {
 	private List<Modifier> modifiers;
 	//this is a list of the actions the parent COULD have taken, not what it did
 	private List<Action> possibleParentActions;
-	//this is a list of the actions actually selected by the parent step, and avalible to try again
+	//this is a list of the actions actually selected by the parent step, and available to try again
 	private List<Action> usedParentActions;
 	//actions this hypothetical is already committed to taking
 	private List<List<Action>> actions;
@@ -76,50 +77,51 @@ public class Hypothetical {
 		possibleParentActions.removeAll(usedParentActions);		
 		possibleActions.removeAll(possibleParentActions);
 		
+		//TODO: genericise this
 		List<List<Action>> ideas = SpaceGameIdeaGenerator.instance().generateIdeas((model.Game)game, empire, possibleActions, iteration);
+
+		Game futureGame = GameCloner.cloneGame(game);
+		
+		parent.applyContingencies(futureGame,this.empire,this.iteration);
 		
 		//base case where I'm out of time
 		if(tightForcastLength == 0 && looseForcastLength == 0) {
-			Game futureGame = GameCloner.cloneGame(game);
+			Game tailGame = GameCloner.cloneGame(futureGame);
 
 			for(int turn = 0; turn < tail; turn++) {
-				futureGame.endRound();
-				scoreAccumulator.add(new HypotheticalResult(futureGame, empire).getScore());
+				tailGame.endRound();
+				scoreAccumulator.add(new HypotheticalResult(tailGame, empire).getScore());
 			}
-			HypotheticalResult retval = new HypotheticalResult(futureGame,empire, plan);
+			HypotheticalResult retval = new HypotheticalResult(tailGame,empire, plan);
 			retval.setScore(retval.getScore().add(scoreAccumulator));
 			return retval;
 		}
-			
-		if(iteration > 1) {
-			//System.out.println("degub");
-		}
-		
+					
 		//add score from this round
 		scoreAccumulator.add(thisLevelResult.getScore());
 		
 		//try adding a new action
 		for(List<Action> current: ideas) {
 			Score scoreToPass = new Score(scoreAccumulator);
-			Game futureGame = GameCloner.cloneGame(game);
+			Game branchGame = GameCloner.cloneGame(futureGame);
 			List<Action> combinedIdeas = ListUtils.combine(actions.get(0),current);
-			futureGame.setActionsForEmpire(combinedIdeas, empire);
-			futureGame.endRound();
+			branchGame.setActionsForEmpire(combinedIdeas, empire);
+			branchGame.endRound();
 			//skip a round when we are in loose forecasting
 			if(isInLooseForcastPhase()) {
-				scoreToPass.add(new HypotheticalResult(futureGame, empire).getScore().decay(parent.getDecayRate()));
+				scoreToPass.add(new HypotheticalResult(branchGame, empire).getScore().decay(parent.getDecayRate()));
 				futureGame.endRound();
 			}
-			List<Action> toPass = current.size()==0?passdownActions:futureGame.returnActions(empire);
+			List<Action> toPass = current.size()==0?passdownActions:branchGame.returnActions(empire);
 			Plan planToPass = new Plan(plan);
 			planToPass.addReasoning(new Reasoning("adding actions "+Arrays.toString(combinedIdeas.toArray())));
 			planToPass.addActionListToEnd(combinedIdeas);
 			allOptions.add(packResult((tightForcastLength == 0?
-						new Hypothetical(futureGame,modifiers,parent,toPass,
+						new Hypothetical(branchGame,modifiers,parent,toPass,
 							new ArrayList<Action>(current), actions.subList(1, actions.size()),tightForcastLength,
 							looseForcastLength-1,tail,empire,
 							scoreToPass.decay(parent.getDecayRate()),iteration,planToPass).calculate(debug)
-						:new Hypothetical(futureGame,modifiers,parent,toPass,
+						:new Hypothetical(branchGame,modifiers,parent,toPass,
 							new ArrayList<Action>(current), actions.subList(1, actions.size()),tightForcastLength-1,
 							looseForcastLength,tail,empire,
 							scoreToPass.decay(parent.getDecayRate()), iteration, planToPass).calculate(debug))
@@ -130,9 +132,9 @@ public class Hypothetical {
 		double bestScore = 0;
 		HypotheticalResult retval = null;
 		for(HypotheticalResult current: allOptions) {
-			//warning for debugging
-			if(!debug && isAtTopOfForecast() && current.getScore().totalScore() != parent.runPath(this.game, current.getPlan()).getScore().totalScore()) {
-				double result = parent.runPath(parent.getParentGame(), current.getPlan()).getScore().totalScore();
+			//warning for debugging, since there are two ways of rating the same game which is likely to break
+			if(!debug && isAtTopOfForecast() && current.getScore().totalScore() != parent.runPath(futureGame, current.getPlan()).getScore().totalScore()) {
+				double result = parent.runPath(futureGame, current.getPlan()).getScore().totalScore();
 				System.err.println("rates as "+current.getScore().totalScore()+" vs "+result);
 			}
 			if(retval == null || current.getScore().totalScore() > bestScore) {

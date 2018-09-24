@@ -2,8 +2,8 @@ package testers;
 
 import java.util.List;
 
-import actions.Action;
 import aibrain.AIBrain;
+import aibrain.Action;
 import aibrain.HypotheticalResult;
 import aibrain.Reasoning;
 import model.ActionType;

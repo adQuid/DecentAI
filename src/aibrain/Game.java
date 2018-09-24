@@ -2,7 +2,6 @@ package aibrain;
 
 import java.util.List;
 
-import actions.Action;
 import model.Empire;
 
 public interface Game {
@@ -17,10 +16,13 @@ public interface Game {
 	
 	public void setActionsForEmpire(List<Action> actions, Empire empire);
 	
+	public void appendActionsForEmpire(List<Action> actions, Empire empire);
+	
 	//clears out all actions for each empire
 	public void endRound();
 	
 	//returns a new game based on the results of endRound
 	public Game nextRound();
 	
+	public Game imageForPlayer(Empire player);
 }

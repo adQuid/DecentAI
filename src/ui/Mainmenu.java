@@ -13,8 +13,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 
-import actions.Action;
 import aibrain.AIBrain;
+import aibrain.Action;
 import display.GridDisplay;
 import model.Empire;
 import model.Game;

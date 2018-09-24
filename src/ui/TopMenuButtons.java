@@ -9,8 +9,8 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import actions.Action;
 import aibrain.AIBrain;
+import aibrain.Action;
 import model.Colony;
 import model.Empire;
 import model.Game;

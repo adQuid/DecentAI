@@ -1,6 +1,6 @@
 package model;
 
-import actions.Action;
+import aibrain.Action;
 
 public class Star extends SpaceObject{
 

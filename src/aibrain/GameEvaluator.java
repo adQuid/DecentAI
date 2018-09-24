@@ -1,7 +1,7 @@
 package aibrain;
 
 import model.Empire;
-import model.Game;
+import aibrain.Game;
 
 public interface GameEvaluator {
 

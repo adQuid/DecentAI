@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import actions.Action;
 import aibrain.IdeaGenerator;
 import cloners.GameCloner;
 import model.ActionType;
 import model.Colony;
 import model.Empire;
+import aibrain.Action;
 import aibrain.Game;
 
 public class SpaceGameIdeaGenerator implements IdeaGenerator{

@@ -1,24 +1,30 @@
 package spacegame;
 
-import java.util.List;
 import java.util.Map;
 
-import actions.Action;
+import aibrain.Action;
 import model.ActionType;
 
 public class SpaceGameAction implements Action{
 
 	private ActionType type;
 	private Map<String,Object> params;
+	private boolean contingency = false;
+	
+	private int order = 5;
 	
 	public SpaceGameAction(ActionType type, Map<String,Object> params) {
 		super();
 		this.type = type;
 		this.params = params;
+		if(this.type == ActionType.defend) {
+			this.order = 6;
+		}
 	}
 	public SpaceGameAction(SpaceGameAction other){
 		this.type = other.type;
 		this.params = other.params;//somewhat dangerous
+		this.order = other.order;
 	}
 	public ActionType getType() {
 		return type;
@@ -67,5 +73,20 @@ public class SpaceGameAction implements Action{
 	}
 	public void setParam(String param, Object value) {
 		params.put(param, value);
+	}
+	
+	
+	public int getOrder() {
+		return order;
+	}
+	public void setOrder(int order) {
+		this.order = order;
+	}
+	public void setContingency(boolean contingency) {
+		this.contingency = contingency;
+	}
+	@Override
+	public boolean isContingency() {
+		return contingency;
 	}
 }

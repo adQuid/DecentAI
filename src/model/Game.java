@@ -3,9 +3,10 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-import actions.Action;
+import aibrain.Action;
 import cloners.GameCloner;
 import spacegame.PowerOverload;
+import spacegame.SpaceGameAction;
 
 public class Game implements aibrain.Game{
 
@@ -18,7 +19,7 @@ public class Game implements aibrain.Game{
 	
 	private List<Empire> empires = new ArrayList<Empire>();
 	
-	PowerOverload event = new PowerOverload(0.3);
+	PowerOverload event = new PowerOverload(0.0);
 	
 	private boolean live;
 	
@@ -117,10 +118,19 @@ public class Game implements aibrain.Game{
 		matchingEmp.setActionsThisTurn(actions);
 	}
 	
+	public void appendActionsForEmpire(List<Action> actions, Empire empire){
+		Empire matchingEmp = findMatchingEmpire(empire);
+		matchingEmp.getActionsThisTurn().addAll(actions);
+	}
+	
 	public void endRound(){
-		for(Empire curEmpire: empires){
-			for(Action curAction: curEmpire.getActionsThisTurn()){
-				this.map.processActions(curAction);
+		for(int phase = 0; phase < 10; phase++) {
+			for(Empire curEmpire: empires){
+				for(Action curAction: curEmpire.getActionsThisTurn()){
+					if(((SpaceGameAction)curAction).getOrder() == phase) {
+						this.map.processActions(curAction);
+					}
+				}
 			}
 		}
 		event.applyTo(this,live);
@@ -134,6 +144,16 @@ public class Game implements aibrain.Game{
 	public Game nextRound() {
 		Game retval = (Game) GameCloner.cloneGame(this);
 		retval.endRound();
+		return retval;
+	}
+
+	@Override
+	public aibrain.Game imageForPlayer(Empire player) {
+		Game retval = (Game) GameCloner.cloneGame(this);
+		
+		for(Empire current: this.empires) {
+			retval.setActionsForEmpire(new ArrayList<Action>(), current);
+		}
 		return retval;
 	}
 }

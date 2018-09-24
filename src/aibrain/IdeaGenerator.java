@@ -2,7 +2,6 @@ package aibrain;
 
 import java.util.List;
 
-import actions.Action;
 import model.Empire;
 import aibrain.Game;
 

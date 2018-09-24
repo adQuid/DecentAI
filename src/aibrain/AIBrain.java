@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import actions.Action;
 import cloners.GameCloner;
 import model.ActionType;
 import model.Empire;
@@ -13,6 +12,8 @@ import model.Empire;
 //theses SHOULD NOT exist in final version
 import spacegame.SpaceGameIdeaGenerator;
 import spacegame.SpaceGameAction;
+import spacegame.SpaceGameContingencyGenerator;
+import spacegame.SpaceGameEvaluator;
 
 public class AIBrain {
 	
@@ -37,9 +38,9 @@ public class AIBrain {
 	}
 	
 	//run one turn of the AI
-	public HypotheticalResult runAI(Game trueGame){
+	public HypotheticalResult runAI(Game sourceGame){
 		
-		this.trueGame = trueGame;
+		this.trueGame = sourceGame.imageForPlayer(self);
 		
 		if(lastIdea == null) {
 			addLog("I have no plan");
@@ -77,7 +78,10 @@ public class AIBrain {
 				HypotheticalResult opportunityResult = immediateIteration(trueGame, lastIdea.getImmediateActions(), lastIdea.getPlan());
 				
 				if(opportunityResult != null) {
-					addLog("...but I'm ammending the immedate actions");
+					addLog("...but I'm ammending the immedate actions with:");
+					for(Action current: opportunityResult.getImmediateActions()) {
+						addLog(current.toString());
+					}
 					lastIdea.getPlan().getPlannedActions().set(0, opportunityResult.getImmediateActions());
 				}
 			}	
@@ -169,6 +173,8 @@ public class AIBrain {
 		
 		for(int actionIndex = 0; actionIndex < plan.getPlannedActions().size(); actionIndex++) {
 			
+			applyContingencies(game,this.self,1);//what should iteration be here?
+			
 			copyGame.setActionsForEmpire(plan.getPlannedActions().get(actionIndex), this.self);
 			copyGame.endRound();
 			
@@ -188,6 +194,9 @@ public class AIBrain {
 		
 		for(int actionIndex = 0; actionIndex < maxTtl + lookAheadSecondary; actionIndex++) {
 			scoreAccumulator.add(new HypotheticalResult(copyGame,this.self,plan).getScore());
+			
+			applyContingencies(copyGame,this.self,1);//what should iteration be here?
+			
 			copyGame.setActionsForEmpire(plan.getPlannedActions().get(actionIndex), this.self);
 			copyGame.endRound();
 			
@@ -208,6 +217,33 @@ public class AIBrain {
 		HypotheticalResult retval = new HypotheticalResult(copyGame, self, plan);
 		retval.setScore(retval.getScore().add(scoreAccumulator));
 		return retval;
+	}
+	
+	//not sure I really want this method here, it's kind of a strange utility
+	public void applyContingencies(Game game, Empire empire, int iteration) {
+		List<Action> contingencyPossibilities = new ArrayList<Action>();
+		for(Empire current: game.getEmpires()) {
+			contingencyPossibilities.addAll(game.returnActions(current));
+		}
+		
+		List<Contingency> contingencies = SpaceGameContingencyGenerator.instance().generateContingencies((model.Game)game, empire, contingencyPossibilities, iteration);
+		
+		
+		for(Contingency current: contingencies) {
+			Game contingencyGame = GameCloner.cloneGame(game);
+
+			double value1 = SpaceGameEvaluator.getInstance().getValue(contingencyGame, current.getPlayer()).totalScore();
+			
+			contingencyGame.setActionsForEmpire(current.getActions(), current.getPlayer());
+			contingencyGame.endRound();			
+			
+			double value2 = SpaceGameEvaluator.getInstance().getValue(contingencyGame, current.getPlayer()).totalScore();
+			
+			//if this empire does better when doing this contingency, we assume it will choose to do so.
+			if(value2 > value1) {
+				game.appendActionsForEmpire(current.getActions(), current.getPlayer());
+			}
+		}
 	}
 	
 	public boolean valueIsValid(double value){

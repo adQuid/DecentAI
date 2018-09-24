@@ -1,4 +1,4 @@
-package actions;
+package aibrain;
 
 import java.util.List;
 
@@ -9,5 +9,7 @@ public interface Action {
 	public Object getParam(String param);
 	
 	public String toString();
+	
+	public boolean isContingency();
 	
 }

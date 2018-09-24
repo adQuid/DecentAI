@@ -2,8 +2,8 @@ package ui;
 
 import java.util.List;
 
-import actions.Action;
 import aibrain.AIBrain;
+import aibrain.Action;
 import model.ActionType;
 import model.Colony;
 import model.Empire;

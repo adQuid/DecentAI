@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-import actions.Action;
+import aibrain.Action;
 import refdata.NameList;
 
 public class Map {
