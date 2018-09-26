@@ -27,10 +27,17 @@ public class SpaceGameEvaluator implements GameEvaluator{
 		double currencyScore = Math.pow(castGame.findMatchingEmpire(empire).getCurrency() * 1.0,1.0);
 
 		double productionPotentialScore = 0;
+		
+		//debugging; getting pillaged isn't good
+		double raidScore = 0.0;
+		
 		for(Tile[] row: castGame.getMap().getGrid()){
 			for(Tile currentTile: row){
 				if(currentTile.getObject() != null && currentTile.getObject() instanceof Planet && ((Planet)currentTile.getObject()).fetchColonyForEmpire(empire) != null){
 					productionPotentialScore += 3 * (Math.min(((Planet)currentTile.getObject()).fetchColonyForEmpire(empire).getIndustry(),((Planet)currentTile.getObject()).fetchColonyForEmpire(empire).getPower()));
+					
+					raidScore+=((Planet)currentTile.getObject()).fetchColonyForEmpire(empire).raids;
+					((Planet)currentTile.getObject()).fetchColonyForEmpire(empire).raids = 0;
 				}
 			}
 		}

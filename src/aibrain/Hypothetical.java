@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import cloners.GameCloner;
+import model.ActionType;
 import model.Empire;
+import spacegame.SpaceGameAction;
 import spacegame.SpaceGameContingencyGenerator;
 import spacegame.SpaceGameEvaluator;
 import spacegame.SpaceGameIdeaGenerator;
@@ -70,7 +72,7 @@ public class Hypothetical {
 		List<Action> passdownActions = game.returnActions(empire);
 		passdownActions.addAll(possibleParentActions);
 		List<HypotheticalResult> allOptions = new ArrayList<HypotheticalResult>();
-		
+			
 		HypotheticalResult thisLevelResult = new HypotheticalResult(game,empire,plan);
 		
 		//remove all actions that the parent could have done, but didn't do
@@ -81,27 +83,32 @@ public class Hypothetical {
 		List<List<Action>> ideas = SpaceGameIdeaGenerator.instance().generateIdeas((model.Game)game, empire, possibleActions, iteration);
 
 		Game futureGame = GameCloner.cloneGame(game);
-		
-		parent.applyContingencies(futureGame,this.empire,this.iteration);
-		
+				
 		//base case where I'm out of time
 		if(tightForcastLength == 0 && looseForcastLength == 0) {
-			Game tailGame = GameCloner.cloneGame(futureGame);
-
-			for(int turn = 0; turn < tail; turn++) {
-				tailGame.endRound();
-				scoreAccumulator.add(new HypotheticalResult(tailGame, empire).getScore());
+			for(int index = 0; index < tail; index++) {
+				futureGame.endRound();
+				scoreAccumulator.add(new HypotheticalResult(futureGame, this.empire).getScore());
 			}
-			HypotheticalResult retval = new HypotheticalResult(tailGame,empire, plan);
+			
+			HypotheticalResult retval = new HypotheticalResult(futureGame, this.empire, plan);
 			retval.setScore(retval.getScore().add(scoreAccumulator));
 			return retval;
 		}
-					
+							
 		//add score from this round
 		scoreAccumulator.add(thisLevelResult.getScore());
+					
+		parent.applyContingencies(futureGame,this.empire,1);
 		
 		//try adding a new action
 		for(List<Action> current: ideas) {
+			
+			if(isAtTopOfForecast() && current.size() == 5 
+					&& actions.get(0).size() > 0 && ((SpaceGameAction)actions.get(0).get(0)).getType() == ActionType.defend) {
+				System.out.println("debug");
+			}
+			
 			Score scoreToPass = new Score(scoreAccumulator);
 			Game branchGame = GameCloner.cloneGame(futureGame);
 			List<Action> combinedIdeas = ListUtils.combine(actions.get(0),current);
@@ -133,8 +140,9 @@ public class Hypothetical {
 		HypotheticalResult retval = null;
 		for(HypotheticalResult current: allOptions) {
 			//warning for debugging, since there are two ways of rating the same game which is likely to break
-			if(!debug && isAtTopOfForecast() && current.getScore().totalScore() != parent.runPath(futureGame, current.getPlan()).getScore().totalScore()) {
-				double result = parent.runPath(futureGame, current.getPlan()).getScore().totalScore();
+			if(!debug && isAtTopOfForecast() && current.getScore().totalScore() != parent.runPath(GameCloner.cloneGame(game), current.getPlan()).getScore().totalScore()) {
+				//System.err.println(current.getScore().addAmounts);
+				double result = parent.runPath(GameCloner.cloneGame(game), current.getPlan(), true).getScore().totalScore();
 				System.err.println("rates as "+current.getScore().totalScore()+" vs "+result);
 			}
 			if(retval == null || current.getScore().totalScore() > bestScore) {

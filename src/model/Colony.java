@@ -109,6 +109,10 @@ public class Colony {
 		return defense;
 	}
 	
+	public int getId() {
+		return id;
+	}
+	
 	public String toString() {
 		return getName();
 	}
@@ -194,9 +198,6 @@ public class Colony {
 		if(action.getType() == ActionType.defend&&
 				((Colony)(action.getParams().get("colony"))).equals(this)){
 			try{
-				if(this.game.isLive()) {
-					System.out.println("Someone defended!");
-				}
 				fetchedOwner.addMinerals(-3);
 				this.defense++;
 			}catch(IllegalActionException e){

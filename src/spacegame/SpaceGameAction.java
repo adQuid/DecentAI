@@ -20,6 +20,9 @@ public class SpaceGameAction implements Action{
 		if(this.type == ActionType.defend) {
 			this.order = 6;
 		}
+		if(this.type == ActionType.pillage) {
+			this.order = 4;
+		}
 	}
 	public SpaceGameAction(SpaceGameAction other){
 		this.type = other.type;

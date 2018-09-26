@@ -8,9 +8,6 @@ import java.util.Map;
 public class Score {
 
 	private Map<String,Double> categories;
-
-	//just used for debugging right now
-	public List<Double> addAmounts = new ArrayList<Double>();
 	
 	public Score() {
 		this(new HashMap<String,Double>());
@@ -41,9 +38,6 @@ public class Score {
 	}
 	
 	public Score add(Score other) {
-		//just for debugging
-		other.addAmounts.add(this.totalScore());
-		this.addAmounts = other.addAmounts;
 		
 		for(String current: categories.keySet()) {
 			if(other.categories.containsKey(current)) {
@@ -60,7 +54,7 @@ public class Score {
 	}
 	
 	public Score decay(double decayRate) {
-		categories.entrySet().stream().forEach(entry -> entry.setValue(entry.getValue() * decayRate));
+		categories.entrySet().stream().filter(entry -> !entry.getKey().equals("raids")).forEach(entry -> entry.setValue(entry.getValue() * decayRate));
 		return this;
 	}
 }
