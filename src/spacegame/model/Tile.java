@@ -1,9 +1,10 @@
-package model;
+package spacegame.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import aibrain.Action;
+import aibrain.Player;
 
 public class Tile {
 
@@ -72,7 +73,7 @@ public class Tile {
 		}
 	}
 	
-	public List<Action> returnActions(Empire empire){
+	public List<Action> returnActions(Player empire){
 		if(this.object != null){
 			return this.object.returnActions(empire);
 		}else{

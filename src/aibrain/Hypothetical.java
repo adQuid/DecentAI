@@ -5,12 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import cloners.GameCloner;
-import model.ActionType;
-import model.Empire;
-import spacegame.SpaceGameAction;
-import spacegame.SpaceGameContingencyGenerator;
-import spacegame.SpaceGameEvaluator;
-import spacegame.SpaceGameIdeaGenerator;
 import utils.ListUtils;
 
 public class Hypothetical {
@@ -19,7 +13,7 @@ public class Hypothetical {
 	
 	private int iteration;
 	private AIBrain parent;
-	private Empire empire;
+	private Player empire;
 	private int tightForcastLength;
 	private int looseForcastLength;
 	private int tail;
@@ -33,17 +27,19 @@ public class Hypothetical {
 	private List<List<Action>> actions;
 	private Plan plan;
 	
+	private IdeaGenerator ideaGenerator; 
+	
 	private Score scoreAccumulator;
 	
 	public Hypothetical(Game game, List<Modifier> modifiers, AIBrain parent, List<Action> possibleParentActions, 
 			List<Action> usedParentActions, List<List<Action>> actions, int tightForcastLength, int looseForcastLength, 
-			int tail, Empire empire, Score scoreAccumulator, int iteration){
-		this(game, modifiers, parent, possibleParentActions, usedParentActions, actions, tightForcastLength, looseForcastLength, tail, empire, scoreAccumulator, iteration, new Plan());
+			int tail, Player empire, Score scoreAccumulator, int iteration, IdeaGenerator ideaGen){
+		this(game, modifiers, parent, possibleParentActions, usedParentActions, actions, tightForcastLength, looseForcastLength, tail, empire, scoreAccumulator, iteration, ideaGen, new Plan());
 	}
 	
 	public Hypothetical(Game game, List<Modifier> modifiers, AIBrain parent, List<Action> possibleParentActions, 
 			List<Action> usedParentActions, List<List<Action>> actions, int tightForcastLength, int looseForcastLength, 
-			int tail, Empire empire, Score scoreAccumulator, int iteration, Plan plan){
+			int tail, Player empire, Score scoreAccumulator, int iteration,  IdeaGenerator ideaGen, Plan plan){
 		
 		this.game = GameCloner.cloneGame(game);
 		this.iteration = iteration;
@@ -57,6 +53,7 @@ public class Hypothetical {
 		this.tail = tail;
 		this.empire = empire;
 		this.scoreAccumulator = scoreAccumulator;
+		this.ideaGenerator = ideaGen;
 		this.plan = plan;
 	}
 	
@@ -73,14 +70,14 @@ public class Hypothetical {
 		passdownActions.addAll(possibleParentActions);
 		List<HypotheticalResult> allOptions = new ArrayList<HypotheticalResult>();
 			
-		HypotheticalResult thisLevelResult = new HypotheticalResult(game,empire,plan);
+		HypotheticalResult thisLevelResult = new HypotheticalResult(game,empire,plan,parent.getEvaluator());
 		
 		//remove all actions that the parent could have done, but didn't do
 		possibleParentActions.removeAll(usedParentActions);		
 		possibleActions.removeAll(possibleParentActions);
 		
 		//TODO: genericise this
-		List<List<Action>> ideas = SpaceGameIdeaGenerator.instance().generateIdeas((model.Game)game, empire, possibleActions, iteration);
+		List<List<Action>> ideas = ideaGenerator.generateIdeas(game, empire, possibleActions, iteration);
 
 		Game futureGame = GameCloner.cloneGame(game);
 				
@@ -88,10 +85,10 @@ public class Hypothetical {
 		if(tightForcastLength == 0 && looseForcastLength == 0) {
 			for(int index = 0; index < tail; index++) {
 				futureGame.endRound();
-				scoreAccumulator.add(new HypotheticalResult(futureGame, this.empire).getScore());
+				scoreAccumulator.add(new HypotheticalResult(futureGame, this.empire,parent.getEvaluator()).getScore());
 			}
 			
-			HypotheticalResult retval = new HypotheticalResult(futureGame, this.empire, plan);
+			HypotheticalResult retval = new HypotheticalResult(futureGame, this.empire, plan,parent.getEvaluator());
 			retval.setScore(retval.getScore().add(scoreAccumulator));
 			return retval;
 		}
@@ -103,12 +100,7 @@ public class Hypothetical {
 		
 		//try adding a new action
 		for(List<Action> current: ideas) {
-			
-			if(isAtTopOfForecast() && current.size() == 5 
-					&& actions.get(0).size() > 0 && ((SpaceGameAction)actions.get(0).get(0)).getType() == ActionType.defend) {
-				System.out.println("debug");
-			}
-			
+						
 			Score scoreToPass = new Score(scoreAccumulator);
 			Game branchGame = GameCloner.cloneGame(futureGame);
 			List<Action> combinedIdeas = ListUtils.combine(actions.get(0),current);
@@ -116,7 +108,7 @@ public class Hypothetical {
 			branchGame.endRound();
 			//skip a round when we are in loose forecasting
 			if(isInLooseForcastPhase()) {
-				scoreToPass.add(new HypotheticalResult(branchGame, empire).getScore().decay(parent.getDecayRate()));
+				scoreToPass.add(new HypotheticalResult(branchGame, empire,parent.getEvaluator()).getScore().decay(parent.getDecayRate()));
 				futureGame.endRound();
 			}
 			List<Action> toPass = current.size()==0?passdownActions:branchGame.returnActions(empire);
@@ -127,11 +119,11 @@ public class Hypothetical {
 						new Hypothetical(branchGame,modifiers,parent,toPass,
 							new ArrayList<Action>(current), actions.subList(1, actions.size()),tightForcastLength,
 							looseForcastLength-1,tail,empire,
-							scoreToPass.decay(parent.getDecayRate()),iteration,planToPass).calculate(debug)
+							scoreToPass.decay(parent.getDecayRate()),iteration,ideaGenerator,planToPass).calculate(debug)
 						:new Hypothetical(branchGame,modifiers,parent,toPass,
 							new ArrayList<Action>(current), actions.subList(1, actions.size()),tightForcastLength-1,
 							looseForcastLength,tail,empire,
-							scoreToPass.decay(parent.getDecayRate()), iteration, planToPass).calculate(debug))
+							scoreToPass.decay(parent.getDecayRate()), iteration,ideaGenerator,planToPass).calculate(debug))
 					,combinedIdeas));	
 		}
 		
@@ -141,7 +133,6 @@ public class Hypothetical {
 		for(HypotheticalResult current: allOptions) {
 			//warning for debugging, since there are two ways of rating the same game which is likely to break
 			if(!debug && isAtTopOfForecast() && current.getScore().totalScore() != parent.runPath(GameCloner.cloneGame(game), current.getPlan()).getScore().totalScore()) {
-				//System.err.println(current.getScore().addAmounts);
 				double result = parent.runPath(GameCloner.cloneGame(game), current.getPlan(), true).getScore().totalScore();
 				System.err.println("rates as "+current.getScore().totalScore()+" vs "+result);
 			}

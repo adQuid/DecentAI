@@ -9,9 +9,9 @@ import aibrain.Action;
 import aibrain.Contingency;
 import aibrain.ContingencyGenerator;
 import aibrain.Game;
-import model.ActionType;
-import model.Colony;
-import model.Empire;
+import aibrain.Player;
+import spacegame.model.ActionType;
+import spacegame.model.Colony;
 
 public class SpaceGameContingencyGenerator implements ContingencyGenerator{
 
@@ -22,17 +22,17 @@ public class SpaceGameContingencyGenerator implements ContingencyGenerator{
 	}
 	
 	@Override
-	public List<Contingency> generateContingencies(Game game, Empire empire, List<Action> possibilities,
+	public List<Contingency> generateContingencies(Game game, Player empire, List<Action> possibilities,
 			int iteration) {
-		model.Game castGame = (model.Game)game;
+		spacegame.model.Game castGame = (spacegame.model.Game)game;
 		List<Contingency> retval = new ArrayList<Contingency>();
 		
 		//there HAS to be a way to do this with less loops...
-		for(Empire curEmpire: castGame.getEmpires()) {
+		for(Player curEmpire: castGame.getEmpires()) {
 			if(!curEmpire.equals(empire)) {
 				for(Colony curColony: castGame.fetchAllColonies()) {
 					if(curColony.getOwner().equals(curEmpire) &&
-							curEmpire.getMinerals() >=5) {
+							((Empire)curEmpire).getMinerals() >=5) {
 						for(Colony targetColony: castGame.fetchAllColonies()) {
 							if(targetColony.getOwner().equals(empire)) {
 

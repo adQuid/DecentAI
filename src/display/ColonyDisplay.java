@@ -6,10 +6,10 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import model.Colony;
-import model.Empire;
-import model.Planet;
-import model.Tile;
+import aibrain.Player;
+import spacegame.Empire;
+import spacegame.model.Colony;
+import spacegame.model.Planet;
 
 public class ColonyDisplay {
 
@@ -30,7 +30,7 @@ public class ColonyDisplay {
 		GUI.setLocation(600, 300);
 	}
 	
-	public static void displayColony(Planet planet, Empire empire){
+	public static void displayColony(Planet planet, Player empire){
 		List<Colony> colList = planet.getActiveColonies();
 		Colony colony = null;
 		for(Colony current: colList){
@@ -42,7 +42,7 @@ public class ColonyDisplay {
 		if(colony == null){
 			name.setText("no colony for this empire");
 		}else{
-			name.setText(colony.getOwner().getName()+" colony on "+planet.getName());
+			name.setText(((Empire)colony.getOwner()).getName()+" colony on "+planet.getName());
 			population.setText(colony.getPopulation()+" population");
 			industry.setText(colony.getIndustry()+" industry");
 			power.setText(colony.getIndustry()+" power");

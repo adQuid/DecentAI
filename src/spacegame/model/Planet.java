@@ -1,9 +1,10 @@
-package model;
+package spacegame.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import aibrain.Action;
+import aibrain.Player;
 import refdata.NameList;
 
 public class Planet extends SpaceObject{
@@ -33,7 +34,7 @@ public class Planet extends SpaceObject{
 		}
 	}
 
-	public void startColony(Empire founder){
+	public void startColony(Player founder){
 		activeColonies.add(new Colony(founder, game));
 	}
 	
@@ -57,7 +58,7 @@ public class Planet extends SpaceObject{
 		return activeColonies;
 	}
 
-	public Colony fetchColonyForEmpire(Empire empire){
+	public Colony fetchColonyForEmpire(Player empire){
 		for(Colony current: activeColonies){
 			if(current.getOwner().equals(empire)){
 				return current;
@@ -71,7 +72,7 @@ public class Planet extends SpaceObject{
 	}
 	
 	@Override
-	public List<Action> returnActions(Empire empire){
+	public List<Action> returnActions(Player empire){
 		List<Action> retval = new ArrayList<Action>();
 		for(Colony current: activeColonies){
 			return current.returnActions(empire);

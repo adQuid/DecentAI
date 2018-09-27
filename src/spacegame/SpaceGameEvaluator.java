@@ -3,12 +3,12 @@ package spacegame;
 import java.util.HashMap;
 import java.util.Map;
 
-import aibrain.GameEvaluator;
-import aibrain.Score;
-import model.Empire;
 import aibrain.Game;
-import model.Planet;
-import model.Tile;
+import aibrain.GameEvaluator;
+import aibrain.Player;
+import aibrain.Score;
+import spacegame.model.Planet;
+import spacegame.model.Tile;
 
 public class SpaceGameEvaluator implements GameEvaluator{
 
@@ -19,9 +19,9 @@ public class SpaceGameEvaluator implements GameEvaluator{
 	}
 	
 	//Given a game state, how good do I find this outcome?
-	public Score getValue(Game game, Empire empire){
+	public Score getValue(Game game, Player empire){
 		
-		model.Game castGame = (model.Game)game;
+		spacegame.model.Game castGame = (spacegame.model.Game)game;
 		
 		double mineralScore = Math.pow(castGame.findMatchingEmpire(empire).getMinerals()*1.0,1.0);
 		double currencyScore = Math.pow(castGame.findMatchingEmpire(empire).getCurrency() * 1.0,1.0);

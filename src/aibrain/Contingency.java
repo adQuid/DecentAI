@@ -2,23 +2,21 @@ package aibrain;
 
 import java.util.List;
 
-import model.Empire;
-
 public class Contingency {
 
-	private Empire player; 
+	private Player player; 
 	private List<Action> actions;
 	
-	public Contingency(Empire empire, List<Action> actions) {
+	public Contingency(Player empire, List<Action> actions) {
 		this.player = empire;
 		this.actions = actions;
 	}
 
-	public Empire getPlayer() {
+	public Player getPlayer() {
 		return player;
 	}
 
-	public void setPlayer(Empire player) {
+	public void setPlayer(Player player) {
 		this.player = player;
 	}
 

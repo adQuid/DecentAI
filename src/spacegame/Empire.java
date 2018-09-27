@@ -1,12 +1,13 @@
-package model;
+package spacegame;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import aibrain.Action;
+import aibrain.Player;
 import exceptions.IllegalActionException;
 
-public class Empire {
+public class Empire implements Player{
 
 	private String name;
 	private double minerals;

@@ -1,10 +1,8 @@
 package spacegame;
 
 import aibrain.AIBrain;
-import exceptions.IllegalActionException;
-import model.Colony;
-import model.Empire;
-import model.Game;
+import spacegame.model.Colony;
+import spacegame.model.Game;
 import ui.Mainmenu;
 
 public class PowerOverload{
@@ -27,7 +25,7 @@ public class PowerOverload{
 						for(AIBrain brain: Mainmenu.brains) {
 							brain.addLog("Power overload!");
 						}
-						System.out.println("power overload for "+current.getOwner().getName());
+						System.out.println("power overload for "+((Empire)current.getOwner()).getName());
 					}
 						
 					}else {

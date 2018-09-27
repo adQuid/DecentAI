@@ -1,40 +1,36 @@
 package aibrain;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import cloners.GameCloner;
-import model.ActionType;
-import model.Empire;
-
-//theses SHOULD NOT exist in final version
-import spacegame.SpaceGameIdeaGenerator;
-import spacegame.SpaceGameAction;
-import spacegame.SpaceGameContingencyGenerator;
-import spacegame.SpaceGameEvaluator;
 
 public class AIBrain {
 	
-	private Empire self;
+	private Player self;
 	private int maxTtl = 0;
 	private int lookAheadSecondary = 0;
 	private int tailLength = 0;
 	private HypotheticalResult lastIdea = null;
 	private double decayRate = 0.8;
+	private IdeaGenerator ideaGenerator;
+	private ContingencyGenerator contingencyGenerator;
+	private GameEvaluator gameEvaluator;
 	
-	//kind of a weird variable, since this changes with every run. Not thread safe
 	private Game trueGame;
 	
 	//for debugging
 	private List<String> logs = new ArrayList<String>();
 	
-	public AIBrain(Empire self, int lookAhead, int lookAheadSecondary, int lookAheadTail) {
+	public AIBrain(Player self, int lookAhead, int lookAheadSecondary, int lookAheadTail,IdeaGenerator ideaGenerator, ContingencyGenerator contingencyGenerator, GameEvaluator gameEvaluator) {
 		this.self = self;
 		this.maxTtl = lookAhead;
 		this.lookAheadSecondary = lookAheadSecondary;
 		this.tailLength = lookAheadTail;
+		this.ideaGenerator = ideaGenerator;
+		this.contingencyGenerator = contingencyGenerator;
+		this.gameEvaluator = gameEvaluator;
 	}
 	
 	//run one turn of the AI
@@ -124,14 +120,14 @@ public class AIBrain {
 		List<Action> possibilities = game.returnActions(self);
 		List<Action> committedActions = new ArrayList<Action>();
 		Plan plan = Plan.emptyPlan();
-		while(SpaceGameIdeaGenerator.instance().hasFurtherIdeas(game, self, possibilities, committedActions, iteration)) {
-			for(Empire current: game.getEmpires()) {
+		while(this.ideaGenerator.hasFurtherIdeas(game, self, possibilities, committedActions, iteration)) {
+			for(Player current: game.getEmpires()) {
 				//remove existing actions. Should this be done here?
 				//game.setActionsForEmpire(new ArrayList<Action>(), current);
 			}			
 			Hypothetical hypothetical = new Hypothetical(game, new ArrayList<Modifier>(), 
 					this, new ArrayList<Action>(), new ArrayList<Action>(), plan.getPlannedActions(), forcast,
-                    lookAheadSecondary, tailLength, self, new Score(), iteration);
+                    lookAheadSecondary, tailLength, self, new Score(), iteration,ideaGenerator);
 			result = hypothetical.calculate();
 			committedActions = result.getImmediateActions();
 			possibilities = game.returnActions(self);
@@ -145,7 +141,7 @@ public class AIBrain {
 
 			Hypothetical hypothetical = new Hypothetical(game, new ArrayList<Modifier>(), 
 					this, new ArrayList<Action>(), new ArrayList<Action>(), plan.getPlannedActions(), forcast,
-                    lookAheadSecondary, tailLength, self, new Score(), 1);
+                    lookAheadSecondary, tailLength, self, new Score(), 1,ideaGenerator);
 			return hypothetical.calculate();
 		}
 		
@@ -156,16 +152,16 @@ public class AIBrain {
 	private HypotheticalResult immediateIteration(Game game, List<Action> committedActions, Plan plan) {
 		
 		List<Action> possibilities = game.returnActions(self);
-		if(SpaceGameIdeaGenerator.instance().hasFurtherIdeas(game, self, possibilities, committedActions, 1)) {
+		if(ideaGenerator.hasFurtherIdeas(game, self, possibilities, committedActions, 1)) {
 			
-			for(Empire current: game.getEmpires()) {
+			for(Player current: game.getEmpires()) {
 				//remove existing actions. Should this be done here?
 				game.setActionsForEmpire(new ArrayList<Action>(), current);
 			}
 			
 			Hypothetical hypothetical = new Hypothetical(game, new ArrayList<Modifier>(), 
 					this, new ArrayList<Action>(), new ArrayList<Action>(), plan.getPlannedActions(), maxTtl/2 + 1,
-                    lookAheadSecondary, tailLength, self, new Score(), 1);
+                    lookAheadSecondary, tailLength, self, new Score(), 1,ideaGenerator);
 			HypotheticalResult result = hypothetical.calculate();
 			committedActions = result.getImmediateActions();
 			possibilities = game.returnActions(self);
@@ -206,7 +202,7 @@ public class AIBrain {
 		Game copyGame = GameCloner.cloneGame(game);
 		
 		//clear any existing actions; we only look at the plan
-		for(Empire current: copyGame.getEmpires()) {
+		for(Player current: copyGame.getEmpires()) {
 			copyGame.setActionsForEmpire(new ArrayList<Action>(), current);
 		}
 		
@@ -215,7 +211,7 @@ public class AIBrain {
 		if(debug)System.err.print("[");
 		
 		for(int actionIndex = 0; actionIndex < maxTtl + lookAheadSecondary; actionIndex++) {
-			scoreAccumulator.add(new HypotheticalResult(copyGame,this.self,plan).getScore());
+			scoreAccumulator.add(new HypotheticalResult(copyGame,this.self,plan,gameEvaluator).getScore());
 			
 			//debug
 			if(debug)System.err.print(scoreAccumulator.getCategories()+", ");
@@ -227,7 +223,7 @@ public class AIBrain {
 			
 			//if we are in loose forcast phase, skip a round
 			if(actionIndex >= maxTtl) {
-				scoreAccumulator.add(new HypotheticalResult(copyGame, this.self).getScore().decay(getDecayRate()));
+				scoreAccumulator.add(new HypotheticalResult(copyGame, this.self,gameEvaluator).getScore().decay(getDecayRate()));
 				copyGame.endRound();
 			}
 			
@@ -236,21 +232,21 @@ public class AIBrain {
 		
 		for(int index = 0; index < tailLength; index++) {
 			copyGame.endRound();
-			scoreAccumulator.add(new HypotheticalResult(copyGame, this.self).getScore());
+			scoreAccumulator.add(new HypotheticalResult(copyGame, this.self,gameEvaluator).getScore());
 			if(debug)System.err.print(scoreAccumulator.getCategories()+", ");
 		}
 		
 		if(debug)System.err.println();
 		
-		HypotheticalResult retval = new HypotheticalResult(copyGame, self, plan);
+		HypotheticalResult retval = new HypotheticalResult(copyGame, self, plan,gameEvaluator);
 		retval.setScore(retval.getScore().add(scoreAccumulator));
 		return retval;
 	}
 	
 	//not sure I really want this method here, it's kind of a strange utility
-	public void applyContingencies(Game game, Empire empire, int iteration) {
+	public void applyContingencies(Game game, Player empire, int iteration) {
 		List<Action> contingencyPossibilities = new ArrayList<Action>();
-		for(Empire current: game.getEmpires()) {
+		for(Player current: game.getEmpires()) {
 			//remove existing actions. Should this be done here?
 			if(current.getActionsThisTurn().size() > 0) {
 				System.err.println("actions are already in place when I add contingencies");
@@ -258,18 +254,18 @@ public class AIBrain {
 			contingencyPossibilities.addAll(game.returnActions(current));
 		}
 		
-		List<Contingency> contingencies = SpaceGameContingencyGenerator.instance().generateContingencies((model.Game)game, empire, contingencyPossibilities, iteration);
+		List<Contingency> contingencies = contingencyGenerator.generateContingencies(game, empire, contingencyPossibilities, iteration);
 		
 		
 		for(Contingency current: contingencies) {
 			Game contingencyGame = GameCloner.cloneGame(game);
 
-			double value1 = SpaceGameEvaluator.getInstance().getValue(contingencyGame, current.getPlayer()).totalScore();
+			double value1 = gameEvaluator.getValue(contingencyGame, current.getPlayer()).totalScore();
 			
 			contingencyGame.setActionsForEmpire(current.getActions(), current.getPlayer());
 			contingencyGame.endRound();			
 			
-			double value2 = SpaceGameEvaluator.getInstance().getValue(contingencyGame, current.getPlayer()).totalScore();
+			double value2 = gameEvaluator.getValue(contingencyGame, current.getPlayer()).totalScore();
 			
 			//if this empire does better when doing this contingency, we assume it will choose to do so.
 			if(value2 > value1) {
@@ -294,8 +290,12 @@ public class AIBrain {
 		return GameCloner.cloneGame(trueGame);
 	}
 	
-	public Empire getSelf() {
+	public Player getSelf() {
 		return self;
+	}
+	
+	public GameEvaluator getEvaluator() {
+		return gameEvaluator;
 	}
 	
 	public void addLog(String log) {

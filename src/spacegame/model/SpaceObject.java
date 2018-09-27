@@ -1,14 +1,15 @@
-package model;
+package spacegame.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import aibrain.Action;
+import aibrain.Player;
 
 public abstract class SpaceObject {
 
 	public abstract String getName();
-	public List<Action> returnActions(Empire empire){
+	public List<Action> returnActions(Player empire){
 		return new ArrayList<Action>();
 	}
 	

@@ -2,25 +2,20 @@ package display;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.WindowConstants;
 
 import descriptionlisteners.TileDescriptionListener;
-import model.Game;
-import model.Map;
-import model.Star;
-import model.Tile;
+import spacegame.model.Game;
+import spacegame.model.Map;
+import spacegame.model.Star;
+import spacegame.model.Tile;
 import ui.SelectTileListener;
 import ui.TopMenuButtons;
 

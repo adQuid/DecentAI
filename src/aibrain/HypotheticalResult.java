@@ -3,9 +3,7 @@ package aibrain;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Empire;
 import aibrain.Game;
-import spacegame.SpaceGameEvaluator;
 
 public class HypotheticalResult {
 
@@ -13,13 +11,13 @@ public class HypotheticalResult {
 	private Plan plan = new Plan();
 	
 	//keeps no logs or reasonings. Only for quickly determining the value of a game state
-	public HypotheticalResult(Game game, Empire empire) {
-		this.score = SpaceGameEvaluator.getInstance().getValue((model.Game)game, empire);
+	public HypotheticalResult(Game game, Player empire, GameEvaluator evaluator) {
+		this.score = evaluator.getValue(game, empire);
 	}
 	
 	//keeps no logs or reasonings. Only for quickly determining the value of a game state
-	public HypotheticalResult(Game game, Empire empire, Plan plan) {
-		this.score = SpaceGameEvaluator.getInstance().getValue((model.Game)game, empire);
+	public HypotheticalResult(Game game, Player empire, Plan plan, GameEvaluator evaluator) {
+		this.score = evaluator.getValue(game, empire);
 		this.plan = plan;		
 		
 		if(plan.getPlannedActions().size() > 0 && plan.getPlannedActions().get(0).hashCode() == -644102700 && plan.getPlannedActions().get(plan.getPlannedActions().size()-1).hashCode() == 1012742614) {
@@ -27,8 +25,8 @@ public class HypotheticalResult {
 		}
 	}	
 	
-	public HypotheticalResult(Game game, List<Action> actions, Empire empire, List<Action> nextActions, Reasoning reason) {
-		this.score = SpaceGameEvaluator.getInstance().getValue((model.Game)game, empire);
+	public HypotheticalResult(Game game, List<Action> actions, Player empire, List<Action> nextActions, Reasoning reason, GameEvaluator evaluator) {
+		this.score = evaluator.getValue(game, empire);
 		this.plan.addActionListToEnd(actions);
 		this.plan.addActionListToEnd(nextActions);
 		this.plan.addReasoning(reason);
@@ -36,8 +34,8 @@ public class HypotheticalResult {
 
 
 	
-	public HypotheticalResult(Game game, List<Action> actions, Empire empire, Plan plan, List<Action> nextActions, Reasoning newReason) {
-		this.score = SpaceGameEvaluator.getInstance().getValue((model.Game)game, empire);
+	public HypotheticalResult(Game game, List<Action> actions, Player empire, Plan plan, List<Action> nextActions, Reasoning newReason, GameEvaluator evaluator) {
+		this.score = evaluator.getValue(game, empire);
 		this.plan.addActionListToEnd(actions);
 		this.plan = plan;
 		plan.addActionListToEnd(nextActions);

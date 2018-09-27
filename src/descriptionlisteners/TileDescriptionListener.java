@@ -4,10 +4,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import display.GridDisplay;
-import model.Colony;
-import model.Planet;
-import model.SpaceObject;
-import model.Tile;
+import spacegame.Empire;
+import spacegame.model.Colony;
+import spacegame.model.Planet;
+import spacegame.model.SpaceObject;
+import spacegame.model.Tile;
 
 public class TileDescriptionListener implements MouseListener{
 
@@ -45,7 +46,7 @@ public class TileDescriptionListener implements MouseListener{
 			if(object instanceof Planet){
 				Planet planet = (Planet)object;
 				for(Colony current: planet.getActiveColonies()){
-					retval += "<br>"+current.getName()+"<br>colony belonging to "+current.getOwner().getName()+
+					retval += "<br>"+current.getName()+"<br>colony belonging to "+((Empire)current.getOwner()).getName()+
 							"<br> industry:"+current.getIndustry()+"/"+current.getPower();
 					
 					if(current.getDefense() > 0) {

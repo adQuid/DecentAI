@@ -1,4 +1,4 @@
-package model;
+package spacegame.model;
 
 public enum ActionType {
 

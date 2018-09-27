@@ -2,10 +2,8 @@ package aibrain;
 
 import java.util.List;
 
-import model.Empire;
-
 public interface ContingencyGenerator {
 
-	public List<Contingency> generateContingencies(Game game, Empire empire, List<Action> possibilities, int iteration);
+	public List<Contingency> generateContingencies(Game game, Player empire, List<Action> possibilities, int iteration);
 	
 }

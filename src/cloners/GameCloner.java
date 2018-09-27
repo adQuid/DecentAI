@@ -1,14 +1,15 @@
 package cloners;
 
-import model.Map;
 import aibrain.Game;
+
+import spacegame.model.Map;
 
 public class GameCloner {
 
 	public static Game cloneGame(Game other){
-		if(other instanceof model.Game) {
-			model.Game converted = (model.Game)other;
-			model.Game retval = new model.Game(converted);
+		if(other instanceof spacegame.model.Game) {
+			spacegame.model.Game converted = (spacegame.model.Game)other;
+			spacegame.model.Game retval = new spacegame.model.Game(converted);
 
 			retval.setMap(new Map(converted.getMap(), retval));
 			

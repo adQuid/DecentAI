@@ -1,4 +1,4 @@
-package model;
+package spacegame.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,15 +6,17 @@ import java.util.List;
 import java.util.Map;
 
 import aibrain.Action;
+import aibrain.Player;
 import exceptions.IllegalActionException;
 import refdata.NameList;
+import spacegame.Empire;
 import spacegame.SpaceGameAction;
 
 public class Colony {
 
 	Game game;
 	String name;
-	Empire owner;
+	Player owner;
 	int population;
 	int defense;
 	double industry;
@@ -25,7 +27,7 @@ public class Colony {
 		
 	}
 	
-	public Colony(Empire owner, Game game){
+	public Colony(Player owner, Game game){
 		this.game = game;
 		this.name = NameList.randomColonyName();
 		this.owner = owner;
@@ -61,11 +63,11 @@ public class Colony {
 		this.defense = other.defense;
 	}
 
-	public Empire getOwner() {
+	public Player getOwner() {
 		return owner;
 	}
 
-	public void setOwner(Empire owner) {
+	public void setOwner(Player owner) {
 		this.owner = owner;
 	}
 
@@ -117,7 +119,9 @@ public class Colony {
 		return getName();
 	}
 	
-	public List<Action> returnActions(Empire empire){
+	public List<Action> returnActions(Player player){
+		Empire empire = (Empire)player;
+		
 		List<Action> retval = new ArrayList<Action>();
 		
 		if(empire.equals(this.getOwner())){
@@ -221,7 +225,7 @@ public class Colony {
 				
 				//debug
 				if(game.isLive() && !action.isContingency()) {
-					System.out.println(owner.getName()+" attacked "+action.getParam("target").toString());
+					System.out.println(((Empire)owner).getName()+" attacked "+action.getParam("target").toString());
 				}
 				
 				fetchedOwner.addMinerals(-5);
@@ -250,7 +254,7 @@ public class Colony {
 	}
 	
 	public void endRound() {
-		Empire fetchedOwner = this.game.findMatchingEmpire(owner);
+		Empire fetchedOwner = (Empire)this.game.findMatchingEmpire(owner);
 		try{
 			fetchedOwner.addMinerals(Math.max(Math.min(this.industry,this.power),0));
 		}catch(IllegalActionException e){

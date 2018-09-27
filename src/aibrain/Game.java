@@ -2,21 +2,19 @@ package aibrain;
 
 import java.util.List;
 
-import model.Empire;
-
 public interface Game {
 
 	public boolean isLive();
 	
-	public List<Empire> getEmpires();
+	public List<Player> getEmpires();
 	
 	public void setLive(boolean live);
 	
-	public List<Action> returnActions(Empire empire);
+	public List<Action> returnActions(Player empire);
 	
-	public void setActionsForEmpire(List<Action> actions, Empire empire);
+	public void setActionsForEmpire(List<Action> actions, Player empire);
 	
-	public void appendActionsForEmpire(List<Action> actions, Empire empire);
+	public void appendActionsForEmpire(List<Action> actions, Player empire);
 	
 	//clears out all actions for each empire
 	public void endRound();
@@ -24,5 +22,5 @@ public interface Game {
 	//returns a new game based on the results of endRound
 	public Game nextRound();
 	
-	public Game imageForPlayer(Empire player);
+	public Game imageForPlayer(Player player);
 }

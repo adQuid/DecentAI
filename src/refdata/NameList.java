@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
-import model.Tile;
+import spacegame.model.Tile;
 
 public class NameList {
 

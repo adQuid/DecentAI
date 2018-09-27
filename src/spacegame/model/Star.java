@@ -1,4 +1,4 @@
-package model;
+package spacegame.model;
 
 import aibrain.Action;
 

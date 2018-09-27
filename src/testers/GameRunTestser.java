@@ -6,12 +6,13 @@ import aibrain.AIBrain;
 import aibrain.Action;
 import aibrain.HypotheticalResult;
 import aibrain.Reasoning;
-import model.ActionType;
-import model.Colony;
-import model.Game;
-import model.Planet;
 import spacegame.SpaceGameAction;
+import spacegame.SpaceGameContingencyGenerator;
 import spacegame.SpaceGameEvaluator;
+import spacegame.SpaceGameIdeaGenerator;
+import spacegame.model.ActionType;
+import spacegame.model.Colony;
+import spacegame.model.Game;
 
 public class GameRunTestser {
 
@@ -24,11 +25,10 @@ public class GameRunTestser {
 		final int tailLength = 12;
 		long time = System.currentTimeMillis();
 		
-		AIBrain brain = new AIBrain(testGame.fetchCurrentEmpire(), lookAhead, lookAheadSecondary, tailLength);
+		AIBrain brain = new AIBrain(testGame.fetchCurrentEmpire(), lookAhead, lookAheadSecondary, tailLength,SpaceGameIdeaGenerator.instance(),SpaceGameContingencyGenerator.instance(),SpaceGameEvaluator.getInstance());
 		
 		for(int i = 0; i<totalTurns; i++){
 			time = System.currentTimeMillis();
-			System.out.println("Resources this turn: minerals "+testGame.getEmpires().get(0).getMinerals()+", credits "+testGame.getEmpires().get(0).getCurrency()+", industry "+((Planet)testGame.getMap().getGrid()[5][8].getObject()).getActiveColonies().get(0).getIndustry()+"/"+((Planet)testGame.getMap().getGrid()[5][8].getObject()).getActiveColonies().get(0).getPower()+","+((Planet)testGame.getMap().getGrid()[5][9].getObject()).getActiveColonies().get(0).getIndustry()+"/"+((Planet)testGame.getMap().getGrid()[5][9].getObject()).getActiveColonies().get(0).getPower()+". Score: "+SpaceGameEvaluator.getInstance().getValue(testGame, testGame.getEmpires().get(0)).totalScore());
 			HypotheticalResult result = brain.runAI(testGame);
 			List<Action> actions = result.getImmediateActions();
 			System.out.println("Actions this turn:");
@@ -48,7 +48,6 @@ public class GameRunTestser {
 			testGame.endRound();
 			System.out.println("ran in "+(System.currentTimeMillis()-time)+" ms");
 		}
-		System.out.println("minerals "+testGame.getEmpires().get(0).getMinerals()+", credits "+testGame.getEmpires().get(0).getCurrency()+", industry "+((Planet)testGame.getMap().getGrid()[5][8].getObject()).getActiveColonies().get(0).getIndustry()+"/"+((Planet)testGame.getMap().getGrid()[5][8].getObject()).getActiveColonies().get(0).getPower()+","+((Planet)testGame.getMap().getGrid()[5][9].getObject()).getActiveColonies().get(0).getIndustry()+"/"+((Planet)testGame.getMap().getGrid()[5][9].getObject()).getActiveColonies().get(0).getPower()+". Score: "+SpaceGameEvaluator.getInstance().getValue(testGame, testGame.getEmpires().get(0)).totalScore());
 	}
 		
 }

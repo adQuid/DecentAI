@@ -14,10 +14,12 @@ import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 
 import aibrain.AIBrain;
-import aibrain.Action;
+import aibrain.Player;
 import display.GridDisplay;
-import model.Empire;
-import model.Game;
+import spacegame.SpaceGameContingencyGenerator;
+import spacegame.SpaceGameEvaluator;
+import spacegame.SpaceGameIdeaGenerator;
+import spacegame.model.Game;
 
 public class Mainmenu {
 
@@ -37,8 +39,8 @@ public class Mainmenu {
 			public void actionPerformed(ActionEvent e) {
 				liveGame = new Game();
 				
-				for(Empire current: liveGame.getEmpires()) {
-					brains.add(new AIBrain(current, 8, 0, 12));
+				for(Player current: liveGame.getEmpires()) {
+					brains.add(new AIBrain(current, 8, 0, 12, SpaceGameIdeaGenerator.instance(),SpaceGameContingencyGenerator.instance(),SpaceGameEvaluator.getInstance()));
 				}
 								
 				try {

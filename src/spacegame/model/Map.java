@@ -1,9 +1,10 @@
-package model;
+package spacegame.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import aibrain.Action;
+import aibrain.Player;
 import refdata.NameList;
 
 public class Map {
@@ -66,7 +67,7 @@ public class Map {
 		}
 	}
 	
-	public List<Action> returnActions(Empire empire){
+	public List<Action> returnActions(Player empire){
 		List<Action> retval = new ArrayList<Action>();
 		for(int x=0; x<SIZE; x++){
 			for(int y=0; y<SIZE; y++){

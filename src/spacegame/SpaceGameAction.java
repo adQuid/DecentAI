@@ -3,7 +3,7 @@ package spacegame;
 import java.util.Map;
 
 import aibrain.Action;
-import model.ActionType;
+import spacegame.model.ActionType;
 
 public class SpaceGameAction implements Action{
 
@@ -61,6 +61,10 @@ public class SpaceGameAction implements Action{
 		if (type != other.type)
 			return false;
 		return true;
+	}
+	
+	public boolean equivelent(SpaceGameAction other) {
+		return this.type == other.type;
 	}
 	
 	public String toString() {
