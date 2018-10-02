@@ -10,11 +10,11 @@ public interface Game {
 	
 	public void setLive(boolean live);
 	
-	public List<Action> returnActions(Player empire);
+	public List<Action> returnActions(Player player);
 	
-	public void setActionsForEmpire(List<Action> actions, Player empire);
+	public void setActionsForPlayer(List<Action> actions, Player player);
 	
-	public void appendActionsForEmpire(List<Action> actions, Player empire);
+	public void appendActionsForPlayer(List<Action> actions, Player player);
 	
 	//clears out all actions for each empire
 	public void endRound();

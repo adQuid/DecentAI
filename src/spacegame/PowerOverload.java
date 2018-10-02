@@ -3,7 +3,7 @@ package spacegame;
 import aibrain.AIBrain;
 import spacegame.model.Colony;
 import spacegame.model.Game;
-import ui.Mainmenu;
+import spacegame.ui.Mainmenu;
 
 public class PowerOverload{
 

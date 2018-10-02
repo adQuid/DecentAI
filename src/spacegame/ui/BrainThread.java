@@ -1,4 +1,4 @@
-package ui;
+package spacegame.ui;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class BrainThread implements Runnable{
 			brain.addLog("Resources this turn: minerals "+((Empire)Mainmenu.liveGame.getEmpires().get(0)).getMinerals()+", credits "+((Empire)Mainmenu.liveGame.getEmpires().get(0)).getCurrency()+", industry "+((Planet)Mainmenu.liveGame.getMap().getGrid()[5][8].getObject()).getActiveColonies().get(0).getIndustry()+"/"+((Planet)Mainmenu.liveGame.getMap().getGrid()[5][8].getObject()).getActiveColonies().get(0).getPower()+","+((Planet)Mainmenu.liveGame.getMap().getGrid()[5][9].getObject()).getActiveColonies().get(0).getIndustry()+"/"+((Planet)Mainmenu.liveGame.getMap().getGrid()[5][9].getObject()).getActiveColonies().get(0).getPower()+". Score: "+SpaceGameEvaluator.getInstance().getValue(Mainmenu.liveGame, Mainmenu.liveGame.getEmpires().get(0)).totalScore());
 			List<Action> actions = brain.runAI(Mainmenu.liveGame).getImmediateActions();
 			
-			Mainmenu.liveGame.setActionsForEmpire(actions, brain.getSelf());
+			Mainmenu.liveGame.setActionsForPlayer(actions, brain.getSelf());
 			
 			Mainmenu.playersReady.add(((Empire)brain.getSelf()).getName());
 		}

@@ -1,9 +1,9 @@
-package ui;
+package spacegame.ui;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import display.TileDetailWindow;
+import spacegame.display.TileDetailWindow;
 
 public class SelectTileListener implements MouseListener{
 

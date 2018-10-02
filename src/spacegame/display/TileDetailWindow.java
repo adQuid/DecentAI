@@ -1,4 +1,4 @@
-package display;
+package spacegame.display;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 import spacegame.model.Game;
 import spacegame.model.Planet;
 import spacegame.model.Tile;
-import ui.Mainmenu;
+import spacegame.ui.Mainmenu;
 
 public class TileDetailWindow {
 

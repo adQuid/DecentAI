@@ -5,8 +5,8 @@ import java.util.List;
 
 import aibrain.Action;
 import aibrain.Player;
-import cloners.GameCloner;
 import spacegame.Empire;
+import spacegame.SpaceGameCloner;
 import spacegame.PowerOverload;
 import spacegame.SpaceGameAction;
 
@@ -89,7 +89,7 @@ public class Game implements aibrain.Game{
 	}
 
 	//used for deep copies
-	public Empire findMatchingEmpire(Player oldEmp){
+	public Empire findMatchingPlayer(Player oldEmp){
 		for(Player current: empires){
 			if(current.equals(oldEmp)){
 				return (Empire)current;
@@ -115,13 +115,13 @@ public class Game implements aibrain.Game{
 		return retval;
 	}
 	
-	public void setActionsForEmpire(List<Action> actions, Player empire){
-		Player matchingEmp = findMatchingEmpire(empire);
+	public void setActionsForPlayer(List<Action> actions, Player empire){
+		Player matchingEmp = findMatchingPlayer(empire);
 		matchingEmp.setActionsThisTurn(actions);
 	}
 	
-	public void appendActionsForEmpire(List<Action> actions, Player empire){
-		Player matchingEmp = findMatchingEmpire(empire);
+	public void appendActionsForPlayer(List<Action> actions, Player empire){
+		Player matchingEmp = findMatchingPlayer(empire);
 		matchingEmp.getActionsThisTurn().addAll(actions);
 	}
 	
@@ -144,17 +144,17 @@ public class Game implements aibrain.Game{
 	}
 	
 	public Game nextRound() {
-		Game retval = (Game) GameCloner.cloneGame(this);
+		Game retval = (Game) SpaceGameCloner.getInstance().cloneGame(this);
 		retval.endRound();
 		return retval;
 	}
 
 	@Override
 	public aibrain.Game imageForPlayer(Player player) {
-		Game retval = (Game) GameCloner.cloneGame(this);
+		Game retval = (Game) SpaceGameCloner.getInstance().cloneGame(this);
 		
 		for(Player current: this.empires) {
-			retval.setActionsForEmpire(new ArrayList<Action>(), current);
+			retval.setActionsForPlayer(new ArrayList<Action>(), current);
 		}
 		return retval;
 	}

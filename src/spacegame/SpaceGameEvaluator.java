@@ -23,8 +23,8 @@ public class SpaceGameEvaluator implements GameEvaluator{
 		
 		spacegame.model.Game castGame = (spacegame.model.Game)game;
 		
-		double mineralScore = Math.pow(castGame.findMatchingEmpire(empire).getMinerals()*1.0,1.0);
-		double currencyScore = Math.pow(castGame.findMatchingEmpire(empire).getCurrency() * 1.0,1.0);
+		double mineralScore = Math.pow(castGame.findMatchingPlayer(empire).getMinerals()*1.0,1.0);
+		double currencyScore = Math.pow(castGame.findMatchingPlayer(empire).getCurrency() * 1.0,1.0);
 
 		double productionPotentialScore = 0;
 		

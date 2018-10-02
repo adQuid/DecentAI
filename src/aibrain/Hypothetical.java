@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import cloners.GameCloner;
+import spacegame.SpaceGameCloner;
 import utils.ListUtils;
 
 public class Hypothetical {
@@ -41,7 +41,7 @@ public class Hypothetical {
 			List<Action> usedParentActions, List<List<Action>> actions, int tightForcastLength, int looseForcastLength, 
 			int tail, Player empire, Score scoreAccumulator, int iteration,  IdeaGenerator ideaGen, Plan plan){
 		
-		this.game = GameCloner.cloneGame(game);
+		this.game = parent.getCloner().cloneGame(game);
 		this.iteration = iteration;
 		this.modifiers = modifiers;
 		this.parent = parent;
@@ -79,7 +79,7 @@ public class Hypothetical {
 		//TODO: genericise this
 		List<List<Action>> ideas = ideaGenerator.generateIdeas(game, empire, possibleActions, iteration);
 
-		Game futureGame = GameCloner.cloneGame(game);
+		Game futureGame = parent.getCloner().cloneGame(game);
 				
 		//base case where I'm out of time
 		if(tightForcastLength == 0 && looseForcastLength == 0) {
@@ -102,9 +102,9 @@ public class Hypothetical {
 		for(List<Action> current: ideas) {
 						
 			Score scoreToPass = new Score(scoreAccumulator);
-			Game branchGame = GameCloner.cloneGame(futureGame);
+			Game branchGame = parent.getCloner().cloneGame(futureGame);
 			List<Action> combinedIdeas = ListUtils.combine(actions.get(0),current);
-			branchGame.setActionsForEmpire(combinedIdeas, empire);
+			branchGame.setActionsForPlayer(combinedIdeas, empire);
 			branchGame.endRound();
 			//skip a round when we are in loose forecasting
 			if(isInLooseForcastPhase()) {
@@ -132,8 +132,8 @@ public class Hypothetical {
 		HypotheticalResult retval = null;
 		for(HypotheticalResult current: allOptions) {
 			//warning for debugging, since there are two ways of rating the same game which is likely to break
-			if(!debug && isAtTopOfForecast() && current.getScore().totalScore() != parent.runPath(GameCloner.cloneGame(game), current.getPlan()).getScore().totalScore()) {
-				double result = parent.runPath(GameCloner.cloneGame(game), current.getPlan(), true).getScore().totalScore();
+			if(!debug && isAtTopOfForecast() && current.getScore().totalScore() != parent.runPath(parent.getCloner().cloneGame(game), current.getPlan()).getScore().totalScore()) {
+				double result = parent.runPath(parent.getCloner().cloneGame(game), current.getPlan(), true).getScore().totalScore();
 				System.err.println("rates as "+current.getScore().totalScore()+" vs "+result);
 			}
 			if(retval == null || current.getScore().totalScore() > bestScore) {

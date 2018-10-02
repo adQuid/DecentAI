@@ -1,4 +1,4 @@
-package ui;
+package spacegame.ui;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;

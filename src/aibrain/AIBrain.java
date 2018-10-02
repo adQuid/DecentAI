@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import cloners.GameCloner;
+
 
 public class AIBrain {
 	
@@ -14,16 +14,19 @@ public class AIBrain {
 	private int tailLength = 0;
 	private HypotheticalResult lastIdea = null;
 	private double decayRate = 0.8;
+	
 	private IdeaGenerator ideaGenerator;
 	private ContingencyGenerator contingencyGenerator;
 	private GameEvaluator gameEvaluator;
+	private GameCloner gameCloner;
 	
 	private Game trueGame;
 	
 	//for debugging
 	private List<String> logs = new ArrayList<String>();
 	
-	public AIBrain(Player self, int lookAhead, int lookAheadSecondary, int lookAheadTail,IdeaGenerator ideaGenerator, ContingencyGenerator contingencyGenerator, GameEvaluator gameEvaluator) {
+	public AIBrain(Player self, int lookAhead, int lookAheadSecondary, int lookAheadTail,IdeaGenerator ideaGenerator,
+			ContingencyGenerator contingencyGenerator, GameEvaluator gameEvaluator, GameCloner gameCloner) {
 		this.self = self;
 		this.maxTtl = lookAhead;
 		this.lookAheadSecondary = lookAheadSecondary;
@@ -31,6 +34,7 @@ public class AIBrain {
 		this.ideaGenerator = ideaGenerator;
 		this.contingencyGenerator = contingencyGenerator;
 		this.gameEvaluator = gameEvaluator;
+		this.gameCloner = gameCloner;
 	}
 	
 	//run one turn of the AI
@@ -61,7 +65,7 @@ public class AIBrain {
 			
 			lastIdea.appendActionsEnd(appendResult.getImmediateActions(),appendResult.getPlan().getReasonings().get(0));
 			//is my last idea still working?
-			Score latestScore = runPath(GameCloner.cloneGame(trueGame), lastIdea.getPlan()).getScore();
+			Score latestScore = runPath(gameCloner.cloneGame(trueGame), lastIdea.getPlan()).getScore();
 			double assumedScore = lastIdea.getScore().totalScore();
 			if(latestScore.totalScore() < assumedScore) {
 				addLog("this plan got worse: "+latestScore.totalScore()+" vs "+assumedScore);
@@ -156,7 +160,7 @@ public class AIBrain {
 			
 			for(Player current: game.getEmpires()) {
 				//remove existing actions. Should this be done here?
-				game.setActionsForEmpire(new ArrayList<Action>(), current);
+				game.setActionsForPlayer(new ArrayList<Action>(), current);
 			}
 			
 			Hypothetical hypothetical = new Hypothetical(game, new ArrayList<Modifier>(), 
@@ -175,13 +179,13 @@ public class AIBrain {
 	
 	//like runPath, but it doesn't track score
 	private Game runGame(Game game, Plan plan) {
-		Game copyGame = GameCloner.cloneGame(game);
+		Game copyGame = gameCloner.cloneGame(game);
 		
 		for(int actionIndex = 0; actionIndex < plan.getPlannedActions().size(); actionIndex++) {
 			
 			applyContingencies(copyGame,this.self,1);//what should iteration be here?
 			
-			copyGame.setActionsForEmpire(plan.getPlannedActions().get(actionIndex), this.self);
+			copyGame.setActionsForPlayer(plan.getPlannedActions().get(actionIndex), this.self);
 			copyGame.endRound();
 			
 			//if we are in loose forcast phase, skip a round
@@ -199,11 +203,11 @@ public class AIBrain {
 	}
 	
 	public HypotheticalResult runPath(Game game, Plan plan, boolean debug) {
-		Game copyGame = GameCloner.cloneGame(game);
+		Game copyGame = gameCloner.cloneGame(game);
 		
 		//clear any existing actions; we only look at the plan
 		for(Player current: copyGame.getEmpires()) {
-			copyGame.setActionsForEmpire(new ArrayList<Action>(), current);
+			copyGame.setActionsForPlayer(new ArrayList<Action>(), current);
 		}
 		
 		Score scoreAccumulator = new Score(new HashMap<String,Double>());
@@ -218,7 +222,7 @@ public class AIBrain {
 			
 			applyContingencies(copyGame,this.self,1);//what should iteration be here?
 			
-			copyGame.setActionsForEmpire(plan.getPlannedActions().get(actionIndex), this.self);
+			copyGame.setActionsForPlayer(plan.getPlannedActions().get(actionIndex), this.self);
 			copyGame.endRound();
 			
 			//if we are in loose forcast phase, skip a round
@@ -258,18 +262,18 @@ public class AIBrain {
 		
 		
 		for(Contingency current: contingencies) {
-			Game contingencyGame = GameCloner.cloneGame(game);
+			Game contingencyGame = gameCloner.cloneGame(game);
 
 			double value1 = gameEvaluator.getValue(contingencyGame, current.getPlayer()).totalScore();
 			
-			contingencyGame.setActionsForEmpire(current.getActions(), current.getPlayer());
+			contingencyGame.setActionsForPlayer(current.getActions(), current.getPlayer());
 			contingencyGame.endRound();			
 			
 			double value2 = gameEvaluator.getValue(contingencyGame, current.getPlayer()).totalScore();
 			
 			//if this empire does better when doing this contingency, we assume it will choose to do so.
 			if(value2 > value1) {
-				game.appendActionsForEmpire(current.getActions(), current.getPlayer());
+				game.appendActionsForPlayer(current.getActions(), current.getPlayer());
 			}
 		}
 	}
@@ -287,7 +291,7 @@ public class AIBrain {
 	}
 	
 	public Game getParentGame() {
-		return GameCloner.cloneGame(trueGame);
+		return gameCloner.cloneGame(trueGame);
 	}
 	
 	public Player getSelf() {
@@ -296,6 +300,10 @@ public class AIBrain {
 	
 	public GameEvaluator getEvaluator() {
 		return gameEvaluator;
+	}
+	
+	public GameCloner getCloner() {
+		return gameCloner;
 	}
 	
 	public void addLog(String log) {

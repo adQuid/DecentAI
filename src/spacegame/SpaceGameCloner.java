@@ -1,12 +1,18 @@
-package cloners;
+package spacegame;
 
 import aibrain.Game;
-
+import aibrain.GameCloner;
 import spacegame.model.Map;
 
-public class GameCloner {
+public class SpaceGameCloner implements GameCloner{
 
-	public static Game cloneGame(Game other){
+	static SpaceGameCloner instance = new SpaceGameCloner();
+	
+	public static SpaceGameCloner getInstance() {
+		return instance;
+	}
+	
+	public Game cloneGame(Game other){
 		if(other instanceof spacegame.model.Game) {
 			spacegame.model.Game converted = (spacegame.model.Game)other;
 			spacegame.model.Game retval = new spacegame.model.Game(converted);

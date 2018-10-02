@@ -74,7 +74,6 @@ public class SpaceGameAction implements Action{
 			return type.name();
 		}
 	}
-	@Override
 	public Object getParam(String param) {
 		return params.get(param);
 	}

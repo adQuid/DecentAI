@@ -1,10 +1,10 @@
-package descriptionlisteners;
+package spacegame.descriptionlisteners;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import display.GridDisplay;
 import spacegame.Empire;
+import spacegame.display.GridDisplay;
 import spacegame.model.Colony;
 import spacegame.model.Planet;
 import spacegame.model.SpaceObject;

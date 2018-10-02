@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import aibrain.IdeaGenerator;
-import cloners.GameCloner;
 import spacegame.model.ActionType;
 import spacegame.model.Colony;
 import aibrain.Action;
@@ -145,8 +144,8 @@ public class SpaceGameIdeaGenerator implements IdeaGenerator{
 			return false;
 		}
 		
-		Game futureGame = GameCloner.cloneGame(game);
-		futureGame.setActionsForEmpire(committedActions, empire);
+		Game futureGame = SpaceGameCloner.getInstance().cloneGame(game);
+		futureGame.setActionsForPlayer(committedActions, empire);
 		futureGame.endRound();
 		List<Player> empires = futureGame.getEmpires();
 		Empire me = null;

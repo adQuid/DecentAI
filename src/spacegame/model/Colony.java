@@ -55,7 +55,7 @@ public class Colony {
 	public Colony(Colony other, Game game){
 		this.game = game;
 		this.name = other.name;
-		this.owner = new Empire(game.findMatchingEmpire(other.owner));
+		this.owner = new Empire(game.findMatchingPlayer(other.owner));
 		this.id = other.id;
 		this.population = other.population;
 		this.industry = other.industry;
@@ -158,7 +158,7 @@ public class Colony {
 	}
 	
 	public void processActions(Action current) {
-		Empire fetchedOwner = this.game.findMatchingEmpire(owner);		
+		Empire fetchedOwner = this.game.findMatchingPlayer(owner);		
 
 		//it BETTER be this type of action...
 		SpaceGameAction action = (SpaceGameAction)current;
@@ -254,7 +254,7 @@ public class Colony {
 	}
 	
 	public void endRound() {
-		Empire fetchedOwner = (Empire)this.game.findMatchingEmpire(owner);
+		Empire fetchedOwner = (Empire)this.game.findMatchingPlayer(owner);
 		try{
 			fetchedOwner.addMinerals(Math.max(Math.min(this.industry,this.power),0));
 		}catch(IllegalActionException e){

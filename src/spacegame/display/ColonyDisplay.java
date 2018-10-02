@@ -1,4 +1,4 @@
-package display;
+package spacegame.display;
 
 import java.awt.GridLayout;
 import java.util.List;

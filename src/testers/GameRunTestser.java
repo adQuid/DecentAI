@@ -7,6 +7,7 @@ import aibrain.Action;
 import aibrain.HypotheticalResult;
 import aibrain.Reasoning;
 import spacegame.SpaceGameAction;
+import spacegame.SpaceGameCloner;
 import spacegame.SpaceGameContingencyGenerator;
 import spacegame.SpaceGameEvaluator;
 import spacegame.SpaceGameIdeaGenerator;
@@ -25,7 +26,7 @@ public class GameRunTestser {
 		final int tailLength = 12;
 		long time = System.currentTimeMillis();
 		
-		AIBrain brain = new AIBrain(testGame.fetchCurrentEmpire(), lookAhead, lookAheadSecondary, tailLength,SpaceGameIdeaGenerator.instance(),SpaceGameContingencyGenerator.instance(),SpaceGameEvaluator.getInstance());
+		AIBrain brain = new AIBrain(testGame.fetchCurrentEmpire(), lookAhead, lookAheadSecondary, tailLength,SpaceGameIdeaGenerator.instance(),SpaceGameContingencyGenerator.instance(),SpaceGameEvaluator.getInstance(),SpaceGameCloner.getInstance());
 		
 		for(int i = 0; i<totalTurns; i++){
 			time = System.currentTimeMillis();
@@ -36,7 +37,7 @@ public class GameRunTestser {
 				System.out.print(""+((SpaceGameAction)current).getType());
 				if(((SpaceGameAction)current).getType() == ActionType.develop ||
 						((SpaceGameAction)current).getType() == ActionType.developPower){
-					System.out.print(" "+((Colony)current.getParam("colony")).getName());
+					System.out.print(" "+((Colony)((SpaceGameAction)current).getParam("colony")).getName());
 				}
 				System.out.println();
 			}
@@ -44,7 +45,7 @@ public class GameRunTestser {
 			for(Reasoning current: result.getPlan().getReasonings()) {
 				System.out.println(">"+current.toString());
 			}
-			testGame.setActionsForEmpire(actions, testGame.fetchCurrentEmpire());
+			testGame.setActionsForPlayer(actions, testGame.fetchCurrentEmpire());
 			testGame.endRound();
 			System.out.println("ran in "+(System.currentTimeMillis()-time)+" ms");
 		}

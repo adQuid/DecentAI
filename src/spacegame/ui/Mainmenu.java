@@ -1,4 +1,4 @@
-package ui;
+package spacegame.ui;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -15,10 +15,11 @@ import javax.swing.WindowConstants;
 
 import aibrain.AIBrain;
 import aibrain.Player;
-import display.GridDisplay;
+import spacegame.SpaceGameCloner;
 import spacegame.SpaceGameContingencyGenerator;
 import spacegame.SpaceGameEvaluator;
 import spacegame.SpaceGameIdeaGenerator;
+import spacegame.display.GridDisplay;
 import spacegame.model.Game;
 
 public class Mainmenu {
@@ -40,7 +41,7 @@ public class Mainmenu {
 				liveGame = new Game();
 				
 				for(Player current: liveGame.getEmpires()) {
-					brains.add(new AIBrain(current, 8, 0, 12, SpaceGameIdeaGenerator.instance(),SpaceGameContingencyGenerator.instance(),SpaceGameEvaluator.getInstance()));
+					brains.add(new AIBrain(current, 8, 0, 12, SpaceGameIdeaGenerator.instance(),SpaceGameContingencyGenerator.instance(),SpaceGameEvaluator.getInstance(),SpaceGameCloner.getInstance()));
 				}
 								
 				try {

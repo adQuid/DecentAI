@@ -1,4 +1,4 @@
-package display;
+package spacegame.display;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -11,13 +11,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import descriptionlisteners.TileDescriptionListener;
+import spacegame.descriptionlisteners.TileDescriptionListener;
 import spacegame.model.Game;
 import spacegame.model.Map;
 import spacegame.model.Star;
 import spacegame.model.Tile;
-import ui.SelectTileListener;
-import ui.TopMenuButtons;
+import spacegame.ui.SelectTileListener;
+import spacegame.ui.TopMenuButtons;
 
 public class GridDisplay {
 
