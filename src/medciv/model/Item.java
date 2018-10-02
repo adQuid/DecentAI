@@ -13,4 +13,6 @@ public interface Item {
 	public String description();
 	
 	public void focusOnItem();
+	
+	public boolean isDead();
 }

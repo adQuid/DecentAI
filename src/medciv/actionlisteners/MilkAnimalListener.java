@@ -3,7 +3,6 @@ package medciv.actionlisteners;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import aibrain.Action;
 import medciv.aiconstructs.ActionType;
 import medciv.aiconstructs.MedcivAction;
 import medciv.model.actions.MilkAnimal;
@@ -19,12 +18,15 @@ public class MilkAnimalListener implements ActionListener{
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {
-			ActionType milkType = new MilkAnimal(cow, MainUI.liveGame.getSelectedVillager());
-			
+		if(!cow.willBeMilkedThisTurn()) {
+			ActionType milkType = new MilkAnimal(cow, MainUI.liveGame.getSelectedVillager());			
 			MedcivAction milkAction = new MedcivAction(milkType);
 			
-			MainUI.liveGame.addActionForCurrentPlayer(milkAction);
-		
-			cow.setWillBeMilkedThisTurn(true);
+			if(MainUI.liveGame.getSelectedVillager().canAffordAction(milkAction)) {
+				MainUI.liveGame.addActionForCurrentPlayer(milkAction);
+			
+				cow.focusOnItem();
+			}
+		}
 	}		
 }

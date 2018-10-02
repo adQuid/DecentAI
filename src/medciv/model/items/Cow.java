@@ -1,31 +1,43 @@
 package medciv.model.items;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 
+import aibrain.Action;
 import medciv.actionlisteners.MilkAnimalListener;
-import medciv.aiconstructs.ActionType;
+import medciv.actionlisteners.TendAnimalListener;
 import medciv.aiconstructs.MedcivAction;
 import medciv.model.Item;
 import medciv.model.Villager;
 import medciv.model.actions.MilkAnimal;
+import medciv.model.actions.TendAnimal;
 import medciv.ui.MainUI;
 
 public class Cow implements Item{
-
-	private boolean willBeMilkedThisTurn = false;
+	
 	private boolean wasMilkedThisTurn = false;
+	private boolean tendedToThisTurn = false;
+	private boolean dead = false;
 	
-	
-	
-	public boolean isWillBeMilkedThisTurn() {
-		return willBeMilkedThisTurn;
+	public boolean willBeMilkedThisTurn() {
+		for(Action current: MainUI.liveGame.getSelectedPlayer().getActionsThisTurn()) {
+			MedcivAction castAction = (MedcivAction)current;
+			if(castAction.getType().getClass() == MilkAnimal.class &&
+					((MilkAnimal)castAction.getType()).getTarget() == this) {
+				return true;
+			}
+		}
+		return false;
 	}
-
-	public void setWillBeMilkedThisTurn(boolean willBeMilkedThisTurn) {
-		this.willBeMilkedThisTurn = willBeMilkedThisTurn;
+	
+	public boolean willBeTendedThisTurn() {
+		for(Action current: MainUI.liveGame.getSelectedPlayer().getActionsThisTurn()) {
+			MedcivAction castAction = (MedcivAction)current;
+			if(castAction.getType().getClass() == TendAnimal.class &&
+					((TendAnimal)castAction.getType()).getTarget() == this) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean isWasMilkedThisTurn() {
@@ -34,6 +46,14 @@ public class Cow implements Item{
 
 	public void setWasMilkedThisTurn(boolean wasMilkedThisTurn) {
 		this.wasMilkedThisTurn = wasMilkedThisTurn;
+	}
+	
+	public boolean isTendedToThisTurn() {
+		return tendedToThisTurn;
+	}
+
+	public void setTendedToThisTurn(boolean tendedToThisTurn) {
+		this.tendedToThisTurn = tendedToThisTurn;
 	}
 
 	@Override
@@ -44,8 +64,13 @@ public class Cow implements Item{
 
 	@Override
 	public void endRound(Villager owner) {
-		willBeMilkedThisTurn = false;
 		wasMilkedThisTurn = false;		
+		
+		if(tendedToThisTurn) {
+			tendedToThisTurn = false;
+		} else {
+			dead = true;
+		}
 	}
 
 	@Override
@@ -66,13 +91,21 @@ public class Cow implements Item{
 	@Override
 	public void focusOnItem() {
 		
-		String milkText = willBeMilkedThisTurn?"Already milked this turn":"Milk";
-		
+		String milkText = willBeMilkedThisTurn()?"Already milked this turn":"Milk";
 		JButton milkButton = new JButton(milkText);
-		
 		milkButton.addActionListener(new MilkAnimalListener(this));
 		
-		MainUI.addOptions("Cow", new JButton("Feed"), milkButton);
+		String tendText = willBeTendedThisTurn()?"Already tended to this turn":"Tend to Animal";
+		JButton tendButton = new JButton(tendText);
+		tendButton.addActionListener(new TendAnimalListener(this));
+		
+		MainUI.setFocusItem(this);
+		MainUI.addOptions("Cow", tendButton, milkButton);
+	}
+
+	@Override
+	public boolean isDead() {
+		return dead;
 	}
 
 }

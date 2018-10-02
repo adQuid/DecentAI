@@ -17,7 +17,8 @@ public class EndGameHumanActionListener implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		game.endRound();
-		MainUI.focusOnVillager(game.getSelectedVillager());
+		MainUI.cancelItemFocus();
+		MainUI.refresh();
 	}
 
 }

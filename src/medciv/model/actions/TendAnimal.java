@@ -6,12 +6,12 @@ import medciv.model.Villager;
 import medciv.model.items.Cow;
 import medciv.model.items.Milk;
 
-public class MilkAnimal implements ActionType{
+public class TendAnimal implements ActionType{
 
 	private Cow target;
 	private Villager owner;
 	
-	public MilkAnimal(Cow target, Villager owner) {
+	public TendAnimal(Cow target, Villager owner) {
 		this.target = target;
 		this.owner = owner;
 	}
@@ -21,20 +21,12 @@ public class MilkAnimal implements ActionType{
 	}
 	
 	public String toString() {
-		return "Milk cow";
+		return "Tend to cow";
 	}
 	
 	@Override
 	public void doAction(MedcivGame game) {
-		if(!target.isWasMilkedThisTurn()) {
-			target.setWasMilkedThisTurn(true);
-			if(game.isLive()) {
-				int roll = game.getRandom().nextInt(3);
-				owner.addItems(new Milk(roll));
-			}else{
-				owner.addItems(new Milk(1));
-			}
-		}
+		target.setTendedToThisTurn(true);
 	}
 
 	@Override

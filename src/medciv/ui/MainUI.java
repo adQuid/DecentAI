@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -17,7 +18,10 @@ import javax.swing.WindowConstants;
 import aibrain.Action;
 import medciv.actionlisteners.EndGameHumanActionListener;
 import medciv.actionlisteners.ItemActionListener;
+import medciv.actionlisteners.RemoveActionListener;
 import medciv.aiconstructs.MedcivAction;
+import medciv.model.FoodGrouping;
+import medciv.model.Item;
 import medciv.model.MedcivGame;
 import medciv.model.Villager;
 
@@ -35,13 +39,33 @@ public class MainUI {
 	
 	private static JLabel description = new JLabel("Hover over things for details");
 	
+	private static VerticalList itemList = new VerticalList(new ArrayList<Component>());
+	private static VerticalList actionList = new VerticalList(new ArrayList<Component>());
+	
 	private static JButton quit = new JButton("Quit");
 	private static JButton save = new JButton("Save");
 	private static JButton endTurn1 = new JButton("End Turn as Human");	
 	private static JButton endTurn2 = new JButton("End Turn as AI");	
 	
 	private static Villager focusVillager;
-	
+	private static Item focusItem;
+		
+	public static Villager getFocusVillager() {
+		return focusVillager;
+	}
+
+	public static void setFocusVillager(Villager focusVillager) {
+		MainUI.focusVillager = focusVillager;
+	}
+
+	public static Item getFocusItem() {
+		return focusItem;
+	}
+
+	public static void setFocusItem(Item focusItem) {
+		MainUI.focusItem = focusItem;
+	}
+
 	public static void setup(MedcivGame game) {
 		
 		liveGame = game;
@@ -88,43 +112,53 @@ public class MainUI {
 		mainWindow.removeAll();
 		detailWindow.removeAll();
 		
-		mainWindow.add(new JLabel(focus.getName()));
-		
-		detailWindow.setLayout(new GridLayout(7,1));
-		if(focus.getOwnedItems().size() < 7) {
-			for(int index = 0; index < focus.getOwnedItems().size(); index++) {
-				JButton toAdd = new JButton(focus.getOwnedItems().get(index).toString());
-				toAdd.addMouseListener(new ItemActionListener(focus.getOwnedItems().get(index)));
-				detailWindow.add(toAdd);
-			}
-			for(int index = focus.getOwnedItems().size(); index < 7; index++) {
-				detailWindow.add(new JButton(""));
-			}
-		} else {
-			for(int index = 0; index < 6; index++) {
-				JButton toAdd = new JButton(focus.getOwnedItems().get(index).toString());
-				detailWindow.add(toAdd);
-			}
-			detailWindow.add(new JButton("down"));
+		String foodString = "Eating: ";
+		FoodGrouping food = focus.getPlannedFood();
+		for(Item current: food.getFood()) {
+			foodString += current.description();
 		}
+		
+		String timeString = "Avalible time: "+focusVillager.timeLeft();
+		
+		JLabel nameLabel = new JLabel(focus.getName());
+		JLabel foodLabel = new JLabel(foodString);
+		JLabel timeLabel = new JLabel(timeString);
+		
+		displayItems();
+		
+		mainWindow.setLayout(new GridLayout(3,1));
+		mainWindow.add(nameLabel);
+		mainWindow.add(foodLabel);
+		mainWindow.add(timeLabel);
+		
 		GUI.revalidate();
 		GUI.repaint();
+	}
+	
+	public static void displayItems() {
+		List<Component> itemButtons = new ArrayList<Component>();
+		for(Item current: focusVillager.getOwnedItems()) {
+			JButton toAdd = new JButton(current.toString());
+			toAdd.addMouseListener(new ItemActionListener(current));
+			itemButtons.add(toAdd);
+		}
+		itemList.updatePanel(detailWindow, itemButtons, 7);
 	}
 	
 	public static void displayPlannedActions() {
 		sideOptionsWindow.removeAll();
 		
-		List<Action> actionList = liveGame.getSelectedPlayer().getActionsThisTurn();
+		List<Action> actionsThisTurn = liveGame.getSelectedPlayer().getActionsThisTurn();
 		
-		sideOptionsWindow.setLayout(new GridLayout(Math.max(actionList.size(),12),1));
+		//sideOptionsWindow.setLayout(new GridLayout(Math.max(actionList.size(),12),1));
 		
-		for(Action current: actionList) {
-			sideOptionsWindow.add(new JButton(((MedcivAction)current).getType().toString()));
+		List<Component> buttonList = new ArrayList<Component>();
+		for(Action current: actionsThisTurn) {
+			JButton toAdd = new JButton(((MedcivAction)current).getType().toString());
+			toAdd.addActionListener(new RemoveActionListener(liveGame.getSelectedPlayer(),(MedcivAction)current));
+			buttonList.add(toAdd);
 		}
-		
-		for(int index = actionList.size(); index < 12; index++) {
-			sideOptionsWindow.add(new JLabel("Empty Time"));
-		}
+		actionList.updatePanel(sideOptionsWindow, buttonList, 12);
 		
 		GUI.revalidate();
 		GUI.repaint();
@@ -152,7 +186,18 @@ public class MainUI {
 	}
 	
 	public static void cancelItemFocus() {
+		focusItem = null;
 		focusOnVillager(focusVillager);
+	}
+	
+	public static void refresh() {
+		if(focusItem != null) {
+			focusItem.focusOnItem();
+		} else {
+			focusOnVillager(focusVillager);
+		}
+		displayItems();
+		displayPlannedActions();
 	}
 	
 	public static void main(String[] args) {

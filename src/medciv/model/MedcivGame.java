@@ -2,6 +2,7 @@ package medciv.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import aibrain.Action;
 import aibrain.Game;
@@ -22,13 +23,17 @@ public class MedcivGame implements Game{
 	private MedcivPlayer selectedPlayer;
 	private Villager selectedVillager;	
 	
+	private Random random = new Random();
+	
 	public MedcivGame(Boolean cloning) {
 
 		if(!cloning) {
-		Town startTown = new Town("Townsburg");
-		Villager startMan = new Villager(startTown,"bilbo");
-		startMan.addItems(new Cow());
 		MedcivPlayer startPlayer = new MedcivPlayer();
+		Town startTown = new Town("Townsburg");
+		Villager startMan = new Villager(startTown,startPlayer,"bilbo");
+		for(int i=0;i<7;i++) {
+			startMan.addItems(new Cow());
+		}
 		
 		people.add(startMan);		
 		towns.add(startTown);
@@ -65,6 +70,10 @@ public class MedcivGame implements Game{
 	
 	public Villager getSelectedVillager() {
 		return selectedVillager;
+	}
+	
+	public Random getRandom() {
+		return random;
 	}
 	
 	public MedcivPlayer findMatchingPlayer(MedcivPlayer player) {
@@ -118,18 +127,19 @@ public class MedcivGame implements Game{
 
 	@Override
 	public void endRound() {
-		for(Villager current: people) {
-			current.endRound();
-		}
 		//this will have to change for any competitive actions
 		for(MedcivPlayer player: players) {
 			for(Action action: player.getActionsThisTurn()) {
 				MedcivAction castAction = (MedcivAction)action;
-				castAction.getType().doAction();
+				castAction.getType().doAction(this);
 			}
 		}
 				
-		MainUI.displayPlannedActions();
+		for(Villager current: people) {
+			current.endRound();
+		}
+		
+		MainUI.refresh();
 	}
 
 	@Override
