@@ -19,9 +19,8 @@ public class TendAnimalListener implements ActionListener{
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {
-		if(!cow.isWasMilkedThisTurn()) {
-			ActionType tendType = new TendAnimal(cow, MainUI.liveGame.getSelectedVillager());			
-			MedcivAction tendAction = new MedcivAction(tendType);
+		if(!cow.isTendedToThisTurn()) {
+			MedcivAction tendAction = cow.tendAction();
 			
 			if(MainUI.liveGame.getSelectedVillager().canAffordAction(tendAction)) {
 				MainUI.liveGame.addActionForCurrentPlayer(tendAction);

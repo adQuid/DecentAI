@@ -109,8 +109,16 @@ public class MedcivGame implements Game{
 
 	@Override
 	public List<Action> returnActions(Player empire) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Action> retval = new ArrayList<Action>();
+		
+		//this is going to get weird if there end up being multiple villagers per player. Not sure if I'm gonna do that though
+		for(Villager current: people) {
+			if(current.getOwner().equals(empire)) {
+				retval.addAll(current.returnActions());
+			}
+		}
+		
+		return retval;
 	}
 
 	@Override

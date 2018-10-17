@@ -1,10 +1,14 @@
 package medciv.model.items;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JButton;
 
 import aibrain.Action;
 import medciv.actionlisteners.MilkAnimalListener;
 import medciv.actionlisteners.TendAnimalListener;
+import medciv.aiconstructs.ActionType;
 import medciv.aiconstructs.MedcivAction;
 import medciv.model.Item;
 import medciv.model.Villager;
@@ -57,12 +61,6 @@ public class Cow implements Item{
 	}
 
 	@Override
-	public void applyAction(MedcivAction action) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void endRound(Villager owner) {
 		wasMilkedThisTurn = false;		
 		
@@ -108,4 +106,23 @@ public class Cow implements Item{
 		return dead;
 	}
 
+	@Override
+	public List<Action> getAssociatedActions(Villager villager) {
+		List<Action> retval = new ArrayList<Action>();
+		
+		retval.add(milkAction());
+		retval.add(tendAction());
+		
+		return retval;
+	}
+
+	public MedcivAction milkAction() {
+		ActionType milkType = new MilkAnimal(this, MainUI.liveGame.getSelectedVillager());			
+		return new MedcivAction(milkType);
+	}
+	
+	public MedcivAction tendAction() {
+		ActionType tendType = new TendAnimal(this, MainUI.liveGame.getSelectedVillager());			
+		return new MedcivAction(tendType);
+	}
 }

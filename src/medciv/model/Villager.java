@@ -120,6 +120,16 @@ public class Villager{
 		return new FoodGrouping(ownedItems, foodToEat);
 	}
 	
+	public List<Action> returnActions(){
+		List<Action> retval = new ArrayList<Action>();
+		
+		for(Item current: ownedItems) {
+			retval.addAll(current.getAssociatedActions(this));
+		}
+		
+		return retval;
+	}
+	
 	public void endRound() {
 		for(Item current: getPlannedFood().getFood()) {
 			removeItem(current);//later we need to check if these actually get removed. If not, we go down a food tier

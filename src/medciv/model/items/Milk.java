@@ -1,11 +1,14 @@
 package medciv.model.items;
 
 import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import aibrain.Action;
 import medciv.aiconstructs.MedcivAction;
 import medciv.model.Item;
 import medciv.model.Villager;
@@ -24,12 +27,6 @@ public class Milk extends Stackable implements Item,Edible{
 		this.age = age;
 	}
 	
-	@Override
-	public void applyAction(MedcivAction action) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	@Override
 	public void endRound(Villager owner) {
 		age++;
@@ -76,6 +73,11 @@ public class Milk extends Stackable implements Item,Edible{
 	@Override
 	public boolean isDead() {
 		return stackSize == 0;
+	}
+
+	@Override
+	public List<Action> getAssociatedActions(Villager villager) {
+		return new ArrayList<Action>();
 	}
 
 }
