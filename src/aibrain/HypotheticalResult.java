@@ -18,11 +18,7 @@ public class HypotheticalResult {
 	//keeps no logs or reasonings. Only for quickly determining the value of a game state
 	public HypotheticalResult(Game game, Player empire, Plan plan, GameEvaluator evaluator) {
 		this.score = evaluator.getValue(game, empire);
-		this.plan = plan;		
-		
-		if(plan.getPlannedActions().size() > 0 && plan.getPlannedActions().get(0).hashCode() == -644102700 && plan.getPlannedActions().get(plan.getPlannedActions().size()-1).hashCode() == 1012742614) {
-			System.out.println("starting score: "+score.totalScore());
-		}
+		this.plan = plan;				
 	}	
 	
 	public HypotheticalResult(Game game, List<Action> actions, Player empire, List<Action> nextActions, Reasoning reason, GameEvaluator evaluator) {

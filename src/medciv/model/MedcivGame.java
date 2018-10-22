@@ -107,7 +107,6 @@ public class MedcivGame implements Game{
 		
 	}
 
-	@Override
 	public List<Action> returnActions(Player empire) {
 		List<Action> retval = new ArrayList<Action>();
 		

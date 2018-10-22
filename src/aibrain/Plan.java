@@ -59,6 +59,18 @@ public class Plan {
 		this.reasonings.remove(this.plannedActions.size()-1);
 	}
 	
+	public Plan withoutImmediateActions() {
+		Plan retval = new Plan(this);
+		
+		retval.plannedActions.remove(0);
+		retval.reasonings.remove(0);
+		
+		retval.plannedActions.add(new ArrayList<Action>());
+		retval.reasonings.add(new Reasoning("filler"));
+		
+		return retval;
+	}
+	
 	public List<Reasoning> getReasonings() {
 		return reasonings;
 	}

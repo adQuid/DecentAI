@@ -17,7 +17,7 @@ public class MedcivEvaluator implements GameEvaluator{
 		Map<String,Double> categories = new HashMap<String,Double>();
 		categories.put("test",1.0);//all games are created equal for now
 		
-		retval.setCategories(categories);
+		retval.addLayer(categories);
 		return retval;
 	}	
 }

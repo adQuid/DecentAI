@@ -22,11 +22,11 @@ public class SpaceGameContingencyGenerator implements ContingencyGenerator{
 	}
 	
 	@Override
-	public List<Contingency> generateContingencies(Game game, Player empire, List<Action> possibilities,
+	public List<Contingency> generateContingencies(Game game, Player empire,
 			int iteration) {
 		spacegame.model.Game castGame = (spacegame.model.Game)game;
 		List<Contingency> retval = new ArrayList<Contingency>();
-		
+				
 		//there HAS to be a way to do this with less loops...
 		for(Player curEmpire: castGame.getEmpires()) {
 			if(!curEmpire.equals(empire)) {

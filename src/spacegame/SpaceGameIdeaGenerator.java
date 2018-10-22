@@ -21,11 +21,13 @@ public class SpaceGameIdeaGenerator implements IdeaGenerator{
 		return instance;
 	}
 	
-	public List<List<Action>> generateIdeas(Game game, Player empire, List<Action> possibilities, int iteration){
+	public List<List<Action>> generateIdeas(Game game, Player empire, int iteration){
 		List<List<Action>> retval = new ArrayList<List<Action>>();
 
 		spacegame.model.Game castGame = (spacegame.model.Game)game;
 
+		List<Action> possibilities = castGame.returnActions(empire);
+		
 		List<SpaceGameAction> castPossibilities = new ArrayList<SpaceGameAction>();
 		
 		for(Action current: possibilities) {
@@ -44,7 +46,7 @@ public class SpaceGameIdeaGenerator implements IdeaGenerator{
 			for(SpaceGameAction current: castPossibilities) {
 				if(current.getType() == ActionType.develop) {
 					List<Action> toAdd = new ArrayList<Action>();
-					for(int i = 0; i < ((Empire)castGame.fetchCurrentEmpire()).getMinerals(); i+=4) {
+					for(int i = 0; i < ((Empire)empire).getMinerals(); i+=4) {
 						toAdd.add(current);
 						toAdd.add(new SpaceGameAction(ActionType.developPower,current.getParams()));
 					}
@@ -59,7 +61,7 @@ public class SpaceGameIdeaGenerator implements IdeaGenerator{
 					Colony colony = (Colony)current.getParams().get(0);
 					List<Action> toAdd = new ArrayList<Action>();
 					toAdd.add(current);
-					for(int i = 6; i < Math.min(((Empire)castGame.fetchCurrentEmpire()).getMinerals(),12); i+=2) {
+					for(int i = 6; i < Math.min(((Empire)empire).getMinerals(),12); i+=2) {
 						toAdd.add(new SpaceGameAction(ActionType.developPower,current.getParams()));
 					}
 					toAdd.add(new SpaceGameAction(ActionType.dummy, dummyParams));
@@ -71,7 +73,7 @@ public class SpaceGameIdeaGenerator implements IdeaGenerator{
 			for(SpaceGameAction current: castPossibilities) {
 				if(current.getType() == ActionType.developPower) {
 					List<Action> toAdd = new ArrayList<Action>();
-					for(int i = 0; i < ((Empire)castGame.fetchCurrentEmpire()).getMinerals(); i+=2) {
+					for(int i = 0; i < ((Empire)empire).getMinerals(); i+=2) {
 						toAdd.add(current);
 					}
 					toAdd.add(new SpaceGameAction(ActionType.dummy, dummyParams));
@@ -135,7 +137,9 @@ public class SpaceGameIdeaGenerator implements IdeaGenerator{
 	}
 
 	@Override
-	public boolean hasFurtherIdeas(Game game, Player empire, List<Action> possibilities, List<Action> committedActions, int iteration) {
+	public boolean hasFurtherIdeas(Game game, Player empire, List<Action> committedActions, int iteration) {
+		
+		spacegame.model.Game castGame = (spacegame.model.Game)game;
 		
 		if(iteration == 1) {
 			return true;
@@ -157,7 +161,7 @@ public class SpaceGameIdeaGenerator implements IdeaGenerator{
 		if(me.getMinerals() < 2) {
 			return false;
 		}
-		if(futureGame.returnActions(empire).size() == 0) {
+		if(((spacegame.model.Game)futureGame).returnActions(empire).size() == 0) {
 			return false;
 		}
 		return true;

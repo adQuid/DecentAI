@@ -13,6 +13,7 @@ public class AIBrain {
 	private int lookAheadSecondary = 0;
 	private int tailLength = 0;
 	private HypotheticalResult lastIdea = null;
+	//the behavior of decay actually biases towards LATER turns, not earlier ones, with a value < 1
 	private double decayRate = 0.8;
 	
 	private IdeaGenerator ideaGenerator;
@@ -48,31 +49,33 @@ public class AIBrain {
 		} else {
 			//we presumably did the first round of the last idea, so lets remove it
 			lastIdea.getPlan().removeActionListFromFront();
-			//now we add a new final step to keep the same length
-			HypotheticalResult appendResult = runIterations(runGame(trueGame,lastIdea.getPlan()),maxTtl/2 + 1);
 
-			//more debug
-			addLog("what I got in mind...");
-			for(Reasoning current: appendResult.getPlan().getReasonings()) {
-				addLog(">"+current.toString());
-			}
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			lastIdea.appendActionsEnd(appendResult.getImmediateActions(),appendResult.getPlan().getReasonings().get(0));
 			//is my last idea still working?
 			Score latestScore = runPath(gameCloner.cloneGame(trueGame), lastIdea.getPlan()).getScore();
-			double assumedScore = lastIdea.getScore().totalScore();
-			if(latestScore.totalScore() < assumedScore) {
+			Score assumedScore = lastIdea.getScore().withoutFirstRound();
+			if(latestScore.totalScore() < assumedScore.totalScore()) {
 				addLog("this plan got worse: "+latestScore.totalScore()+" vs "+assumedScore);
 				lastIdea = runIterations(trueGame, maxTtl);
 			} else {
 				addLog("this plan is just as good or better: "+latestScore.totalScore()+" vs "+assumedScore);				
 				lastIdea.setScore(latestScore);
+				
+				//now we add a new final step to keep the same length
+				HypotheticalResult appendResult = runIterations(runGame(trueGame,lastIdea.getPlan()),maxTtl/2 + 1);
+				
+				//more debug
+				addLog("what I got in mind...");
+				for(Reasoning current: appendResult.getPlan().getReasonings()) {
+					addLog(">"+current.toString());
+				}
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				lastIdea.appendActionsEnd(appendResult.getImmediateActions(),appendResult.getPlan().getReasonings().get(0));
 				
 				//just in case, let's see if there are any last minute opportunities or problems that came up just this turn
 				HypotheticalResult opportunityResult = immediateIteration(trueGame, lastIdea.getImmediateActions(), lastIdea.getPlan());
@@ -121,20 +124,14 @@ public class AIBrain {
 	private HypotheticalResult runIterations(Game game, int forcast) {
 		int iteration = 1;
 		HypotheticalResult result = null;//this SHOULD fail if the variable is not changed
-		List<Action> possibilities = game.returnActions(self);
 		List<Action> committedActions = new ArrayList<Action>();
 		Plan plan = Plan.emptyPlan();
-		while(this.ideaGenerator.hasFurtherIdeas(game, self, possibilities, committedActions, iteration)) {
-			for(Player current: game.getEmpires()) {
-				//remove existing actions. Should this be done here?
-				//game.setActionsForEmpire(new ArrayList<Action>(), current);
-			}			
-			Hypothetical hypothetical = new Hypothetical(game, new ArrayList<Modifier>(), 
-					this, new ArrayList<Action>(), new ArrayList<Action>(), plan.getPlannedActions(), forcast,
-                    lookAheadSecondary, tailLength, self, new Score(), iteration,ideaGenerator);
+		while(this.ideaGenerator.hasFurtherIdeas(game, self, committedActions, iteration)) {		
+			Hypothetical hypothetical = new Hypothetical(game, 
+					this, plan.getPlannedActions(), forcast,
+                    lookAheadSecondary, tailLength, self, iteration,ideaGenerator);
 			result = hypothetical.calculate();
 			committedActions = result.getImmediateActions();
-			possibilities = game.returnActions(self);
 			plan = result.getPlan();
 			
 			iteration++;
@@ -143,9 +140,9 @@ public class AIBrain {
 		if(result == null) {
 			System.err.println("Idea Generator generated no ideas on iteration 1");
 
-			Hypothetical hypothetical = new Hypothetical(game, new ArrayList<Modifier>(), 
-					this, new ArrayList<Action>(), new ArrayList<Action>(), plan.getPlannedActions(), forcast,
-                    lookAheadSecondary, tailLength, self, new Score(), 1,ideaGenerator);
+			Hypothetical hypothetical = new Hypothetical(game,
+					this, plan.getPlannedActions(), forcast,
+                    lookAheadSecondary, tailLength, self, 1,ideaGenerator);
 			return hypothetical.calculate();
 		}
 		
@@ -155,20 +152,18 @@ public class AIBrain {
 	//TODO: merge this with the one above
 	private HypotheticalResult immediateIteration(Game game, List<Action> committedActions, Plan plan) {
 		
-		List<Action> possibilities = game.returnActions(self);
-		if(ideaGenerator.hasFurtherIdeas(game, self, possibilities, committedActions, 1)) {
+		if(ideaGenerator.hasFurtherIdeas(game, self, committedActions, 1)) {
 			
 			for(Player current: game.getEmpires()) {
 				//remove existing actions. Should this be done here?
 				game.setActionsForPlayer(new ArrayList<Action>(), current);
 			}
 			
-			Hypothetical hypothetical = new Hypothetical(game, new ArrayList<Modifier>(), 
-					this, new ArrayList<Action>(), new ArrayList<Action>(), plan.getPlannedActions(), maxTtl/2 + 1,
-                    lookAheadSecondary, tailLength, self, new Score(), 1,ideaGenerator);
+			Hypothetical hypothetical = new Hypothetical(game, 
+					this, plan.getPlannedActions(), maxTtl/2 + 1,
+                    lookAheadSecondary, tailLength, self, 1,ideaGenerator);
 			HypotheticalResult result = hypothetical.calculate();
 			committedActions = result.getImmediateActions();
-			possibilities = game.returnActions(self);
 			plan = result.getPlan();
 			
 			return result;
@@ -202,6 +197,7 @@ public class AIBrain {
 		return runPath(game,plan,false);
 	}
 	
+	//in kind of quirky behavior, this only runs path to the length of the plan provided
 	public HypotheticalResult runPath(Game game, Plan plan, boolean debug) {
 		Game copyGame = gameCloner.cloneGame(game);
 		
@@ -210,15 +206,15 @@ public class AIBrain {
 			copyGame.setActionsForPlayer(new ArrayList<Action>(), current);
 		}
 		
-		Score scoreAccumulator = new Score(new HashMap<String,Double>());
+		Score scoreAccumulator = new Score();
 		
 		if(debug)System.err.print("[");
 		
-		for(int actionIndex = 0; actionIndex < maxTtl + lookAheadSecondary; actionIndex++) {
-			scoreAccumulator.add(new HypotheticalResult(copyGame,this.self,plan,gameEvaluator).getScore());
+		for(int actionIndex = 0; actionIndex < plan.getPlannedActions().size(); actionIndex++) {
+			scoreAccumulator.addLayer(new HypotheticalResult(copyGame,this.self,plan,gameEvaluator).getScore().getFirstLayer());
 			
 			//debug
-			if(debug)System.err.print(scoreAccumulator.getCategories()+", ");
+			if(debug)System.err.print(scoreAccumulator.getLastLayer()+", ");
 			
 			applyContingencies(copyGame,this.self,1);//what should iteration be here?
 			
@@ -227,7 +223,7 @@ public class AIBrain {
 			
 			//if we are in loose forcast phase, skip a round
 			if(actionIndex >= maxTtl) {
-				scoreAccumulator.add(new HypotheticalResult(copyGame, this.self,gameEvaluator).getScore().decay(getDecayRate()));
+				scoreAccumulator.addLayer(new HypotheticalResult(copyGame, this.self,gameEvaluator).getScore().decay(getDecayRate()).getFirstLayer());
 				copyGame.endRound();
 			}
 			
@@ -236,29 +232,20 @@ public class AIBrain {
 		
 		for(int index = 0; index < tailLength; index++) {
 			copyGame.endRound();
-			scoreAccumulator.add(new HypotheticalResult(copyGame, this.self,gameEvaluator).getScore());
-			if(debug)System.err.print(scoreAccumulator.getCategories()+", ");
+			scoreAccumulator.addLayer(new HypotheticalResult(copyGame, this.self,gameEvaluator).getScore().getFirstLayer());
+			if(debug)System.err.print(scoreAccumulator.getLastLayer()+", ");
 		}
 		
 		if(debug)System.err.println();
 		
 		HypotheticalResult retval = new HypotheticalResult(copyGame, self, plan,gameEvaluator);
-		retval.setScore(retval.getScore().add(scoreAccumulator));
+		retval.setScore(scoreAccumulator.addLayer(retval.getScore().getFirstLayer()));
 		return retval;
 	}
 	
 	//not sure I really want this method here, it's kind of a strange utility
-	public void applyContingencies(Game game, Player empire, int iteration) {
-		List<Action> contingencyPossibilities = new ArrayList<Action>();
-		for(Player current: game.getEmpires()) {
-			//remove existing actions. Should this be done here?
-			if(current.getActionsThisTurn().size() > 0) {
-				System.err.println("actions are already in place when I add contingencies");
-			}
-			contingencyPossibilities.addAll(game.returnActions(current));
-		}
-		
-		List<Contingency> contingencies = contingencyGenerator.generateContingencies(game, empire, contingencyPossibilities, iteration);
+	public void applyContingencies(Game game, Player empire, int iteration) {		
+		List<Contingency> contingencies = contingencyGenerator.generateContingencies(game, empire, iteration);
 		
 		
 		for(Contingency current: contingencies) {

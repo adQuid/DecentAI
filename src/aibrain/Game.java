@@ -10,8 +10,6 @@ public interface Game {
 	
 	public void setLive(boolean live);
 	
-	public List<Action> returnActions(Player player);
-	
 	public void setActionsForPlayer(List<Action> actions, Player player);
 	
 	public void appendActionsForPlayer(List<Action> actions, Player player);
