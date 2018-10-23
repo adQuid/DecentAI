@@ -15,19 +15,29 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import aibrain.AIBrain;
 import aibrain.Action;
+import medciv.actionlisteners.EndGameAIListener;
 import medciv.actionlisteners.EndGameHumanActionListener;
 import medciv.actionlisteners.ItemActionListener;
 import medciv.actionlisteners.RemoveActionListener;
 import medciv.aiconstructs.MedcivAction;
+import medciv.aiconstructs.MedcivBaseIdeaGen;
+import medciv.aiconstructs.MedcivCloner;
+import medciv.aiconstructs.MedcivContingencyGenerator;
+import medciv.aiconstructs.MedcivEvaluator;
+import medciv.aiconstructs.MedcivPlayer;
+import medciv.gamesetup.BaseGameSetup;
 import medciv.model.FoodGrouping;
 import medciv.model.Item;
 import medciv.model.MedcivGame;
 import medciv.model.Villager;
+import medciv.model.items.Edible;
 
 public class MainUI {
 
 	public static MedcivGame liveGame;
+	public static List<AIBrain> brains = new ArrayList<AIBrain>();
 	
 	private static JFrame GUI = new JFrame("Medciv");
 	
@@ -70,7 +80,8 @@ public class MainUI {
 		
 		liveGame = game;
 		
-		endTurn1.addActionListener(new EndGameHumanActionListener(liveGame));
+		endTurn1.addActionListener(new EndGameHumanActionListener());
+		endTurn2.addActionListener(new EndGameAIListener());
 		
 		mainWindow.setMinimumSize(new Dimension(200,200));
 		descriptionWindow.setMinimumSize(new Dimension(200,200));
@@ -114,7 +125,7 @@ public class MainUI {
 		
 		String foodString = "Eating: ";
 		FoodGrouping food = focus.getPlannedFood();
-		for(Item current: food.getFood()) {
+		for(Edible current: food.getFood()) {
 			foodString += current.description();
 		}
 		
@@ -149,8 +160,6 @@ public class MainUI {
 		sideOptionsWindow.removeAll();
 		
 		List<Action> actionsThisTurn = liveGame.getSelectedPlayer().getActionsThisTurn();
-		
-		//sideOptionsWindow.setLayout(new GridLayout(Math.max(actionList.size(),12),1));
 		
 		List<Component> buttonList = new ArrayList<Component>();
 		for(Action current: actionsThisTurn) {
@@ -200,8 +209,18 @@ public class MainUI {
 		displayPlannedActions();
 	}
 	
+	public static void endRound() {
+		liveGame.endRound();
+		MainUI.cancelItemFocus();
+		MainUI.refresh();
+	}
+	
 	public static void main(String[] args) {
-		setup(new MedcivGame(false));
+		setup(BaseGameSetup.newBasicGame());
+		
+		for(MedcivPlayer current: liveGame.getPlayers()) {
+			brains.add(new AIBrain(current, 4, 0, 1, new MedcivBaseIdeaGen(), new MedcivContingencyGenerator(), new MedcivEvaluator(), new MedcivCloner()));
+		}
 		
 		focusOnVillager(liveGame.getPeople().get(0));
 		

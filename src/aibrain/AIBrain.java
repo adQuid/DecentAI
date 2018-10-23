@@ -58,7 +58,6 @@ public class AIBrain {
 				lastIdea = runIterations(trueGame, maxTtl);
 			} else {
 				addLog("this plan is just as good or better: "+latestScore.totalScore()+" vs "+assumedScore);				
-				lastIdea.setScore(latestScore);
 				
 				//now we add a new final step to keep the same length
 				HypotheticalResult appendResult = runIterations(runGame(trueGame,lastIdea.getPlan()),maxTtl/2 + 1);
@@ -68,14 +67,10 @@ public class AIBrain {
 				for(Reasoning current: appendResult.getPlan().getReasonings()) {
 					addLog(">"+current.toString());
 				}
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 				
+				//push the new action onto the end, and adjust score appropriately
 				lastIdea.appendActionsEnd(appendResult.getImmediateActions(),appendResult.getPlan().getReasonings().get(0));
+				lastIdea.setScore(runPath(gameCloner.cloneGame(trueGame), lastIdea.getPlan()).getScore());
 				
 				//just in case, let's see if there are any last minute opportunities or problems that came up just this turn
 				HypotheticalResult opportunityResult = immediateIteration(trueGame, lastIdea.getImmediateActions(), lastIdea.getPlan());
@@ -239,7 +234,8 @@ public class AIBrain {
 		if(debug)System.err.println();
 		
 		HypotheticalResult retval = new HypotheticalResult(copyGame, self, plan,gameEvaluator);
-		retval.setScore(scoreAccumulator.addLayer(retval.getScore().getFirstLayer()));
+		//retval.setScore(scoreAccumulator.addLayer(retval.getScore().getFirstLayer()));
+		retval.setScore(scoreAccumulator);
 		return retval;
 	}
 	

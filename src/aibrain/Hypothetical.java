@@ -68,24 +68,11 @@ public class Hypothetical {
 	}
 	
 	public HypotheticalResult calculate(boolean debug) {
-						
-		/*if(tightForcastLength == 3 && this.iteration == 2 
-				&& plan.getPlannedActions().get(0).size() == 7
-				&& plan.getPlannedActions().get(1).size() == 0
-				&& plan.getPlannedActions().get(2).size() == 0
-				&& plan.getPlannedActions().get(3).size() == 0
-				&& plan.getPlannedActions().get(4).size() == 0
-				&& this.scoreAccumulator.totalScore() == 30.881280000000004) {
-			System.out.println("debug");
-		}*/
 		
 		//these are the actions I look at when trying out new actions this turn
 		List<List<Action>> possibleActions = ideaGenerator.generateIdeas(game, self, iteration);
 		//these are the actions I pass down to the next level to not consider if I don't do them at this level
 		List<List<Action>> passdownActions = ideaGenerator.generateIdeas(game, self, iteration);
-		
-		//why is this here?
-		//passdownActions.addAll(possibleParentActions);
 
 		List<HypotheticalResult> allOptions = new ArrayList<HypotheticalResult>();
 			
@@ -97,7 +84,7 @@ public class Hypothetical {
 		
 		List<List<Action>> ideas = possibleActions;
 		//always include the empty idea
-		ideas.add(new ArrayList<Action>());
+		ideas.add(0,new ArrayList<Action>());
 		
 		
 		Game futureGame = parent.getCloner().cloneGame(game);
@@ -110,7 +97,7 @@ public class Hypothetical {
 			}
 						
 			HypotheticalResult retval = new HypotheticalResult(futureGame, this.self, plan,parent.getEvaluator());
-			retval.setScore(scoreAccumulator.addLayer(retval.getScore().getFirstLayer()));
+			retval.setScore(scoreAccumulator);
 			return retval;
 		}
 							

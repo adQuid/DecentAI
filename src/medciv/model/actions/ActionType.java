@@ -1,4 +1,4 @@
-package medciv.aiconstructs;
+package medciv.model.actions;
 
 import medciv.model.MedcivGame;
 

@@ -1,6 +1,5 @@
 package medciv.model.actions;
 
-import medciv.aiconstructs.ActionType;
 import medciv.model.MedcivGame;
 import medciv.model.Villager;
 import medciv.model.items.Cow;
@@ -8,16 +7,17 @@ import medciv.model.items.Milk;
 
 public class TendAnimal implements ActionType{
 
-	private Cow target;
-	private Villager owner;
-	
-	public TendAnimal(Cow target, Villager owner) {
-		this.target = target;
-		this.owner = owner;
+	private int targetId;
+	private int ownerId;
+			
+	public TendAnimal(int targetId, int ownerId) {
+		super();
+		this.targetId = targetId;
+		this.ownerId = ownerId;
 	}
-	
-	public Cow getTarget() {
-		return target;
+
+	public int getTargetId() {
+		return targetId;
 	}
 	
 	public String toString() {
@@ -26,7 +26,12 @@ public class TendAnimal implements ActionType{
 	
 	@Override
 	public void doAction(MedcivGame game) {
-		target.setTendedToThisTurn(true);
+		//a silly way to resolve this, but feeding a cow has no effect if you or the cow are dead
+		try {
+			((Cow)game.matchingVillager(ownerId).getItemById(targetId)).setTendedToThisTurn(true);
+		}catch(NullPointerException e) {
+			//do nothing; the cow is dead, or you are
+		}
 	}
 
 	@Override

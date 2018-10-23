@@ -8,25 +8,34 @@ import javax.swing.JButton;
 import aibrain.Action;
 import medciv.actionlisteners.MilkAnimalListener;
 import medciv.actionlisteners.TendAnimalListener;
-import medciv.aiconstructs.ActionType;
 import medciv.aiconstructs.MedcivAction;
 import medciv.model.Item;
+import medciv.model.MedcivGame;
 import medciv.model.Villager;
+import medciv.model.actions.ActionType;
 import medciv.model.actions.MilkAnimal;
 import medciv.model.actions.TendAnimal;
 import medciv.ui.MainUI;
 
-public class Cow implements Item{
+public class Cow extends Item{
 	
 	private boolean wasMilkedThisTurn = false;
 	private boolean tendedToThisTurn = false;
 	private boolean dead = false;
 	
+	public Cow(MedcivGame game, int ownerId) {
+		super(game, ownerId);
+	}
+	
+	public Cow(MedcivGame game, int id, int ownerId) {
+		super(game, id, ownerId);
+	}
+	
 	public boolean willBeMilkedThisTurn() {
 		for(Action current: MainUI.liveGame.getSelectedPlayer().getActionsThisTurn()) {
 			MedcivAction castAction = (MedcivAction)current;
 			if(castAction.getType().getClass() == MilkAnimal.class &&
-					((MilkAnimal)castAction.getType()).getTarget() == this) {
+					((MilkAnimal)castAction.getType()).getId() == this.getId()) {
 				return true;
 			}
 		}
@@ -37,7 +46,7 @@ public class Cow implements Item{
 		for(Action current: MainUI.liveGame.getSelectedPlayer().getActionsThisTurn()) {
 			MedcivAction castAction = (MedcivAction)current;
 			if(castAction.getType().getClass() == TendAnimal.class &&
-					((TendAnimal)castAction.getType()).getTarget() == this) {
+					((TendAnimal)castAction.getType()).getTargetId() == this.getId()) {
 				return true;
 			}
 		}
@@ -72,9 +81,12 @@ public class Cow implements Item{
 	}
 
 	@Override
-	public Item clone() {
-		// TODO Auto-generated method stub
-		return null;
+	public Item clone(MedcivGame game) {
+		Cow retval = new Cow(game, getId(), ownerId);
+		retval.dead = this.dead;
+		retval.tendedToThisTurn = this.tendedToThisTurn;
+		retval.wasMilkedThisTurn = this.wasMilkedThisTurn;
+		return retval;
 	}
 	
 	public String toString() {
@@ -110,19 +122,19 @@ public class Cow implements Item{
 	public List<Action> getAssociatedActions(Villager villager) {
 		List<Action> retval = new ArrayList<Action>();
 		
-		retval.add(milkAction());
-		retval.add(tendAction());
+		retval.add(milkAction(villager));
+		retval.add(tendAction(villager));
 		
 		return retval;
 	}
 
-	public MedcivAction milkAction() {
-		ActionType milkType = new MilkAnimal(this, MainUI.liveGame.getSelectedVillager());			
-		return new MedcivAction(milkType);
+	public MedcivAction milkAction(Villager villager) {
+		ActionType milkType = new MilkAnimal(this.getId(), ownerId);			
+		return new MedcivAction(milkType,villager.getId());
 	}
 	
-	public MedcivAction tendAction() {
-		ActionType tendType = new TendAnimal(this, MainUI.liveGame.getSelectedVillager());			
-		return new MedcivAction(tendType);
+	public MedcivAction tendAction(Villager villager) {
+		ActionType tendType = new TendAnimal(this.getId(), ownerId);			
+		return new MedcivAction(tendType,villager.getId());
 	}
 }

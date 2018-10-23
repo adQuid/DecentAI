@@ -8,24 +8,27 @@ import aibrain.Game;
 import aibrain.IdeaGenerator;
 import aibrain.Player;
 import medciv.model.actions.TendAnimal;
+import medciv.model.items.Cow;
+import medciv.model.Item;
 import medciv.model.MedcivGame;
+import medciv.model.Villager;
 
 public class MedcivBaseIdeaGen implements IdeaGenerator{
 
 	@Override
-	public List<List<Action>> generateIdeas(Game game, Player empire,  int iteration) {
-		List<Action> possibilities = ((MedcivGame)game).returnActions(empire);
+	public List<List<Action>> generateIdeas(Game game, Player player,  int iteration) {
+		MedcivGame castGame = (MedcivGame)game;
 		List<List<Action>> retval = new ArrayList<List<Action>>();
 		
-		for(Action current: possibilities) {
-			MedcivAction castAction = (MedcivAction)current;
-			
-			if(castAction.getType() instanceof TendAnimal) {
-				List<Action> toAdd = new ArrayList<Action>();
-				toAdd.add(castAction);
-				
-				retval.add(toAdd);
-				continue; 
+		Villager villager = castGame.firstVillagerOwnedByPlayer((MedcivPlayer)player);
+		
+		for(Item current: villager.getOwnedItems()) {
+			if(current instanceof Cow) {
+				Cow cow = (Cow)current;
+				List<Action> milkAndTend = new ArrayList<Action>();
+				milkAndTend.add(cow.tendAction(villager));
+				milkAndTend.add(cow.milkAction(villager));
+				retval.add(milkAndTend);
 			}
 		}
 		
@@ -35,8 +38,7 @@ public class MedcivBaseIdeaGen implements IdeaGenerator{
 	@Override
 	public boolean hasFurtherIdeas(Game game, Player empire, List<Action> committedActions,
 			int iteration) {
-		// TODO Auto-generated method stub
-		return false;
+		return iteration < 10;
 	}
 
 }

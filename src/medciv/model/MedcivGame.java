@@ -27,22 +27,7 @@ public class MedcivGame implements Game{
 	
 	public MedcivGame(Boolean cloning) {
 
-		if(!cloning) {
-		MedcivPlayer startPlayer = new MedcivPlayer();
-		Town startTown = new Town("Townsburg");
-		Villager startMan = new Villager(startTown,startPlayer,"bilbo");
-		for(int i=0;i<7;i++) {
-			startMan.addItems(new Cow());
-		}
-		
-		people.add(startMan);		
-		towns.add(startTown);
-		players.add(startPlayer);
-		
-		selectedPlayer = players.get(0);
-		selectedVillager = people.get(0);
-		live = true;
-		}
+
 	}
 	
 	public MedcivGame clone() {
@@ -50,26 +35,75 @@ public class MedcivGame implements Game{
 		
 		retval.live = false;
 		for(Town current: towns) {
-			retval.towns.add(current.clone());
+			retval.towns.add(current.clone(this));
 		}
 		
 		for(Villager current: people) {
 			retval.people.add(current.clone(this));
 		}
 		
+		for(MedcivPlayer current: players) {
+			retval.players.add(current.clone(this));
+		}
+		
 		return retval;
+	}
+	
+	public List<Town> getTowns() {
+		return towns;
 	}
 	
 	public List<Villager> getPeople() {
 		return people;
 	}
 	
+	public List<MedcivPlayer> getPlayers() {
+		return players;
+	}
+	
 	public MedcivPlayer getSelectedPlayer() {
 		return selectedPlayer;
 	}
 	
+	public void setSelectedPlayer(MedcivPlayer player) {
+		this.selectedPlayer = player;
+	}
+	
 	public Villager getSelectedVillager() {
 		return selectedVillager;
+	}
+	
+	public void setSelectedVillager(Villager villager) {
+		this.selectedVillager = villager;
+	}
+	
+	//I'm assuming a one-to-one relationship
+	public Villager firstVillagerOwnedByPlayer(MedcivPlayer player) {
+		for(Villager current: people) {
+			if(current.getOwner().equals(player)) {
+				return current;
+			}
+		}
+		
+		return null;
+	}
+	
+	public Villager matchingVillager(Villager other) {
+		for(Villager current: people) {
+			if(current.equals(other)) {
+				return current;
+			}
+		}
+		return null;
+	}
+	
+	public Villager matchingVillager(int id) {
+		for(Villager current: people) {
+			if(current.getId() == id) {
+				return current;
+			}
+		}
+		return null;
 	}
 	
 	public Random getRandom() {
@@ -103,33 +137,25 @@ public class MedcivGame implements Game{
 
 	@Override
 	public void setLive(boolean live) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public List<Action> returnActions(Player empire) {
-		List<Action> retval = new ArrayList<Action>();
-		
-		//this is going to get weird if there end up being multiple villagers per player. Not sure if I'm gonna do that though
-		for(Villager current: people) {
-			if(current.getOwner().equals(empire)) {
-				retval.addAll(current.returnActions());
-			}
-		}
-		
-		return retval;
+		this.live = live;
 	}
 
 	@Override
 	public void setActionsForPlayer(List<Action> actions, Player empire) {
-		// TODO Auto-generated method stub
-		
+		for(MedcivPlayer current: players) {
+			if(empire.equals(current)) {
+				current.setActionsThisTurn(actions);
+			}
+		}
 	}
 
 	@Override
 	public void appendActionsForPlayer(List<Action> actions, Player empire) {
-		// TODO Auto-generated method stub
-		
+		for(MedcivPlayer current: players) {
+			if(empire.equals(current)) {
+				current.addActionThisTurn(actions);
+			}
+		}
 	}
 
 	@Override
@@ -138,27 +164,29 @@ public class MedcivGame implements Game{
 		for(MedcivPlayer player: players) {
 			for(Action action: player.getActionsThisTurn()) {
 				MedcivAction castAction = (MedcivAction)action;
-				castAction.getType().doAction(this);
+				if(matchingVillager(castAction.getVillagerId()).timeLeft() > 0) {
+					castAction.getType().doAction(this);
+				}else {
+					//do nothing: you just can't afford this
+				}
 			}
 		}
 				
 		for(Villager current: people) {
 			current.endRound();
 		}
-		
-		MainUI.refresh();
 	}
 
 	@Override
 	public Game nextRound() {
-		// TODO Auto-generated method stub
-		return null;
+		MedcivGame retval = this.clone();
+		retval.endRound();
+		return retval;
 	}
 
 	@Override
 	public Game imageForPlayer(Player player) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.clone();
 	}
 
 	

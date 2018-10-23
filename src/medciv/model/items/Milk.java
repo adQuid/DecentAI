@@ -1,41 +1,44 @@
 package medciv.model.items;
 
-import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 import aibrain.Action;
-import medciv.aiconstructs.MedcivAction;
 import medciv.model.Item;
+import medciv.model.MedcivGame;
 import medciv.model.Villager;
 import medciv.ui.MainUI;
 
-public class Milk extends Stackable implements Item,Edible{
+public class Milk extends Edible{
 	
 	int age = 0;
 	
-	public Milk(int size) {
-		this(size,0);
+	public Milk(MedcivGame game, int size,  int ownerId) {
+		this(game,size,0,ownerId);
 	}
 	
-	public Milk(int size, int age) {
+	public Milk(MedcivGame game, int size, int age,  int ownerId) {
+		super(game, ownerId);
+		this.stackSize = size;
+		this.age = age;
+	}
+	
+	public Milk(MedcivGame game, int size, int age, int id, int ownerId) {
+		super(game, id, ownerId);
 		this.stackSize = size;
 		this.age = age;
 	}
 	
 	@Override
 	public void endRound(Villager owner) {
-		age++;
-		
+		age++;		
 	}
 
 	@Override
-	public Milk clone() {
-		return new Milk(stackSize,age);
+	public Milk clone(MedcivGame game) {
+		return new Milk(game,stackSize,age,this.getId(),ownerId);
 	}
 
 	public String toString() {
@@ -79,5 +82,4 @@ public class Milk extends Stackable implements Item,Edible{
 	public List<Action> getAssociatedActions(Villager villager) {
 		return new ArrayList<Action>();
 	}
-
 }

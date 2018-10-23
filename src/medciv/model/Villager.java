@@ -11,13 +11,22 @@ import medciv.model.items.Stackable;
 
 public class Villager{
 
+	private MedcivGame game;
+	private static int lastId = 0;
+	private int id;
 	private MedcivPlayer owner;
 	private String name;
 	private Town location;
 	private List<Item> ownedItems;
-	private int foodToEat = 2;
+	private int foodToEat = 0;
 	
-	public Villager(Town location, MedcivPlayer owner, String name) {
+	public Villager(MedcivGame game, Town location, MedcivPlayer owner, String name) {
+		this(game, location,owner,name,lastId++);
+	}
+	
+	public Villager(MedcivGame game, Town location, MedcivPlayer owner, String name, int id) {
+		this.game = game;
+		this.id = id;
 		this.name = name;
 		this.location = location;
 		this.owner = owner;
@@ -25,15 +34,41 @@ public class Villager{
 	}
 
 	public Villager clone(MedcivGame game) {
-		Villager retval = new Villager(location,owner,name);
+		Villager retval = new Villager(game,location,owner,name,id);
 		
 		for(Item current: ownedItems) {
-			retval.ownedItems.add(current.clone());
+			retval.ownedItems.add(current.clone(game));
 		}
-		this.owner = game.findMatchingPlayer(owner);
+		retval.owner = this.owner;
 		return retval;
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Villager other = (Villager) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+
+	public int getId() {
+		return id;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -49,6 +84,15 @@ public class Villager{
 	public List<Item> getOwnedItems() {
 		return ownedItems;
 	}
+	
+	public Item getItemById(int id) {
+		for(Item current: ownedItems) {
+			if(current.getId() == id) {
+				return current;
+			}
+		}
+		return null;
+	}
 
 	public int timeLeft() {
 		return timeLeft(owner.getActionsThisTurn());
@@ -58,7 +102,9 @@ public class Villager{
 		int totalTime = 20; //this will be based on food in the future;
 		for(Action current: actions) {
 			MedcivAction castAction = (MedcivAction) current;
-			totalTime -= castAction.getType().getTimeCost();
+			if(game.matchingVillager(castAction.getVillagerId()).equals(this)) {
+				totalTime -= castAction.getType().getTimeCost();
+			}
 		}
 		return totalTime;
 	}
@@ -81,7 +127,7 @@ public class Villager{
 		this.ownedItems.add(item);
 	}
 	
-	//returns true if the villager actually had that item
+	//returns true if the villager actually had an item of that class
 	public boolean removeItem(Item item) {
 		Item toRemove = null;
 		for(Item current: ownedItems) {

@@ -8,7 +8,9 @@ public class MedcivCloner implements GameCloner{
 
 	@Override
 	public Game cloneGame(Game other) {
-		return ((MedcivGame)other).clone();
+		MedcivGame retval = ((MedcivGame)other).clone();
+				
+		return retval;
 	}
 
 }

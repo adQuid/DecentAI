@@ -3,8 +3,8 @@ package medciv.actionlisteners;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import medciv.aiconstructs.ActionType;
 import medciv.aiconstructs.MedcivAction;
+import medciv.model.actions.ActionType;
 import medciv.model.actions.MilkAnimal;
 import medciv.model.actions.TendAnimal;
 import medciv.model.items.Cow;
@@ -20,7 +20,7 @@ public class TendAnimalListener implements ActionListener{
 	
 	public void actionPerformed(ActionEvent arg0) {
 		if(!cow.isTendedToThisTurn()) {
-			MedcivAction tendAction = cow.tendAction();
+			MedcivAction tendAction = cow.tendAction(MainUI.liveGame.getSelectedVillager());
 			
 			if(MainUI.liveGame.getSelectedVillager().canAffordAction(tendAction)) {
 				MainUI.liveGame.addActionForCurrentPlayer(tendAction);

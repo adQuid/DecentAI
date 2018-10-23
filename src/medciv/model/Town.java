@@ -8,7 +8,7 @@ public class Town {
 		this.name = name;
 	}
 	
-	public Town clone() {
+	public Town clone(MedcivGame game) {
 		return new Town(name);
 	}
 	

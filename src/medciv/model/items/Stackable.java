@@ -1,12 +1,21 @@
 package medciv.model.items;
 
 import medciv.model.Item;
+import medciv.model.MedcivGame;
 
-public abstract class Stackable implements Item{
+public abstract class Stackable extends Item{
 
 	protected int stackSize = 1;
 	
-	public abstract Stackable clone();
+	public Stackable(MedcivGame game, int ownerId) {
+		super(game, ownerId);
+	}
+	
+	public Stackable(MedcivGame game, int id, int ownerId) {
+		super(game, id, ownerId);
+	}
+	
+	public abstract Stackable clone(MedcivGame game);
 	
 	public int getStackSize() {
 		return stackSize;
@@ -26,13 +35,13 @@ public abstract class Stackable implements Item{
 	}
 	
 	public Stackable hypotheticalStack(int size) {
-		Stackable retval = this.clone();
+		Stackable retval = this.clone(game);
 		retval.stackSize = size;
 		return retval;
 	}
 	
 	public Stackable splitStack(int size) {
-		Stackable retval = this.clone();
+		Stackable retval = this.clone(game);
 		if(size >= stackSize) {
 			this.stackSize = 0;
 		}else {

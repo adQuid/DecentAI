@@ -1,6 +1,5 @@
 package medciv.model.actions;
 
-import medciv.aiconstructs.ActionType;
 import medciv.model.MedcivGame;
 import medciv.model.Villager;
 import medciv.model.items.Cow;
@@ -8,16 +7,17 @@ import medciv.model.items.Milk;
 
 public class MilkAnimal implements ActionType{
 
-	private Cow target;
-	private Villager owner;
-	
-	public MilkAnimal(Cow target, Villager owner) {
-		this.target = target;
-		this.owner = owner;
+	private int targetId;
+	private int ownerId;
+		
+	public MilkAnimal(int targetId, int owner) {
+		super();
+		this.targetId = targetId;
+		this.ownerId = owner;
 	}
-	
-	public Cow getTarget() {
-		return target;
+
+	public int getId() {
+		return targetId;
 	}
 	
 	public String toString() {
@@ -26,14 +26,21 @@ public class MilkAnimal implements ActionType{
 	
 	@Override
 	public void doAction(MedcivGame game) {
-		if(!target.isWasMilkedThisTurn()) {
-			target.setWasMilkedThisTurn(true);
-			if(game.isLive()) {
-				int roll = game.getRandom().nextInt(3);
-				owner.addItems(new Milk(roll));
-			}else{
-				owner.addItems(new Milk(1));
+		//a silly way to resolve this, but milking a cow has no effect if you or the cow are dead
+		try {
+			Villager owner = game.matchingVillager(ownerId);
+			Cow target = (Cow)owner.getItemById(targetId);
+			if(!target.isWasMilkedThisTurn()) {
+				target.setWasMilkedThisTurn(true);
+				if(game.isLive()) {
+					int roll = game.getRandom().nextInt(3);
+					owner.addItems(new Milk(game, roll,ownerId));
+				}else{
+					owner.addItems(new Milk(game, 1,ownerId));
+				}
 			}
+		}catch(NullPointerException e) {
+			//do nothing; cow is dead
 		}
 	}
 
