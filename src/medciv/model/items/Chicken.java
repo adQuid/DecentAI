@@ -17,15 +17,15 @@ import medciv.model.actions.MilkAnimal;
 import medciv.model.actions.TendAnimal;
 import medciv.ui.MainUI;
 
-public class Cow extends Livestock{
+public class Chicken extends Livestock{
 	
 	private boolean wasMilkedThisTurn = false;
 	
-	public Cow(int ownerId) {
+	public Chicken(int ownerId) {
 		super(ownerId);
 	}
 	
-	public Cow(int id, int ownerId) {
+	public Chicken(int id, int ownerId) {
 		super(id, ownerId);
 	}
 	
@@ -63,39 +63,37 @@ public class Cow extends Livestock{
 	@Override
 	public void endRound(MedcivGame game, Villager owner) {
 		super.endRound(game, owner);
-		wasMilkedThisTurn = false;			
+		wasMilkedThisTurn = false;		
+		
+		owner.addItems(new Eggs(1, owner.getId()));
 	}
 
 	@Override
 	public Item clone() {
-		Cow retval = new Cow(getId(), ownerId);
+		Chicken retval = new Chicken(getId(), ownerId);
 		retval.wasMilkedThisTurn = this.wasMilkedThisTurn;
 		super.cloneHelper(retval);
 		return retval;
 	}
 	
 	public String toString() {
-		return "Cow";
+		return "Chicken";
 	}
 
 	@Override
 	public String description() {
-		return "A cow. Seems healthy.";
+		return "A chicken. Seems healthy.";
 	}
 
 	@Override
 	public void focusOnItem() {
-		
-		String milkText = willBeMilkedThisTurn()?"Already milked this turn":"Milk";
-		JButton milkButton = new JButton(milkText);
-		milkButton.addActionListener(new MilkAnimalListener(this));
-		
+				
 		String tendText = willBeTendedThisTurn()?"Already tended to this turn":"Tend to Animal";
 		JButton tendButton = new JButton(tendText);
 		tendButton.addActionListener(new TendAnimalListener(this));
 		
 		MainUI.setFocusItem(this);
-		MainUI.addItemOptions("Cow", tendButton, milkButton);
+		MainUI.addItemOptions("Chicken", tendButton);
 	}
 
 	@Override

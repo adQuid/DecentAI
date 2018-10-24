@@ -11,21 +11,21 @@ import medciv.model.MedcivGame;
 import medciv.model.Villager;
 import medciv.ui.MainUI;
 
-public class Milk extends Edible{
+public class Eggs extends Edible{
 	
 	int age = 0;
 	
-	public Milk(int size,  int ownerId) {
+	public Eggs(int size,  int ownerId) {
 		this(size,0,ownerId);
 	}
 	
-	public Milk(int size, int age,  int ownerId) {
+	public Eggs(int size, int age,  int ownerId) {
 		super(ownerId);
 		this.stackSize = size;
 		this.age = age;
 	}
 	
-	public Milk(int size, int age, int id, int ownerId) {
+	public Eggs(int size, int age, int id, int ownerId) {
 		super(id, ownerId);
 		this.stackSize = size;
 		this.age = age;
@@ -37,20 +37,20 @@ public class Milk extends Edible{
 	}
 
 	@Override
-	public Milk clone() {
-		return new Milk(stackSize,age,this.getId(),ownerId);
+	public Eggs clone() {
+		return new Eggs(stackSize,age,this.getId(),ownerId);
 	}
 
 	public String toString() {
-		return "Milk";
+		return "Eggs";
 	}
 	
 	@Override
 	public String description() {
-		if(age < 2) {
-			return stackSize+" units of milk";
+		if(age < 3) {
+			return stackSize+" units of eggs";
 		} else {
-			return stackSize+" units of spoiled milk (age "+age+")";
+			return stackSize+" units of rotten eggs (age "+age+")";
 		}
 	}
 
@@ -61,13 +61,13 @@ public class Milk extends Edible{
 
 	@Override
 	public int foodPriority() {
-		return 10-(age*3);
+		return 9-(age);
 	}
 
 	@Override
 	public boolean isEquivelent(Stackable other) {
-		if(other instanceof Milk) {
-		return this.age == ((Milk)other).age;
+		if(other instanceof Eggs) {
+		return this.age == ((Eggs)other).age;
 		} else {
 			return false;
 		}

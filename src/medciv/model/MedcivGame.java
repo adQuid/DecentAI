@@ -164,7 +164,7 @@ public class MedcivGame implements Game{
 		for(MedcivPlayer player: players) {
 			for(Action action: player.getActionsThisTurn()) {
 				MedcivAction castAction = (MedcivAction)action;
-				if(matchingVillager(castAction.getVillagerId()).timeLeft() > 0) {
+				if(matchingVillager(castAction.getVillagerId()).timeLeft(this) > 0) {
 					castAction.getType().doAction(this);
 				}else {
 					//do nothing: you just can't afford this
@@ -173,7 +173,7 @@ public class MedcivGame implements Game{
 		}
 				
 		for(Villager current: people) {
-			current.endRound();
+			current.endRound(this);
 		}
 	}
 

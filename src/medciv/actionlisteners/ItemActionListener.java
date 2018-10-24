@@ -32,7 +32,9 @@ public class ItemActionListener implements MouseListener{
 
 	@Override
 	public void mousePressed(MouseEvent arg0) {
-		item.focusOnItem();	
+		if(MainUI.liveGame.matchingVillager(item.getOwnerId()).getOwner().equals(MainUI.liveGame.getSelectedPlayer())) {
+			item.focusOnItem();	
+		}
 		
 	}
 

@@ -8,6 +8,7 @@ import aibrain.Game;
 import aibrain.IdeaGenerator;
 import aibrain.Player;
 import medciv.model.actions.TendAnimal;
+import medciv.model.items.Chicken;
 import medciv.model.items.Cow;
 import medciv.model.Item;
 import medciv.model.MedcivGame;
@@ -29,6 +30,12 @@ public class MedcivBaseIdeaGen implements IdeaGenerator{
 				milkAndTend.add(cow.tendAction(villager));
 				milkAndTend.add(cow.milkAction(villager));
 				retval.add(milkAndTend);
+			}
+			if(current instanceof Chicken) {
+				Chicken chicken = (Chicken)current;
+				List<Action> tend = new ArrayList<Action>();
+				tend.add(chicken.tendAction(villager));
+				retval.add(tend);
 			}
 		}
 		

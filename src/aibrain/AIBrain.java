@@ -116,11 +116,31 @@ public class AIBrain {
 		return lastIdea;
 	}
 	
+	public double evaluateDeal(Game sourceGame, Deal deal) {
+		//if I don't know what I'm doing without the deal, figure it out real quick
+		if(lastIdea == null) {
+			runAI(sourceGame);
+		}
+		
+		Score scoreWithDeal = runIterations(sourceGame, maxTtl, deal).getScore();
+		
+		return scoreWithDeal.totalScore() / lastIdea.getScore().totalScore();		
+	}
+	
 	private HypotheticalResult runIterations(Game game, int forcast) {
+		return runIterations(game,forcast,null);
+	}
+	
+	private HypotheticalResult runIterations(Game game, int forcast, Deal dealToConsider) {
 		int iteration = 1;
 		HypotheticalResult result = null;//this SHOULD fail if the variable is not changed
 		List<Action> committedActions = new ArrayList<Action>();
-		Plan plan = Plan.emptyPlan();
+		Plan plan;
+		if(dealToConsider != null) {
+			plan = dealToConsider.offers.get(self);
+		}else {
+			plan = Plan.emptyPlan();
+		}
 		while(this.ideaGenerator.hasFurtherIdeas(game, self, committedActions, iteration)) {		
 			Hypothetical hypothetical = new Hypothetical(game, 
 					this, plan.getPlannedActions(), forcast,

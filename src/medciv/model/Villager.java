@@ -16,15 +16,16 @@ public class Villager{
 	private int id;
 	private MedcivPlayer owner;
 	private String name;
-	private Town location;
+	private int location;
 	private List<Item> ownedItems;
-	private int foodToEat = 0;
+	private int foodToEat = 2;
+	private boolean starving = false;
 	
-	public Villager(MedcivGame game, Town location, MedcivPlayer owner, String name) {
+	public Villager(MedcivGame game, int location, MedcivPlayer owner, String name) {
 		this(game, location,owner,name,lastId++);
 	}
 	
-	public Villager(MedcivGame game, Town location, MedcivPlayer owner, String name, int id) {
+	public Villager(MedcivGame game, int location, MedcivPlayer owner, String name, int id) {
 		this.game = game;
 		this.id = id;
 		this.name = name;
@@ -37,9 +38,10 @@ public class Villager{
 		Villager retval = new Villager(game,location,owner,name,id);
 		
 		for(Item current: ownedItems) {
-			retval.ownedItems.add(current.clone(game));
+			retval.ownedItems.add(current.clone());
 		}
 		retval.owner = this.owner;
+		retval.starving = this.starving;
 		return retval;
 	}
 	
@@ -73,11 +75,11 @@ public class Villager{
 		return name;
 	}
 
-	public Town getLocation() {
+	public int getLocation() {
 		return location;
 	}
 
-	public void setLocation(Town location) {
+	public void setLocation(int location) {
 		this.location = location;
 	}
 
@@ -94,8 +96,8 @@ public class Villager{
 		return null;
 	}
 
-	public int timeLeft() {
-		return timeLeft(owner.getActionsThisTurn());
+	public int timeLeft(MedcivGame game) {
+		return timeLeft(game.findMatchingPlayer(owner).getActionsThisTurn());
 	}
 		
 	public int timeLeft(List<Action> actions) {
@@ -166,6 +168,10 @@ public class Villager{
 		return new FoodGrouping(ownedItems, foodToEat);
 	}
 	
+	public boolean isStarving() {
+		return starving;
+	}
+	
 	public List<Action> returnActions(){
 		List<Action> retval = new ArrayList<Action>();
 		
@@ -176,13 +182,19 @@ public class Villager{
 		return retval;
 	}
 	
-	public void endRound() {
+	public void endRound(MedcivGame game) {
+		if(getPlannedFood().belowFoodGoal(foodToEat)) {
+			starving = true;
+		}else {
+			starving = false;
+		}
 		for(Item current: getPlannedFood().getFood()) {
 			removeItem(current);//later we need to check if these actually get removed. If not, we go down a food tier
 		}
 		
-		for(Item current: ownedItems) {
-			current.endRound(this);
+		List<Item> currentItems = new ArrayList<Item>(ownedItems);
+		for(Item current: currentItems) {
+			current.endRound(game, this);
 		}
 		
 		List<Item> newOwnedItems = new ArrayList<Item>();

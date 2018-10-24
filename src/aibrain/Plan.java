@@ -31,6 +31,14 @@ public class Plan {
 		this.reasonings = new ArrayList<Reasoning>(other.reasonings);
 	}
 	
+	public Plan addTo(Plan other) {
+		for(int index = 0; index < plannedActions.size(); index++) {
+			plannedActions.get(index).addAll(other.plannedActions.get(index));	
+		}
+		
+		return this;
+	}
+	
 	public List<List<Action>> getPlannedActions() {
 		return plannedActions;
 	}

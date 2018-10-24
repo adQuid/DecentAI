@@ -26,7 +26,7 @@ public class FoodGrouping {
 		return food;
 	}
 	
-	private boolean belowFoodGoal(int foodSize) {
+	public boolean belowFoodGoal(int foodSize) {
 		int totalFood = 0;
 		for(Edible current: food) {
 			if(current instanceof Stackable) {

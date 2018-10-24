@@ -7,17 +7,15 @@ import medciv.aiconstructs.MedcivAction;
 
 public abstract class Item {
 	
-	protected MedcivGame game;
 	private static int lastId = 0;
 	private int id;
 	protected int ownerId;
 	
-	public Item(MedcivGame game, int ownerId) {
-		this(game, lastId++, ownerId);
+	public Item(int ownerId) {
+		this(lastId++, ownerId);
 	}
 	
-	public Item(MedcivGame game, int id, int ownerId) {
-		this.game = game;
+	public Item(int id, int ownerId) {
 		this.id = id;
 		this.ownerId = ownerId;
 	}
@@ -26,9 +24,13 @@ public abstract class Item {
 		return id;
 	}
 	
-	public abstract void endRound(Villager owner);
+	public int getOwnerId() {
+		return ownerId;
+	}
 	
-	public abstract Item clone(MedcivGame game);
+	public abstract void endRound(MedcivGame game, Villager owner);
+	
+	public abstract Item clone();
 	
 	public abstract String description();
 	

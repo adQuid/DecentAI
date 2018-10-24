@@ -8,24 +8,25 @@ import medciv.model.actions.ActionType;
 import medciv.model.actions.MilkAnimal;
 import medciv.model.actions.TendAnimal;
 import medciv.model.items.Cow;
+import medciv.model.items.Livestock;
 import medciv.ui.MainUI;
 
 public class TendAnimalListener implements ActionListener{
 
-	private Cow cow;
+	private Livestock livestock;
 	
-	public TendAnimalListener(Cow cow) {
-		this.cow = cow;
+	public TendAnimalListener(Livestock cow) {
+		this.livestock = cow;
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {
-		if(!cow.isTendedToThisTurn()) {
-			MedcivAction tendAction = cow.tendAction(MainUI.liveGame.getSelectedVillager());
+		if(!livestock.isTendedToThisTurn()) {
+			MedcivAction tendAction = livestock.tendAction(MainUI.liveGame.getSelectedVillager());
 			
 			if(MainUI.liveGame.getSelectedVillager().canAffordAction(tendAction)) {
 				MainUI.liveGame.addActionForCurrentPlayer(tendAction);
 			
-				cow.focusOnItem();
+				livestock.focusOnItem();
 			}
 		}
 	}		

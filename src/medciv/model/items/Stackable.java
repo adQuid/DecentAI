@@ -7,15 +7,15 @@ public abstract class Stackable extends Item{
 
 	protected int stackSize = 1;
 	
-	public Stackable(MedcivGame game, int ownerId) {
-		super(game, ownerId);
+	public Stackable(int ownerId) {
+		super(ownerId);
 	}
 	
-	public Stackable(MedcivGame game, int id, int ownerId) {
-		super(game, id, ownerId);
+	public Stackable(int id, int ownerId) {
+		super(id, ownerId);
 	}
 	
-	public abstract Stackable clone(MedcivGame game);
+	public abstract Stackable clone();
 	
 	public int getStackSize() {
 		return stackSize;
@@ -35,13 +35,13 @@ public abstract class Stackable extends Item{
 	}
 	
 	public Stackable hypotheticalStack(int size) {
-		Stackable retval = this.clone(game);
+		Stackable retval = this.clone();
 		retval.stackSize = size;
 		return retval;
 	}
 	
 	public Stackable splitStack(int size) {
-		Stackable retval = this.clone(game);
+		Stackable retval = this.clone();
 		if(size >= stackSize) {
 			this.stackSize = 0;
 		}else {

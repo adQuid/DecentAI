@@ -4,7 +4,9 @@ import medciv.aiconstructs.MedcivPlayer;
 import medciv.model.MedcivGame;
 import medciv.model.Town;
 import medciv.model.Villager;
+import medciv.model.items.Chicken;
 import medciv.model.items.Cow;
+import medciv.ui.MainUI;
 
 public class BaseGameSetup {
 
@@ -13,15 +15,26 @@ public class BaseGameSetup {
 		MedcivGame retval = new MedcivGame(false);
 		
 		MedcivPlayer startPlayer = new MedcivPlayer(retval);
+		MedcivPlayer startPlayer2 = new MedcivPlayer(retval);
 		Town startTown = new Town("Townsburg");
-		Villager startMan = new Villager(retval,startTown,startPlayer,"bilbo");
-		for(int i=0;i<1;i++) {
-			startMan.addItems(new Cow(retval,startMan.getId()));
+		
+		MainUI.setFocusTown(startTown);
+		
+		Villager playerGuy = new Villager(retval,startTown.getId(),startPlayer,"bilbo");
+		Villager botMan = new Villager(retval,startTown.getId(),startPlayer2,"bobbo");
+		for(int i=0;i<3;i++) {
+			playerGuy.addItems(new Cow(playerGuy.getId()));
+			botMan.addItems(new Cow(botMan.getId()));
+			botMan.addItems(new Chicken(botMan.getId()));
 		}
 		
-		retval.getPeople().add(startMan);		
+		playerGuy.addItems(new Chicken(playerGuy.getId()));
+		
+		retval.getPeople().add(playerGuy);	
+		retval.getPeople().add(botMan);
 		retval.getTowns().add(startTown);
 		retval.getPlayers().add(startPlayer);
+		retval.getPlayers().add(startPlayer2);
 		
 		retval.setSelectedPlayer(retval.getPlayers().get(0));
 		retval.setSelectedVillager(retval.getPeople().get(0));

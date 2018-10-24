@@ -17,8 +17,11 @@ import javax.swing.WindowConstants;
 
 import aibrain.AIBrain;
 import aibrain.Action;
+import aibrain.HypotheticalResult;
+import medciv.actionlisteners.CancelVillagerFocusListener;
 import medciv.actionlisteners.EndGameAIListener;
 import medciv.actionlisteners.EndGameHumanActionListener;
+import medciv.actionlisteners.FocusVillagerListener;
 import medciv.actionlisteners.ItemActionListener;
 import medciv.actionlisteners.RemoveActionListener;
 import medciv.aiconstructs.MedcivAction;
@@ -31,6 +34,7 @@ import medciv.gamesetup.BaseGameSetup;
 import medciv.model.FoodGrouping;
 import medciv.model.Item;
 import medciv.model.MedcivGame;
+import medciv.model.Town;
 import medciv.model.Villager;
 import medciv.model.items.Edible;
 
@@ -51,12 +55,14 @@ public class MainUI {
 	
 	private static VerticalList itemList = new VerticalList(new ArrayList<Component>());
 	private static VerticalList actionList = new VerticalList(new ArrayList<Component>());
+	private static VerticalList villagerList = new VerticalList(new ArrayList<Component>());
 	
 	private static JButton quit = new JButton("Quit");
 	private static JButton save = new JButton("Save");
 	private static JButton endTurn1 = new JButton("End Turn as Human");	
 	private static JButton endTurn2 = new JButton("End Turn as AI");	
 	
+	private static Town focusTown;
 	private static Villager focusVillager;
 	private static Item focusItem;
 		
@@ -76,6 +82,14 @@ public class MainUI {
 		MainUI.focusItem = focusItem;
 	}
 
+	public static Town getFocusTown() {
+		return focusTown;
+	}
+	
+	public static void setFocusTown(Town focusTown) {
+		MainUI.focusTown = focusTown;
+	}
+	
 	public static void setup(MedcivGame game) {
 		
 		liveGame = game;
@@ -129,18 +143,49 @@ public class MainUI {
 			foodString += current.description();
 		}
 		
-		String timeString = "Avalible time: "+focusVillager.timeLeft();
+		String timeString = "Avalible time: "+focusVillager.timeLeft(liveGame);
 		
 		JLabel nameLabel = new JLabel(focus.getName());
 		JLabel foodLabel = new JLabel(foodString);
 		JLabel timeLabel = new JLabel(timeString);
+
+		JButton deselect = new JButton("Deselect");
+		deselect.addActionListener(new CancelVillagerFocusListener());
 		
 		displayItems();
 		
-		mainWindow.setLayout(new GridLayout(3,1));
+		mainWindow.setLayout(new GridLayout(4,1));
 		mainWindow.add(nameLabel);
 		mainWindow.add(foodLabel);
 		mainWindow.add(timeLabel);
+		mainWindow.add(deselect);
+		
+		GUI.revalidate();
+		GUI.repaint();
+	}
+	
+	public static void focusOnTown(Town focus) {
+		focusItem = null;
+		focusVillager = null;
+		focusTown = focus;
+		
+		mainWindow.removeAll();
+		detailWindow.removeAll();
+		
+		displayVillagers();
+	}
+	
+	public static void displayVillagers() {
+		List<Component> villagers = new ArrayList<Component>();
+		
+		for(Villager current: liveGame.getPeople()) {
+			if(current.getLocation() == focusTown.getId()) {
+				JButton toAdd = new JButton(current.getName());
+				toAdd.addActionListener(new FocusVillagerListener(current));
+				villagers.add(toAdd);
+			}
+		}
+		villagerList.updatePanel(detailWindow, villagers, 10);
 		
 		GUI.revalidate();
 		GUI.repaint();
@@ -173,7 +218,7 @@ public class MainUI {
 		GUI.repaint();
 	}
 	
-	public static void addOptions(String title, Component... components) {
+	public static void addItemOptions(String title, Component... components) {
 		mainWindow.removeAll();
 		
 		mainWindow.setLayout(new GridLayout(components.length+2,1));
@@ -183,7 +228,7 @@ public class MainUI {
 			mainWindow.add(current);
 		}
 		
-		JButton cancel = new JButton("cancel");
+		JButton cancel = new JButton("deselect");
 		cancel.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				MainUI.cancelItemFocus();
@@ -202,14 +247,25 @@ public class MainUI {
 	public static void refresh() {
 		if(focusItem != null) {
 			focusItem.focusOnItem();
-		} else {
+		} else if (focusVillager != null){
 			focusOnVillager(focusVillager);
+			displayItems();
+			
+		} else {
+			focusOnTown(focusTown);
 		}
-		displayItems();
 		displayPlannedActions();
 	}
 	
 	public static void endRound() {
+		for(AIBrain current: brains) {
+			if(!current.getSelf().equals(liveGame.getSelectedPlayer())) {
+				HypotheticalResult result = current.runAI(liveGame);
+				System.out.println(result.getImmediateActions());
+				liveGame.setActionsForPlayer(result.getImmediateActions(), current.getSelf());
+			}
+		}
+		
 		liveGame.endRound();
 		MainUI.cancelItemFocus();
 		MainUI.refresh();
@@ -219,11 +275,13 @@ public class MainUI {
 		setup(BaseGameSetup.newBasicGame());
 		
 		for(MedcivPlayer current: liveGame.getPlayers()) {
-			brains.add(new AIBrain(current, 4, 0, 1, new MedcivBaseIdeaGen(), new MedcivContingencyGenerator(), new MedcivEvaluator(), new MedcivCloner()));
+			if(!current.equals(liveGame.getSelectedPlayer())) {
+				brains.add(new AIBrain(current, 4, 0, 1, new MedcivBaseIdeaGen(), new MedcivContingencyGenerator(), new MedcivEvaluator(), new MedcivCloner()));
+			}
 		}
 		
 		focusOnVillager(liveGame.getPeople().get(0));
-		
+				
 		GUI.setVisible(true);
 	}
 }
