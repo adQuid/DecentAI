@@ -1,5 +1,6 @@
 package medciv.aiconstructs;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,14 +20,14 @@ public class MedcivEvaluator implements GameEvaluator{
 	public Score getValue(Game game, Player empire) {
 		Score retval = new Score();
 		
-		Map<String,Double> categories = new HashMap<String,Double>();
+		Map<String,BigDecimal> categories = new HashMap<String,BigDecimal>();
 		
 		MedcivGame castGame = (MedcivGame)game;
 		
 		for(Villager villager: castGame.getPeople()) {
 			if(villager.getOwner().equals(empire)) {
 				if(villager.isStarving()) {
-					categories.put("Starvation", -10.0);
+					categories.put("Starvation", new BigDecimal(-10.0));
 				}
 				
 				int totalMilk = 0;
@@ -40,14 +41,14 @@ public class MedcivEvaluator implements GameEvaluator{
 					}
 				}
 				if(categories.containsKey("milk")) {
-					categories.put("milk", categories.get("milk") + totalMilk);
+					categories.put("milk", categories.get("milk").add(new BigDecimal(totalMilk)));
 				} else {
-					categories.put("milk", (double)totalMilk);
+					categories.put("milk", new BigDecimal(totalMilk));
 				}
 				if(categories.containsKey("eggs")) {
-					categories.put("eggs", categories.get("eggs") + totalEggs);
+					categories.put("eggs", categories.get("eggs").add(new BigDecimal(totalEggs)));
 				} else {
-					categories.put("eggs", (double)totalEggs);
+					categories.put("eggs", new BigDecimal(totalEggs));
 				}
 			}
 		}

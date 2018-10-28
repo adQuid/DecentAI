@@ -8,4 +8,6 @@ public interface ActionType {
 	
 	public int getTimeCost();
 	
+	public boolean equals(Object other);
+	
 }

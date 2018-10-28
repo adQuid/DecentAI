@@ -53,9 +53,9 @@ public class MainUI {
 	
 	private static JLabel description = new JLabel("Hover over things for details");
 	
-	private static VerticalList itemList = new VerticalList(new ArrayList<Component>());
-	private static VerticalList actionList = new VerticalList(new ArrayList<Component>());
-	private static VerticalList villagerList = new VerticalList(new ArrayList<Component>());
+	private static VerticalList itemList = new VerticalList(detailWindow, new ArrayList<Component>(), 7);
+	private static VerticalList actionList = new VerticalList(sideOptionsWindow, new ArrayList<Component>(), 10);
+	private static VerticalList villagerList = new VerticalList(detailWindow, new ArrayList<Component>(), 7);
 	
 	private static JButton quit = new JButton("Quit");
 	private static JButton save = new JButton("Save");
@@ -65,6 +65,7 @@ public class MainUI {
 	private static Town focusTown;
 	private static Villager focusVillager;
 	private static Item focusItem;
+	private static boolean inDiplomacy = false;
 		
 	public static Villager getFocusVillager() {
 		return focusVillager;
@@ -149,6 +150,14 @@ public class MainUI {
 		JLabel foodLabel = new JLabel(foodString);
 		JLabel timeLabel = new JLabel(timeString);
 
+		JButton diplomacy = new JButton("Diplomacy");
+		diplomacy.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				setupDiplomacy();
+				displayDiplomacy();
+			}			
+		});
+		
 		JButton deselect = new JButton("Deselect");
 		deselect.addActionListener(new CancelVillagerFocusListener());
 		
@@ -156,8 +165,12 @@ public class MainUI {
 		
 		mainWindow.setLayout(new GridLayout(4,1));
 		mainWindow.add(nameLabel);
-		mainWindow.add(foodLabel);
 		mainWindow.add(timeLabel);
+		if(focus.getOwner().equals(liveGame.getSelectedPlayer())) {
+			mainWindow.add(foodLabel);
+		} else {
+			mainWindow.add(diplomacy);
+		}
 		mainWindow.add(deselect);
 		
 		GUI.revalidate();
@@ -185,7 +198,7 @@ public class MainUI {
 				villagers.add(toAdd);
 			}
 		}
-		villagerList.updatePanel(detailWindow, villagers, 10);
+		villagerList.updatePanel(villagers);
 		
 		GUI.revalidate();
 		GUI.repaint();
@@ -198,7 +211,7 @@ public class MainUI {
 			toAdd.addMouseListener(new ItemActionListener(current));
 			itemButtons.add(toAdd);
 		}
-		itemList.updatePanel(detailWindow, itemButtons, 7);
+		itemList.updatePanel(itemButtons);
 	}
 	
 	public static void displayPlannedActions() {
@@ -212,7 +225,7 @@ public class MainUI {
 			toAdd.addActionListener(new RemoveActionListener(liveGame.getSelectedPlayer(),(MedcivAction)current));
 			buttonList.add(toAdd);
 		}
-		actionList.updatePanel(sideOptionsWindow, buttonList, 12);
+		actionList.updatePanel(buttonList);
 		
 		GUI.revalidate();
 		GUI.repaint();
@@ -241,18 +254,39 @@ public class MainUI {
 	
 	public static void cancelItemFocus() {
 		focusItem = null;
-		focusOnVillager(focusVillager);
+		refresh();
+	}
+	
+	public static void cancelDiplomacyMenu() {
+		inDiplomacy = false;
+		refresh();
+	}
+	
+	public static void setupDiplomacy() {
+		inDiplomacy = true;
+		DiplomacyUI.setupDiplomacyScreen(liveGame.getSelectedVillager(), getFocusVillager());
+	}
+	
+	public static void displayDiplomacy() {		
+		mainWindow.removeAll();
+		mainWindow.setLayout(new GridLayout(1,1));
+		mainWindow.add(DiplomacyUI.showDiplomacyScreen());
+		GUI.revalidate();
+		GUI.repaint();
 	}
 	
 	public static void refresh() {
-		if(focusItem != null) {
+		if(inDiplomacy) {
+			displayDiplomacy();
+		} else if(focusItem != null) {
 			focusItem.focusOnItem();
 		} else if (focusVillager != null){
-			focusOnVillager(focusVillager);
-			displayItems();
-			
+			focusOnVillager(focusVillager);			
 		} else {
 			focusOnTown(focusTown);
+		}
+		if(focusVillager != null) {
+			displayItems();
 		}
 		displayPlannedActions();
 	}

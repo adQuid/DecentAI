@@ -11,7 +11,6 @@ public class MilkAnimal implements ActionType{
 	private int ownerId;
 		
 	public MilkAnimal(int targetId, int owner) {
-		super();
 		this.targetId = targetId;
 		this.ownerId = owner;
 	}
@@ -47,5 +46,30 @@ public class MilkAnimal implements ActionType{
 	@Override
 	public int getTimeCost() {
 		return 1;
-	}	
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ownerId;
+		result = prime * result + targetId;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MilkAnimal other = (MilkAnimal) obj;
+		if (ownerId != other.ownerId)
+			return false;
+		if (targetId != other.targetId)
+			return false;
+		return true;
+	}		
 }

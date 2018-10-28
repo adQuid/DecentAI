@@ -11,10 +11,8 @@ public class EndGameAIListener implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		HypotheticalResult result = MainUI.brains.get(0).runAI(MainUI.liveGame);
-		for(String current: MainUI.brains.get(0).getLogs()) {
-			System.out.println(current);
-		}
-		MainUI.liveGame.setActionsForPlayer(result.getImmediateActions(), MainUI.liveGame.getSelectedPlayer());
+		System.out.println(result.getImmediateActions());
+		//MainUI.liveGame.setActionsForPlayer(result.getImmediateActions(), MainUI.liveGame.getSelectedPlayer());
 		MainUI.endRound();
 	}
 

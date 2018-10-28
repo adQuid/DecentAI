@@ -13,7 +13,6 @@ public class TendAnimal implements ActionType{
 	private String animalName;
 			
 	public TendAnimal(int targetId, int ownerId, String animalName) {
-		super();
 		this.targetId = targetId;
 		this.ownerId = ownerId;
 		this.animalName = animalName;
@@ -39,6 +38,37 @@ public class TendAnimal implements ActionType{
 
 	@Override
 	public int getTimeCost() {
-		return 4;
-	}	
+		return 1;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((animalName == null) ? 0 : animalName.hashCode());
+		result = prime * result + ownerId;
+		result = prime * result + targetId;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TendAnimal other = (TendAnimal) obj;
+		if (animalName == null) {
+			if (other.animalName != null)
+				return false;
+		} else if (!animalName.equals(other.animalName))
+			return false;
+		if (ownerId != other.ownerId)
+			return false;
+		if (targetId != other.targetId)
+			return false;
+		return true;
+	}		
 }

@@ -14,32 +14,37 @@ public class VerticalList {
 	private List<Component> components;
 	private int position = 0;
 	VerticalListScrollListener listener = new VerticalListScrollListener(this);
+	private JPanel parentPanel;
+	private int size;
 	
-	public VerticalList(List<Component> components) {
+	public VerticalList(JPanel parentPanel, List<Component> components, int size) {
+		this.parentPanel = parentPanel;
 		this.components = components;
+		this.size = size;
 	}
 	
-	public void updatePanel(JPanel panel, int size) {
-		updatePanel(panel,components,size);
+	public void updatePanel() {
+		updatePanel(components);
 	}
 	
-	public void updatePanel(JPanel panel, List<Component> components, int size) {
-		panel.removeAll();
-		panel.removeMouseWheelListener(listener);
+	public void updatePanel(List<Component> components) {
+		parentPanel.removeAll();
+		parentPanel.removeMouseWheelListener(listener);
 		
 		this.components = components;
 		
-		panel.setLayout(new GridLayout(size,1));
+		parentPanel.setLayout(new GridLayout(size,1));
 		
 		for(int index = position; index < position+size; index++) {
 			if(index<components.size()) {
-				panel.add(components.get(index));
+				parentPanel.add(components.get(index));
 			} else {
-				panel.add(new JButton(""));
+				parentPanel.add(new JButton(""));
 			}
 		}
 		
-		panel.addMouseWheelListener(listener);
+		parentPanel.addMouseWheelListener(listener);
+		parentPanel.repaint();
 	}
 	
 	public void scroll(int scroll) {
@@ -50,5 +55,6 @@ public class VerticalList {
 		if(position >= components.size()) {
 			position = Math.max(components.size()-1,0);
 		}
+		updatePanel();
 	}
 }

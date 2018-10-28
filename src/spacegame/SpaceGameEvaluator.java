@@ -1,5 +1,6 @@
 package spacegame;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,10 +28,7 @@ public class SpaceGameEvaluator implements GameEvaluator{
 		double currencyScore = Math.pow(castGame.findMatchingPlayer(empire).getCurrency() * 1.0,1.0);
 
 		double productionPotentialScore = 0;
-		
-		//debugging; getting pillaged isn't good
-		double raidScore = 0.0;
-		
+				
 		for(Tile[] row: castGame.getMap().getGrid()){
 			for(Tile currentTile: row){
 				if(currentTile.getObject() != null && currentTile.getObject() instanceof Planet && ((Planet)currentTile.getObject()).fetchColonyForEmpire(empire) != null){
@@ -39,10 +37,10 @@ public class SpaceGameEvaluator implements GameEvaluator{
 			}
 		}
 
-		Map<String,Double> map = new HashMap<String,Double>();
-		map.put("minerals", mineralScore);
-		map.put("currency", currencyScore);
-		map.put("production potential", productionPotentialScore);
+		Map<String,BigDecimal> map = new HashMap<String,BigDecimal>();
+		map.put("minerals", new BigDecimal(mineralScore));
+		map.put("currency", new BigDecimal(currencyScore));
+		map.put("production potential", new BigDecimal(productionPotentialScore));
 		
 		return new Score(map);
 	}
