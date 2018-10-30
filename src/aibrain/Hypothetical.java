@@ -1,5 +1,6 @@
 package aibrain;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -79,7 +80,7 @@ public class Hypothetical {
 		HypotheticalResult thisLevelResult = new HypotheticalResult(game,self,plan,parent.getEvaluator());
 		
 		//remove all actions that the parent could have done, but didn't do
-		possibleParentActions.removeAll(usedParentActions);		
+		possibleParentActions.remove(usedParentActions);		
 		possibleActions.removeAll(possibleParentActions);
 		
 		List<List<Action>> ideas = possibleActions;
@@ -136,16 +137,16 @@ public class Hypothetical {
 		}
 					
 		//pick best option
-		double bestScore = 0;
+		BigDecimal bestScore = new BigDecimal(0);
 		HypotheticalResult retval = null;
 		for(HypotheticalResult current: allOptions) {
 			//warning for debugging, since there are two ways of rating the same game which is likely to break
 			if(isAtTopOfForecast() 
-					&& current.getScore().totalScore() != parent.runPath(parent.getCloner().cloneGame(game), current.getPlan()).getScore().totalScore()) {
-				double result = parent.runPath(parent.getCloner().cloneGame(game), current.getPlan(), true).getScore().totalScore();
+					&& current.getScore().totalScore().compareTo(parent.runPath(parent.getCloner().cloneGame(game), current.getPlan()).getScore().totalScore()) != 0) {
+				BigDecimal result = parent.runPath(parent.getCloner().cloneGame(game), current.getPlan(), true).getScore().totalScore();
 				System.err.println("rates as "+current.getScore().totalScore()+" vs "+result);
 			}
-			if(retval == null || current.getScore().totalScore() > bestScore) {
+			if(retval == null || current.getScore().totalScore().compareTo(bestScore) > 0) {
 				bestScore = current.getScore().totalScore();
 				retval = current;
 			}

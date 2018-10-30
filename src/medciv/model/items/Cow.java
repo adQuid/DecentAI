@@ -109,7 +109,8 @@ public class Cow extends Livestock{
 	}
 
 	public MedcivAction milkAction(Villager villager) {
-		ActionType milkType = new MilkAnimal(this.getId(), ownerId);			
+		//we don't just use owner here since the cow might be being given this round
+		ActionType milkType = new MilkAnimal(this.getId(), villager.getId());			
 		return new MedcivAction(milkType,villager.getId());
 	}
 	

@@ -12,7 +12,10 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import aibrain.Action;
+import aibrain.Deal;
+import aibrain.Plan;
 import medciv.actionlisteners.AddDiplomacyActionListener;
+import medciv.actionlisteners.OfferDealActionListener;
 import medciv.actionlisteners.RemoveDiplomacyActionListener;
 import medciv.aiconstructs.MedcivAction;
 import medciv.model.Item;
@@ -52,6 +55,7 @@ public class DiplomacyUI {
 		JPanel bigButtons = new JPanel();
 		
 		JButton offer = new JButton("Offer");
+		offer.addActionListener(new OfferDealActionListener(target.getOwner()));
 		
 		JButton cancel = new JButton("Cancel");
 		cancel.addActionListener(new ActionListener(){
@@ -116,7 +120,7 @@ public class DiplomacyUI {
 		
 		List<Component> otherOffers = new ArrayList<Component>();
 		//getting items 
-		for(Item current: you.getOwnedItems()) {
+		for(Item current: target.getOwnedItems()) {
 			MedcivAction giveAction = new MedcivAction(new GiveItem(target.getId(),you.getId(),current.getId(),current.toString()),target.getId());
 			if(!targetOffers.contains(giveAction)) {
 				JButton giveItem = new JButton("give "+current.toString());
@@ -144,5 +148,29 @@ public class DiplomacyUI {
 
 	public static void removeActionFromOther(MedcivAction action) {
 		targetOffers.remove(action);
+	}
+	
+	public static Deal getDeal() {
+		Deal retval = new Deal();
+		
+		Plan myPlan = Plan.emptyPlan(0);
+		Plan targetPlan = Plan.emptyPlan(0);
+		
+		List<Action> myActionList = new ArrayList<Action>();
+		for(MedcivAction current: myOffers) {
+			myActionList.add(current);
+		}		
+		myPlan.addActionListFront(myActionList);
+		
+		List<Action> targetActionList = new ArrayList<Action>();
+		for(MedcivAction current: targetOffers) {
+			targetActionList.add(current);
+		}		
+		targetPlan.addActionListFront(targetActionList);
+		
+		retval.offers.put(you.getOwner(), myPlan);
+		retval.offers.put(target.getOwner(), targetPlan);
+		
+		return retval;
 	}
 }

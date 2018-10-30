@@ -33,9 +33,9 @@ public class MilkAnimal implements ActionType{
 				target.setWasMilkedThisTurn(true);
 				if(game.isLive()) {
 					int roll = game.getRandom().nextInt(3) + game.getRandom().nextInt(3);
-					owner.addItems(new Milk(roll,ownerId));
+					owner.addItem(new Milk(roll,ownerId));
 				}else{
-					owner.addItems(new Milk(2,ownerId));
+					owner.addItem(new Milk(2,ownerId));
 				}
 			}
 		}catch(NullPointerException e) {

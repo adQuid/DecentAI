@@ -1,5 +1,7 @@
 package aibrain;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +40,7 @@ public class AIBrain {
 		this.gameCloner = gameCloner;
 	}
 	
-	//run one turn of the AI
+	//run one turn of the AI. This modifies the plan, so WILL break if the turn does not end
 	public HypotheticalResult runAI(Game sourceGame){
 		
 		this.trueGame = sourceGame.imageForPlayer(self);
@@ -53,7 +55,7 @@ public class AIBrain {
 			//is my last idea still working?
 			Score latestScore = runPath(gameCloner.cloneGame(trueGame), lastIdea.getPlan()).getScore();
 			Score assumedScore = lastIdea.getScore().withoutFirstRound();
-			if(latestScore.totalScore() < assumedScore.totalScore()) {
+			if(latestScore.totalScore().compareTo(assumedScore.totalScore()) < 0) {
 				addLog("this plan got worse: "+latestScore.totalScore()+" vs "+assumedScore);
 				lastIdea = runIterations(trueGame, maxTtl);
 			} else {
@@ -98,7 +100,7 @@ public class AIBrain {
 				ammendedPlan.getPlannedActions().set(0, ammendedActions);
 				
 				HypotheticalResult ammendedResult = runPath(trueGame, ammendedPlan);
-				if(ammendedResult.getScore().totalScore() >= lastIdea.getScore().totalScore()) {
+				if(ammendedResult.getScore().totalScore().compareTo(lastIdea.getScore().totalScore()) >= 0) {
 					//this is safe because I immediately get out of the loop
 					lastIdea.getPlan().getPlannedActions().set(0, ammendedResult.getImmediateActions());
 					shouldContinue = true;
@@ -116,7 +118,7 @@ public class AIBrain {
 		return lastIdea;
 	}
 	
-	public double evaluateDeal(Game sourceGame, Deal deal) {
+	public BigDecimal evaluateDeal(Game sourceGame, Deal deal) {
 		//if I don't know what I'm doing without the deal, figure it out real quick
 		if(lastIdea == null) {
 			runAI(sourceGame);
@@ -124,7 +126,20 @@ public class AIBrain {
 		
 		Score scoreWithDeal = runIterations(sourceGame, maxTtl, deal).getScore();
 		
-		return scoreWithDeal.totalScore() / lastIdea.getScore().totalScore();		
+		if(lastIdea.getScore().totalScore().compareTo(new BigDecimal(0)) == 0) {
+			if(scoreWithDeal.totalScore().compareTo(new BigDecimal(0)) > 0) {
+				return new BigDecimal(1);
+			} else if (scoreWithDeal.totalScore().compareTo(new BigDecimal(0)) < 0) {
+				return new BigDecimal(-1);
+			} else {
+				return new BigDecimal(0);
+			}
+		} else {
+			//value of deal is (score with deal - base) / (abs(base))
+			BigDecimal scoreDifference = scoreWithDeal.totalScore().subtract(lastIdea.getScore().totalScore());
+		
+			return scoreDifference.divide(lastIdea.getScore().totalScore().abs(),new MathContext(Score.PPRECISION));		
+		}
 	}
 	
 	private HypotheticalResult runIterations(Game game, int forcast) {
@@ -136,13 +151,21 @@ public class AIBrain {
 		HypotheticalResult result = null;//this SHOULD fail if the variable is not changed
 		List<Action> committedActions = new ArrayList<Action>();
 		Plan plan;
+		Game copyGame = this.gameCloner.cloneGame(game);
 		if(dealToConsider != null) {
-			plan = dealToConsider.offers.get(self);
+			plan = Plan.emptyPlan(forcast).addTo(dealToConsider.offers.get(self));
+
+			//this duplicates the plan for self, but it will be erased in the hypothetical's calculate method
+			//also, this only works for one layer right now
+			for(Player current: dealToConsider.offers.keySet()) {
+				copyGame.setActionsForPlayer(dealToConsider.offers.get(current).getLayer(0), current);
+			}
+		
 		}else {
-			plan = Plan.emptyPlan();
+			plan = Plan.emptyPlan(forcast);
 		}
-		while(this.ideaGenerator.hasFurtherIdeas(game, self, committedActions, iteration)) {		
-			Hypothetical hypothetical = new Hypothetical(game, 
+		while(this.ideaGenerator.hasFurtherIdeas(copyGame, self, committedActions, iteration)) {		
+			Hypothetical hypothetical = new Hypothetical(copyGame, 
 					this, plan.getPlannedActions(), forcast,
                     lookAheadSecondary, tailLength, self, iteration,ideaGenerator);
 			result = hypothetical.calculate();
@@ -155,7 +178,7 @@ public class AIBrain {
 		if(result == null) {
 			System.err.println("Idea Generator generated no ideas on iteration 1");
 
-			Hypothetical hypothetical = new Hypothetical(game,
+			Hypothetical hypothetical = new Hypothetical(copyGame,
 					this, plan.getPlannedActions(), forcast,
                     lookAheadSecondary, tailLength, self, 1,ideaGenerator);
 			return hypothetical.calculate();
@@ -218,7 +241,7 @@ public class AIBrain {
 		
 		//clear any existing actions; we only look at the plan
 		for(Player current: copyGame.getEmpires()) {
-			copyGame.setActionsForPlayer(new ArrayList<Action>(), current);
+			//copyGame.setActionsForPlayer(new ArrayList<Action>(), current);
 		}
 		
 		Score scoreAccumulator = new Score();
@@ -267,15 +290,15 @@ public class AIBrain {
 		for(Contingency current: contingencies) {
 			Game contingencyGame = gameCloner.cloneGame(game);
 
-			double value1 = gameEvaluator.getValue(contingencyGame, current.getPlayer()).totalScore();
+			BigDecimal value1 = gameEvaluator.getValue(contingencyGame, current.getPlayer()).totalScore();
 			
 			contingencyGame.setActionsForPlayer(current.getActions(), current.getPlayer());
 			contingencyGame.endRound();			
 			
-			double value2 = gameEvaluator.getValue(contingencyGame, current.getPlayer()).totalScore();
+			BigDecimal value2 = gameEvaluator.getValue(contingencyGame, current.getPlayer()).totalScore();
 			
 			//if this empire does better when doing this contingency, we assume it will choose to do so.
-			if(value2 > value1) {
+			if(value2.compareTo(value1) > 0) {
 				game.appendActionsForPlayer(current.getActions(), current.getPlayer());
 			}
 		}

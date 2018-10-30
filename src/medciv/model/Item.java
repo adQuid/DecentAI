@@ -28,6 +28,10 @@ public abstract class Item {
 		return ownerId;
 	}
 	
+	public void setOwnerId(int ownerId) {
+		this.ownerId = ownerId;
+	}
+	
 	public abstract void endRound(MedcivGame game, Villager owner);
 	
 	public abstract Item clone();

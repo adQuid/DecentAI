@@ -171,9 +171,13 @@ public class MedcivGame implements Game{
 				}
 			}
 		}
-				
+		
 		for(Villager current: people) {
 			current.endRound(this);
+		}
+		//clear actions
+		for(MedcivPlayer player: players) {
+			player.setActionsThisTurn(new ArrayList<Action>());
 		}
 	}
 

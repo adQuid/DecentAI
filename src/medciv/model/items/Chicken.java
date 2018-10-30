@@ -65,7 +65,7 @@ public class Chicken extends Livestock{
 		super.endRound(game, owner);
 		wasMilkedThisTurn = false;		
 		
-		owner.addItems(new Eggs(1, owner.getId()));
+		owner.addItem(new Eggs(1, owner.getId()));
 	}
 
 	@Override

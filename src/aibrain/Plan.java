@@ -9,12 +9,13 @@ public class Plan {
 	private List<List<Action>> plannedActions;
 	private List<Reasoning> reasonings;
 	
-	public static Plan emptyPlan() {
+	public static Plan emptyPlan(int size) {
 		Plan retval = new Plan();
-		for(int index=0; index<100; index++) {
+		for(int index=0; index<size; index++) {
 			retval.plannedActions.add(new ArrayList<Action>());
 			retval.reasonings.add(new Reasoning("empty action list"));
 		}
+		
 		return retval;
 	}
 	
@@ -32,17 +33,26 @@ public class Plan {
 	}
 	
 	public Plan addTo(Plan other) {
-		for(int index = 0; index < plannedActions.size(); index++) {
-			plannedActions.get(index).addAll(other.plannedActions.get(index));	
+		for(int index = 0; index < Math.max(plannedActions.size(),other.plannedActions.size()); index++) {
+			plannedActions.get(index).addAll(other.getLayer(index));	
 		}
 		
 		return this;
 	}
 	
+	//TODO: get rid of this and make it so you just select one layer at a time, defaulting to empty list
 	public List<List<Action>> getPlannedActions() {
 		return plannedActions;
 	}
 
+	public List<Action> getLayer(int layer) {
+		if(layer < plannedActions.size()) {
+			return new ArrayList<Action>(plannedActions.get(layer));
+		} else {
+			return new ArrayList<Action>();
+		}
+	}
+	
 	public void addActionListFront(List<Action> plannedActions) {
 		this.plannedActions.add(0, plannedActions);
 		if(this.plannedActions.size() > this.reasonings.size()) {

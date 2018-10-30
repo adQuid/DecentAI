@@ -22,13 +22,15 @@ public class BaseGameSetup {
 		
 		Villager playerGuy = new Villager(retval,startTown.getId(),startPlayer,"bilbo");
 		Villager botMan = new Villager(retval,startTown.getId(),startPlayer2,"bobbo");
-		for(int i=0;i<3;i++) {
-			botMan.addItems(new Cow(botMan.getId()));
-			playerGuy.addItems(new Chicken(playerGuy.getId()));
-		}
 		
-		botMan.addItems(new Chicken(botMan.getId()));
+		playerGuy.addItem(new Cow(playerGuy.getId()));
+		playerGuy.addItem(new Cow(playerGuy.getId()));
+		playerGuy.addItem(new Cow(playerGuy.getId()));
+		playerGuy.addItem(new Chicken(playerGuy.getId()));
 		
+		
+		//botMan.addItems(new Chicken(botMan.getId()));
+				
 		retval.getPeople().add(playerGuy);	
 		retval.getPeople().add(botMan);
 		retval.getTowns().add(startTown);

@@ -117,7 +117,8 @@ public class Villager{
 		return timeLeft(testActions) > 0;
 	}
 	
-	public void addItems(Item item) {
+	public void addItem(Item item) {
+		item.setOwnerId(getId());
 		if(item instanceof Stackable) {
 			for(Item current: ownedItems) {
 				if(current instanceof Stackable && ((Stackable)current).isEquivelent((Stackable)item)) {
@@ -131,9 +132,13 @@ public class Villager{
 	
 	//returns true if the villager actually had an item of that class
 	public boolean removeItem(Item item) {
+		if(item == null) {
+			System.err.println("tried to remove null item!");
+			return false;
+		}
 		Item toRemove = null;
 		for(Item current: ownedItems) {
-			if(item.getClass() == current.getClass()) {
+			if(item.getId() == current.getId()) {
 				if(item instanceof Stackable) {
 					Stackable castCurrent = (Stackable)current;
 					if(castCurrent.getStackSize() >= ((Stackable)item).getStackSize()) {

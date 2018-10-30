@@ -1,6 +1,8 @@
 package medciv.model.actions;
 
+import medciv.model.Item;
 import medciv.model.MedcivGame;
+import medciv.model.Villager;
 
 public class GiveItem implements ActionType{
 
@@ -16,10 +18,26 @@ public class GiveItem implements ActionType{
 		this.itemName = itemName;
 	}
 	
+	public int getGiveFrom() {
+		return giveFrom;
+	}
+
+	public int getGiveTo() {
+		return giveTo;
+	}
+
+	public int getItem() {
+		return item;
+	}
+	
 	@Override
 	public void doAction(MedcivGame game) {
-		// TODO Auto-generated method stub
-		
+		Villager fromVillager = game.matchingVillager(giveFrom);
+		Villager toVillager = game.matchingVillager(giveTo);
+		Item itemToGive = fromVillager.getItemById(item);
+
+		fromVillager.removeItem(itemToGive);
+		toVillager.addItem(itemToGive);
 	}
 
 	@Override

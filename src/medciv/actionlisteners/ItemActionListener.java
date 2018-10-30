@@ -3,6 +3,7 @@ package medciv.actionlisteners;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import medciv.aiconstructs.MedcivPlayer;
 import medciv.model.Item;
 import medciv.ui.MainUI;
 
@@ -34,6 +35,10 @@ public class ItemActionListener implements MouseListener{
 	public void mousePressed(MouseEvent arg0) {
 		if(MainUI.liveGame.matchingVillager(item.getOwnerId()).getOwner().equals(MainUI.liveGame.getSelectedPlayer())) {
 			item.focusOnItem();	
+		} else { //debug
+			MedcivPlayer temp = MainUI.liveGame.matchingVillager(item.getOwnerId()).getOwner();
+			MedcivPlayer temp2 = MainUI.liveGame.getSelectedPlayer();
+			System.out.println("debug");
 		}
 		
 	}

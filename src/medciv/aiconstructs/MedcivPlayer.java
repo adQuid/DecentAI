@@ -43,6 +43,10 @@ public class MedcivPlayer implements Player{
 	}
 	
 	public void addActionThisTurn(Action actionThisTurn) {
+		//debug
+		if(this.game.isLive()) {
+			System.out.println("added "+actionThisTurn);
+		}
 		this.actions.add(actionThisTurn);
 	}
 	

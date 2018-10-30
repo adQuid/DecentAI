@@ -275,6 +275,15 @@ public class MainUI {
 		GUI.repaint();
 	}
 	
+	public static AIBrain getBrainForPlayer(MedcivPlayer player) {
+		for(AIBrain current: brains) {
+			if(current.getSelf().equals(player)) {
+				return current;
+			}
+		}
+		return null;
+	}
+	
 	public static void refresh() {
 		if(inDiplomacy) {
 			displayDiplomacy();
@@ -309,9 +318,7 @@ public class MainUI {
 		setup(BaseGameSetup.newBasicGame());
 		
 		for(MedcivPlayer current: liveGame.getPlayers()) {
-			if(!current.equals(liveGame.getSelectedPlayer())) {
-				brains.add(new AIBrain(current, 4, 0, 1, new MedcivBaseIdeaGen(), new MedcivContingencyGenerator(), new MedcivEvaluator(), new MedcivCloner()));
-			}
+			brains.add(new AIBrain(current, 4, 0, 1, new MedcivBaseIdeaGen(), new MedcivContingencyGenerator(), new MedcivEvaluator(), new MedcivCloner()));
 		}
 		
 		focusOnVillager(liveGame.getPeople().get(0));

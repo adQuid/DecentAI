@@ -8,6 +8,8 @@ import java.util.Map;
 
 public class Score {
 
+	public final static int PPRECISION = 5;
+	
 	private List<Map<String,BigDecimal>> layers = new ArrayList<Map<String,BigDecimal>>();
 
 	
@@ -40,14 +42,16 @@ public class Score {
 		return this;
 	}
 	
-	public double totalScore() {
-		double retval = 0;
+	public BigDecimal totalScore() {
+		BigDecimal retval = new BigDecimal(0);
 		
 		for(Map<String,BigDecimal> layer: layers) {
-			retval += layer.values().stream().mapToDouble(Number::doubleValue).sum();
+			for(BigDecimal value: layer.values()) {
+			retval = retval.add(value);
+			}
 		}
 		
-		return retval;
+		return retval.setScale(PPRECISION, BigDecimal.ROUND_HALF_UP);
 	}
 	
 	public Score add(Score other) {
@@ -83,6 +87,6 @@ public class Score {
 	}
 	
 	public String toString() {
-		return Double.toString(totalScore());
+		return totalScore().toString();
 	}
 }
