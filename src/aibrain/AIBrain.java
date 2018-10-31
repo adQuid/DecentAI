@@ -124,19 +124,19 @@ public class AIBrain {
 			runAI(sourceGame);
 		}
 		
-		Score scoreWithDeal = runIterations(sourceGame, maxTtl, deal).getScore();
+		HypotheticalResult resultWithDeal = runIterations(sourceGame, maxTtl, deal);
 		
 		if(lastIdea.getScore().totalScore().compareTo(new BigDecimal(0)) == 0) {
-			if(scoreWithDeal.totalScore().compareTo(new BigDecimal(0)) > 0) {
+			if(resultWithDeal.getScore().totalScore().compareTo(new BigDecimal(0)) > 0) {
 				return new BigDecimal(1);
-			} else if (scoreWithDeal.totalScore().compareTo(new BigDecimal(0)) < 0) {
+			} else if (resultWithDeal.getScore().totalScore().compareTo(new BigDecimal(0)) < 0) {
 				return new BigDecimal(-1);
 			} else {
 				return new BigDecimal(0);
 			}
 		} else {
 			//value of deal is (score with deal - base) / (abs(base))
-			BigDecimal scoreDifference = scoreWithDeal.totalScore().subtract(lastIdea.getScore().totalScore());
+			BigDecimal scoreDifference = resultWithDeal.getScore().totalScore().subtract(lastIdea.getScore().totalScore());
 		
 			return scoreDifference.divide(lastIdea.getScore().totalScore().abs(),new MathContext(Score.PPRECISION));		
 		}

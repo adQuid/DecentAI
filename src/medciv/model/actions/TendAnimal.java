@@ -38,7 +38,7 @@ public class TendAnimal implements ActionType{
 
 	@Override
 	public int getTimeCost() {
-		return 4;
+		return 1;
 	}
 
 	@Override

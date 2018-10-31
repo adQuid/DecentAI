@@ -49,7 +49,7 @@ public abstract class Livestock extends Item{
 	}
 	
 	public MedcivAction tendAction(Villager villager) {
-		ActionType tendType = new TendAnimal(this.getId(), ownerId, this.toString());			
+		ActionType tendType = new TendAnimal(this.getId(), villager.getId(), this.toString());			
 		return new MedcivAction(tendType,villager.getId());
 	}
 	

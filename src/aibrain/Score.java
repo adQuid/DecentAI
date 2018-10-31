@@ -10,8 +10,7 @@ public class Score {
 
 	public final static int PPRECISION = 5;
 	
-	private List<Map<String,BigDecimal>> layers = new ArrayList<Map<String,BigDecimal>>();
-
+	private List<Map<String,BigDecimal>> layers = new ArrayList<Map<String,BigDecimal>>();	
 	
 	public Score() {
 		

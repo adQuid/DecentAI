@@ -28,8 +28,10 @@ public class BaseGameSetup {
 		playerGuy.addItem(new Cow(playerGuy.getId()));
 		playerGuy.addItem(new Chicken(playerGuy.getId()));
 		
-		
-		//botMan.addItems(new Chicken(botMan.getId()));
+		botMan.addItem(new Chicken(botMan.getId()));
+		botMan.addItem(new Chicken(botMan.getId()));
+		botMan.addItem(new Chicken(botMan.getId()));
+		botMan.addItem(new Chicken(botMan.getId()));
 				
 		retval.getPeople().add(playerGuy);	
 		retval.getPeople().add(botMan);
