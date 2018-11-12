@@ -138,6 +138,8 @@ public class AIBrain {
 			//value of deal is (score with deal - base) / (abs(base))
 			BigDecimal scoreDifference = resultWithDeal.getScore().totalScore().subtract(lastIdea.getScore().totalScore());
 		
+			//debug
+			System.out.println(resultWithDeal.getScore()+" vs "+lastIdea.getScore());
 			return scoreDifference.divide(lastIdea.getScore().totalScore().abs(),new MathContext(Score.PPRECISION));		
 		}
 	}

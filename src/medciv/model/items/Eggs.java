@@ -42,7 +42,11 @@ public class Eggs extends Edible{
 	}
 
 	public String toString() {
-		return "Eggs";
+		if(age < 3) {
+			return "Eggs";
+		} else {
+			return "Old Eggs";
+		}
 	}
 	
 	@Override

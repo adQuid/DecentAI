@@ -7,6 +7,7 @@ import java.util.List;
 public class Plan {
 
 	private List<List<Action>> plannedActions;
+	//TODO: remove this completely
 	private List<Reasoning> reasonings;
 	
 	public static Plan emptyPlan(int size) {

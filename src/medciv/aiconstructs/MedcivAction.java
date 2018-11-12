@@ -33,6 +33,10 @@ public class MedcivAction implements Action{
 		return villagerId;
 	}
 	
+	public int getInitiative() {
+		return type.getInitiative();
+	}
+	
 	public String toString() {
 		return type.toString();
 	}

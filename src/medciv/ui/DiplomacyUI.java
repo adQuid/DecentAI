@@ -21,6 +21,7 @@ import medciv.aiconstructs.MedcivAction;
 import medciv.model.Item;
 import medciv.model.Villager;
 import medciv.model.actions.GiveItem;
+import medciv.model.items.Stackable;
 
 public class DiplomacyUI {
 	
@@ -110,9 +111,16 @@ public class DiplomacyUI {
 		List<Component> selfOffers = new ArrayList<Component>();
 		//giving items 
 		for(Item current: you.getOwnedItems()) {
-			MedcivAction giveAction = new MedcivAction(new GiveItem(you.getId(),target.getId(),current.getId(),current.toString()),you.getId());
+			MedcivAction giveAction;
+			if(current instanceof Stackable) {
+				giveAction = new MedcivAction(new GiveItem(you.getId(),target.getId(),current.getId(),
+						((Stackable)current).getStackSize(),current.toString()),you.getId());
+			} else {
+				giveAction = new MedcivAction(new GiveItem(you.getId(),target.getId(),current.getId(),current.toString()),you.getId());
+			}
+			
 			if(!myOffers.contains(giveAction)) {
-				JButton giveItem = new JButton("give "+current.toString());
+				JButton giveItem = new JButton(giveAction.toString());
 				giveItem.addActionListener(new AddDiplomacyActionListener(giveAction,true));
 				selfOffers.add(giveItem);
 			}
@@ -121,9 +129,16 @@ public class DiplomacyUI {
 		List<Component> otherOffers = new ArrayList<Component>();
 		//getting items 
 		for(Item current: target.getOwnedItems()) {
-			MedcivAction giveAction = new MedcivAction(new GiveItem(target.getId(),you.getId(),current.getId(),current.toString()),target.getId());
+			MedcivAction giveAction;
+			if(current instanceof Stackable) {
+				giveAction = new MedcivAction(new GiveItem(target.getId(),you.getId(),current.getId(),
+						((Stackable)current).getStackSize(),current.toString()),target.getId());
+			} else {
+				giveAction = new MedcivAction(new GiveItem(target.getId(),you.getId(),current.getId(),current.toString()),target.getId());
+			}
+			
 			if(!targetOffers.contains(giveAction)) {
-				JButton giveItem = new JButton("give "+current.toString());
+				JButton giveItem = new JButton(giveAction.toString());
 				giveItem.addActionListener(new AddDiplomacyActionListener(giveAction,false));
 				otherOffers.add(giveItem);
 			}

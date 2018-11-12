@@ -19,8 +19,6 @@ import medciv.ui.MainUI;
 
 public class Chicken extends Livestock{
 	
-	private boolean wasMilkedThisTurn = false;
-	
 	public Chicken(int ownerId) {
 		super(ownerId);
 	}
@@ -51,19 +49,10 @@ public class Chicken extends Livestock{
 		return false;
 	}
 
-	public boolean isWasMilkedThisTurn() {
-		return wasMilkedThisTurn;
-	}
-
-	public void setWasMilkedThisTurn(boolean wasMilkedThisTurn) {
-		this.wasMilkedThisTurn = wasMilkedThisTurn;
-	}
-	
 
 	@Override
 	public void endRound(MedcivGame game, Villager owner) {
-		super.endRound(game, owner);
-		wasMilkedThisTurn = false;		
+		super.endRound(game, owner);	
 		
 		owner.addItem(new Eggs(1, owner.getId()));
 	}
@@ -71,7 +60,6 @@ public class Chicken extends Livestock{
 	@Override
 	public Item clone() {
 		Chicken retval = new Chicken(getId(), ownerId);
-		retval.wasMilkedThisTurn = this.wasMilkedThisTurn;
 		super.cloneHelper(retval);
 		return retval;
 	}

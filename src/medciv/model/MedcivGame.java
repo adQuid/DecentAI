@@ -161,13 +161,16 @@ public class MedcivGame implements Game{
 	@Override
 	public void endRound() {
 		//this will have to change for any competitive actions
-		for(MedcivPlayer player: players) {
-			for(Action action: player.getActionsThisTurn()) {
-				MedcivAction castAction = (MedcivAction)action;
-				if(matchingVillager(castAction.getVillagerId()).timeLeft(this) > 0) {
-					castAction.getType().doAction(this);
-				}else {
-					//do nothing: you just can't afford this
+		for(int init = 100; init >= 0; init--) {
+			for(MedcivPlayer player: players) {
+				for(Action action: player.getActionsThisTurn()) {
+					MedcivAction castAction = (MedcivAction)action;
+					if(castAction.getInitiative() == init &&
+							matchingVillager(castAction.getVillagerId()).timeLeft(this) > 0) {
+						castAction.getType().doAction(this);
+					}else {
+						//do nothing: you just can't afford this
+					}
 				}
 			}
 		}

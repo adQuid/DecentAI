@@ -18,7 +18,7 @@ public class Villager{
 	private String name;
 	private int location;
 	private List<Item> ownedItems;
-	private int foodToEat = 2;
+	private int foodToEat = 0;
 	private boolean starving = false;
 	
 	public Villager(MedcivGame game, int location, MedcivPlayer owner, String name) {
@@ -197,9 +197,16 @@ public class Villager{
 			removeItem(current);//later we need to check if these actually get removed. If not, we go down a food tier
 		}
 		
+		//this makes sure that new items added while resolving other items are themselves resolved
+		List<Item> processedItems = new ArrayList<Item>();
 		List<Item> currentItems = new ArrayList<Item>(ownedItems);
-		for(Item current: currentItems) {
-			current.endRound(game, this);
+		while(currentItems.size() > 0) {
+			for(Item current: currentItems) {
+				current.endRound(game, this);
+			}
+			processedItems.addAll(currentItems);
+			currentItems = new ArrayList<Item>(ownedItems);
+			currentItems.removeAll(processedItems);
 		}
 		
 		List<Item> newOwnedItems = new ArrayList<Item>();

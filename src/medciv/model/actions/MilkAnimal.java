@@ -35,7 +35,7 @@ public class MilkAnimal implements ActionType{
 					int roll = game.getRandom().nextInt(3) + game.getRandom().nextInt(3);
 					owner.addItem(new Milk(roll,ownerId));
 				}else{
-					owner.addItem(new Milk(2,ownerId));
+					owner.addItem(new Milk(3,ownerId));
 				}
 			}
 		}catch(NullPointerException e) {
@@ -71,5 +71,10 @@ public class MilkAnimal implements ActionType{
 		if (targetId != other.targetId)
 			return false;
 		return true;
+	}
+
+	@Override
+	public int getInitiative() {
+		return 20;
 	}		
 }

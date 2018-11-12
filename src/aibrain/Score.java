@@ -86,6 +86,22 @@ public class Score {
 	}
 	
 	public String toString() {
-		return totalScore().toString();
+		return compressedCategories().toString();
+	}
+	
+	private Map<String,BigDecimal> compressedCategories() {
+		Map<String,BigDecimal> retval = new HashMap<String,BigDecimal>();
+		
+		for(Map<String,BigDecimal> layer: layers) {
+			for(String key: layer.keySet()) {
+				if(retval.containsKey(key)) {
+					retval.put(key, retval.get(key).add(layer.get(key).setScale(PPRECISION, BigDecimal.ROUND_HALF_UP)));
+				} else {
+					retval.put(key, layer.get(key).setScale(PPRECISION, BigDecimal.ROUND_HALF_UP));
+				}
+			}
+		}
+		
+		return retval;
 	}
 }

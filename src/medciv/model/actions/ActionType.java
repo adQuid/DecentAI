@@ -8,6 +8,8 @@ public interface ActionType {
 	
 	public int getTimeCost();
 	
+	public int getInitiative();
+	
 	public boolean equals(Object other);
 	
 }

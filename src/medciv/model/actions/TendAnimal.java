@@ -64,5 +64,10 @@ public class TendAnimal implements ActionType{
 		if (targetId != other.targetId)
 			return false;
 		return true;
+	}
+
+	@Override
+	public int getInitiative() {
+		return 30;
 	}		
 }
