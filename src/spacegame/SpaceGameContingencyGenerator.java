@@ -28,7 +28,7 @@ public class SpaceGameContingencyGenerator implements ContingencyGenerator{
 		List<Contingency> retval = new ArrayList<Contingency>();
 				
 		//there HAS to be a way to do this with less loops...
-		for(Player curEmpire: castGame.getEmpires()) {
+		for(Player curEmpire: castGame.getPlayers()) {
 			if(!curEmpire.equals(empire)) {
 				for(Colony curColony: castGame.fetchAllColonies()) {
 					if(curColony.getOwner().equals(curEmpire) &&

@@ -46,7 +46,7 @@ public class BaseGameSetup {
 		retval.getPlayers().add(startPlayer);
 		retval.getPlayers().add(startPlayer2);
 		
-		retval.setSelectedPlayer(retval.getPlayers().get(0));
+		retval.setSelectedPlayer(retval.getMedcivPlayers().get(0));
 		retval.setSelectedVillager(retval.getPeople().get(0));
 		retval.setLive(true);
 		

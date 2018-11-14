@@ -151,7 +151,7 @@ public class SpaceGameIdeaGenerator implements IdeaGenerator{
 		Game futureGame = SpaceGameCloner.getInstance().cloneGame(game);
 		futureGame.setActionsForPlayer(committedActions, empire);
 		futureGame.endRound();
-		List<Player> empires = futureGame.getEmpires();
+		List<Player> empires = futureGame.getPlayers();
 		Empire me = null;
 		for(Player current: empires) {
 			if(current.equals(empire)) {

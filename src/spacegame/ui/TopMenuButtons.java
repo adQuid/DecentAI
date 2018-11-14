@@ -37,8 +37,8 @@ public class TopMenuButtons {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Empire 0:");
-				System.out.println("Minerals: "+((Empire)Mainmenu.liveGame.getEmpires().get(0)).getMinerals());
-				System.out.println("Currency: "+((Empire)Mainmenu.liveGame.getEmpires().get(0)).getCurrency());
+				System.out.println("Minerals: "+((Empire)Mainmenu.liveGame.getPlayers().get(0)).getMinerals());
+				System.out.println("Currency: "+((Empire)Mainmenu.liveGame.getPlayers().get(0)).getCurrency());
 				System.out.println("logs:");
 				for(String current: Mainmenu.brains.get(0).getLogs()) {
 					System.out.println(current);
@@ -50,8 +50,8 @@ public class TopMenuButtons {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Empire 1:");
-				System.out.println("Minerals: "+((Empire)Mainmenu.liveGame.getEmpires().get(1)).getMinerals());
-				System.out.println("Currency: "+((Empire)Mainmenu.liveGame.getEmpires().get(1)).getCurrency());
+				System.out.println("Minerals: "+((Empire)Mainmenu.liveGame.getPlayers().get(1)).getMinerals());
+				System.out.println("Currency: "+((Empire)Mainmenu.liveGame.getPlayers().get(1)).getCurrency());
 				System.out.println("logs:");
 				for(String current: Mainmenu.brains.get(1).getLogs()) {
 					System.out.println(current);

@@ -40,7 +40,7 @@ public class Mainmenu {
 			public void actionPerformed(ActionEvent e) {
 				liveGame = new Game();
 				
-				for(Player current: liveGame.getEmpires()) {
+				for(Player current: liveGame.getPlayers()) {
 					brains.add(new AIBrain(current, 8, 0, 12, SpaceGameIdeaGenerator.instance(),SpaceGameContingencyGenerator.instance(),SpaceGameEvaluator.getInstance(),SpaceGameCloner.getInstance()));
 				}
 								

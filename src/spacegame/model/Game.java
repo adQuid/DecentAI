@@ -52,7 +52,7 @@ public class Game implements aibrain.Game{
 		map.populateQuickRefrenceLists(allColonies);
 	}
 	
-	public List<Player> getEmpires() {
+	public List<Player> getPlayers() {
 		return empires;
 	}
 

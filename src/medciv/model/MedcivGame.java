@@ -57,7 +57,7 @@ public class MedcivGame implements Game{
 		return people;
 	}
 	
-	public List<MedcivPlayer> getPlayers() {
+	public List<MedcivPlayer> getMedcivPlayers() {
 		return players;
 	}
 	
@@ -130,8 +130,7 @@ public class MedcivGame implements Game{
 		return live;
 	}
 
-	@Override
-	public List<Player> getEmpires() {
+	public List<Player> getPlayers() {
 		return new ArrayList<Player>(players);
 	}
 

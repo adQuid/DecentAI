@@ -2,13 +2,20 @@ package aibrain;
 
 import java.util.List;
 
+/**
+ * A set of actions someone else might do, which the AI should take into consideration. * 
+ */
 public class Contingency {
 
 	private Player player; 
 	private List<Action> actions;
 	
-	public Contingency(Player empire, List<Action> actions) {
-		this.player = empire;
+	/**
+	 * @param player The player who would be taking these actions.
+	 * @param actions
+	 */
+	public Contingency(Player player, List<Action> actions) {
+		this.player = player;
 		this.actions = actions;
 	}
 

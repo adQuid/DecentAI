@@ -6,8 +6,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
-
+/**
+ * A stateful representation of a player's current plans. This will be the main point of interaction with the game 
+ * you are integrating into.
+ * 
+ */
 public class AIBrain {
 	
 	private Player self;
@@ -28,6 +31,22 @@ public class AIBrain {
 	//for debugging
 	private List<String> logs = new ArrayList<String>();
 	
+	/**
+	 * 
+	 * @param self The player this AI is making decisions for
+	 * @param lookAhead How many turns in advance the AI will think when making plans. Usually a higher lookAhead will result
+	 * in smarter, but slower decision-making, but in situations where the actions of other player's have very large impacts, 
+	 * a higher lookAhead may be a waste of time, or even hurt the AI as it works towards complex plans it can't hope to 
+	 * complete without being interrupted.
+	 * @param lookAheadSecondary A hybrid of lookAhead and lookAheadTail. This will probably be deprecated soon.
+	 * @param lookAheadTail After the primary and secondary forecasts, the AI brain will continue to run the game a number of
+	 * turns equal to the tail length without taking any more actions, to better see long-term consequences of a plan. In some
+	 * games this is vital to making good plans in a reasonable amount of time, in others this is useless.
+	 * @param ideaGenerator
+	 * @param contingencyGenerator
+	 * @param gameEvaluator
+	 * @param gameCloner
+	 */
 	public AIBrain(Player self, int lookAhead, int lookAheadSecondary, int lookAheadTail,IdeaGenerator ideaGenerator,
 			ContingencyGenerator contingencyGenerator, GameEvaluator gameEvaluator, GameCloner gameCloner) {
 		this.self = self;
@@ -40,7 +59,13 @@ public class AIBrain {
 		this.gameCloner = gameCloner;
 	}
 	
-	//run one turn of the AI. This modifies the plan, so WILL break if the turn does not end
+	/**
+	 * Run one turn of the AI. This modifies the plan in the brain's internal memory, so WILL break if the turn does not end 
+	 * in the real game.
+	 * @param sourceGame The real game it is making plans for. This game will NOT be modified in any way; the controller using 
+	 * Decent AI is left to either implement the suggested plan, or do something else with it.
+	 * @return A HypotheticalResult representing the best path found by this Brain.
+	 */
 	public HypotheticalResult runAI(Game sourceGame){
 		
 		this.trueGame = sourceGame.imageForPlayer(self);
@@ -118,6 +143,13 @@ public class AIBrain {
 		return lastIdea;
 	}
 	
+	/**
+	 * Returns marginal effect of accepting the deal suggested. A value of 0 represents no change, a value of -0.5 
+	 * represents the player would do 50% worse by taking the deal, and so on. 
+	 * @param sourceGame
+	 * @param deal
+	 * @return
+	 */
 	public BigDecimal evaluateDeal(Game sourceGame, Deal deal) {
 		//if I don't know what I'm doing without the deal, figure it out real quick
 		if(lastIdea == null) {
@@ -194,7 +226,7 @@ public class AIBrain {
 		
 		if(ideaGenerator.hasFurtherIdeas(game, self, committedActions, 1)) {
 			
-			for(Player current: game.getEmpires()) {
+			for(Player current: game.getPlayers()) {
 				//remove existing actions. Should this be done here?
 				game.setActionsForPlayer(new ArrayList<Action>(), current);
 			}
@@ -233,16 +265,16 @@ public class AIBrain {
 		return copyGame;
 	}
 	
-	public HypotheticalResult runPath(Game game, Plan plan) {
+	HypotheticalResult runPath(Game game, Plan plan) {
 		return runPath(game,plan,false);
 	}
 	
 	//in kind of quirky behavior, this only runs path to the length of the plan provided
-	public HypotheticalResult runPath(Game game, Plan plan, boolean debug) {
+	HypotheticalResult runPath(Game game, Plan plan, boolean debug) {
 		Game copyGame = gameCloner.cloneGame(game);
 		
 		//clear any existing actions; we only look at the plan
-		for(Player current: copyGame.getEmpires()) {
+		for(Player current: copyGame.getPlayers()) {
 			//copyGame.setActionsForPlayer(new ArrayList<Action>(), current);
 		}
 		
@@ -285,7 +317,7 @@ public class AIBrain {
 	}
 	
 	//not sure I really want this method here, it's kind of a strange utility
-	public void applyContingencies(Game game, Player empire, int iteration) {		
+	void applyContingencies(Game game, Player empire, int iteration) {		
 		List<Contingency> contingencies = contingencyGenerator.generateContingencies(game, empire, iteration);
 		
 		

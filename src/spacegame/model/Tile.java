@@ -27,10 +27,10 @@ public class Tile {
 			this.object = new Star("unnamed sun");
 		}else if(x==5&&(y==8||y==9)){
 			this.object = new Planet(this, game);
-			((Planet)this.object).startColony(game.getEmpires().get(0));
+			((Planet)this.object).startColony(game.getPlayers().get(0));
 		}else if(x==3&&(y==8||y==9)){
 			this.object = new Planet(this, game);
-			((Planet)this.object).startColony(game.getEmpires().get(1));
+			((Planet)this.object).startColony(game.getPlayers().get(1));
 		}
 	}
 	

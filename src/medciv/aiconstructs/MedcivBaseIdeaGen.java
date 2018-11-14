@@ -30,7 +30,7 @@ public class MedcivBaseIdeaGen implements IdeaGenerator{
 		}
 		
 		//because we need to tend to animals the same turn we get them, we also check for animals other people will give us
-		for(MedcivPlayer curPlayer: castGame.getPlayers()) {
+		for(MedcivPlayer curPlayer: castGame.getMedcivPlayers()) {
 			for(Action action: curPlayer.getActionsThisTurn()) {
 				MedcivAction castAction = (MedcivAction)action;
 				if(castAction.getType() instanceof GiveItem) {

@@ -317,7 +317,7 @@ public class MainUI {
 	public static void main(String[] args) {
 		setup(BaseGameSetup.newBasicGame());
 		
-		for(MedcivPlayer current: liveGame.getPlayers()) {
+		for(MedcivPlayer current: liveGame.getMedcivPlayers()) {
 			brains.add(new AIBrain(current, 4, 0, 1, new MedcivBaseIdeaGen(), new MedcivContingencyGenerator(), new MedcivEvaluator(), new MedcivCloner()));
 		}
 		
