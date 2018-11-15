@@ -8,7 +8,7 @@ import java.util.List;
 import spacegame.SpaceGameCloner;
 import utils.ListUtils;
 
-public class Hypothetical {
+class Hypothetical {
 
 	private static int numMade = 0;
 	

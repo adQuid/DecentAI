@@ -11,7 +11,7 @@ public interface Action {
 			
 	/**
 	 * Used for logging actions; valuable for debugging
-	 * @return
+	 * @return String representation of action
 	 */
 	public String toString();
 	

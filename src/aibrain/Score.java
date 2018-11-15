@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class Score {
 
-	public final static int PPRECISION = 5;
+	public final static int PRECISION = 5;
 	
 	private List<Map<String,BigDecimal>> layers = new ArrayList<Map<String,BigDecimal>>();	
 	
@@ -50,7 +50,7 @@ public class Score {
 			}
 		}
 		
-		return retval.setScale(PPRECISION, BigDecimal.ROUND_HALF_UP);
+		return retval.setScale(PRECISION, BigDecimal.ROUND_HALF_UP);
 	}
 	
 	public Score add(Score other) {
@@ -95,9 +95,9 @@ public class Score {
 		for(Map<String,BigDecimal> layer: layers) {
 			for(String key: layer.keySet()) {
 				if(retval.containsKey(key)) {
-					retval.put(key, retval.get(key).add(layer.get(key).setScale(PPRECISION, BigDecimal.ROUND_HALF_UP)));
+					retval.put(key, retval.get(key).add(layer.get(key).setScale(PRECISION, BigDecimal.ROUND_HALF_UP)));
 				} else {
-					retval.put(key, layer.get(key).setScale(PPRECISION, BigDecimal.ROUND_HALF_UP));
+					retval.put(key, layer.get(key).setScale(PRECISION, BigDecimal.ROUND_HALF_UP));
 				}
 			}
 		}

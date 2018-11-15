@@ -4,7 +4,11 @@ import aibrain.Game;
 
 public interface GameEvaluator {
 
-	//Given a game state, how good do I find this outcome?
+	/**
+	 * @param game
+	 * @param empire
+	 * @return A Score object representing the value of that state.
+	 */
 	public Score getValue(Game game, Player empire);
 	
 }

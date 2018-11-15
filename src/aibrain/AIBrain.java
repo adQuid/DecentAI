@@ -172,7 +172,7 @@ public class AIBrain {
 		
 			//debug
 			System.out.println(resultWithDeal.getScore()+" vs "+lastIdea.getScore());
-			return scoreDifference.divide(lastIdea.getScore().totalScore().abs(),new MathContext(Score.PPRECISION));		
+			return scoreDifference.divide(lastIdea.getScore().totalScore().abs(),new MathContext(Score.PRECISION));		
 		}
 	}
 	
