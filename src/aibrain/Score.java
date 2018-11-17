@@ -21,21 +21,21 @@ public class Score {
 		addLayer(layer);
 	}
 	
-	public Score(Score other) {
+	Score(Score other) {
 		for(Map<String,BigDecimal> layer: other.layers) {
 			layers.add(new HashMap(layer));//these only get made in this class, so I know it's always hashmap
 		}
 	}
 	
-	public Map<String, BigDecimal> getFirstLayer() {
+	Map<String, BigDecimal> getFirstLayer() {
 		return layers.get(0);
 	}
 	
-	public Map<String, BigDecimal> getLastLayer() {
+	Map<String, BigDecimal> getLastLayer() {
 		return layers.get(layers.size()-1);
 	}
 
-	public Score addLayer(Map<String, BigDecimal> categories) {
+	Score addLayer(Map<String, BigDecimal> categories) {
 		layers.add(categories);
 		
 		return this;
@@ -53,7 +53,7 @@ public class Score {
 		return retval.setScale(PRECISION, BigDecimal.ROUND_HALF_UP);
 	}
 	
-	public Score add(Score other) {
+	Score add(Score other) {
 		
 		for(int index=0; index<Math.max(this.layers.size(), other.layers.size()); index++) {
 			if(index < this.layers.size()) {
@@ -70,7 +70,7 @@ public class Score {
 		return this;
 	}
 	
-	public Score withoutFirstRound() {
+	Score withoutFirstRound() {
 		Score retval = new Score(this);
 		
 		retval.layers.remove(0);
@@ -78,7 +78,7 @@ public class Score {
 		return retval;
 	}
 	
-	public Score decay(double decayRate) {
+	Score decay(double decayRate) {
 		for(Map<String,BigDecimal> layer: layers) {
 			layer.entrySet().stream().filter(entry -> !entry.getKey().equals("raids")).forEach(entry -> entry.setValue(entry.getValue().multiply(new BigDecimal(decayRate))));
 		}
@@ -89,7 +89,7 @@ public class Score {
 		return compressedCategories().toString();
 	}
 	
-	private Map<String,BigDecimal> compressedCategories() {
+	Map<String,BigDecimal> compressedCategories() {
 		Map<String,BigDecimal> retval = new HashMap<String,BigDecimal>();
 		
 		for(Map<String,BigDecimal> layer: layers) {
