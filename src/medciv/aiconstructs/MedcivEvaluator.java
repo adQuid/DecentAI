@@ -17,9 +17,7 @@ import medciv.model.items.Milk;
 public class MedcivEvaluator implements GameEvaluator{
 
 	@Override
-	public Score getValue(Game game, Player empire) {
-		Score retval = new Score();
-		
+	public Score getValue(Game game, Player empire) {		
 		Map<String,BigDecimal> categories = new HashMap<String,BigDecimal>();
 		
 		MedcivGame castGame = (MedcivGame)game;
@@ -53,7 +51,7 @@ public class MedcivEvaluator implements GameEvaluator{
 			}
 		}
 				
-		retval.addLayer(categories);
+		Score retval = new Score(categories);
 		return retval;
 	}	
 }
