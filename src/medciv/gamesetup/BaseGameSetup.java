@@ -43,8 +43,8 @@ public class BaseGameSetup {
 		retval.getPeople().add(playerGuy);	
 		retval.getPeople().add(botMan);
 		retval.getTowns().add(startTown);
-		retval.getPlayers().add(startPlayer);
-		retval.getPlayers().add(startPlayer2);
+		retval.addPlayer(startPlayer);
+		retval.addPlayer(startPlayer2);
 		
 		retval.setSelectedPlayer(retval.getMedcivPlayers().get(0));
 		retval.setSelectedVillager(retval.getPeople().get(0));

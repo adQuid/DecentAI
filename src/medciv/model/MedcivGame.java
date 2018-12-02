@@ -134,6 +134,10 @@ public class MedcivGame implements Game{
 		return new ArrayList<Player>(players);
 	}
 
+	public void addPlayer(MedcivPlayer player) {
+		this.players.add(player);
+	}
+	
 	@Override
 	public void setLive(boolean live) {
 		this.live = live;
