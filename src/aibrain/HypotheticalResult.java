@@ -28,7 +28,6 @@ public class HypotheticalResult {
 		this.score = evaluator.getValue(game, empire);
 		this.plan.addActionListToEnd(actions);
 		this.plan.addActionListToEnd(nextActions);
-		this.plan.addReasoning(reason);
 	}
 
 	HypotheticalResult(Game game, List<Action> actions, Player empire, Plan plan, List<Action> nextActions, Reasoning newReason, GameEvaluator evaluator) {
@@ -36,7 +35,6 @@ public class HypotheticalResult {
 		this.plan.addActionListToEnd(actions);
 		this.plan = plan;
 		plan.addActionListToEnd(nextActions);
-		plan.addReasoning(newReason);
 	}
 	
 	HypotheticalResult(Score score, List<Action> actions) {
@@ -78,7 +76,6 @@ public class HypotheticalResult {
 	}
 
 	void appendActionsEnd(List<Action> actions, Reasoning reasonings) {
-		this.plan.addReasoning(reasonings);
 		this.plan.addActionListToEnd(actions);
 	}
 	

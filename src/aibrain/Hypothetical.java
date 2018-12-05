@@ -122,7 +122,6 @@ class Hypothetical {
 			}
 			List<List<Action>> toPass = current.size()==0?passdownActions:ideaGenerator.generateIdeas(branchGame, self, iteration);
 			Plan planToPass = new Plan(plan);
-			planToPass.addReasoning(new Reasoning("adding actions "+Arrays.toString(combinedIdeas.toArray())));
 			planToPass.addActionListToEnd(combinedIdeas);
 			allOptions.add(packResult((tightForcastLength == 0?
 						new Hypothetical(branchGame,modifiers,parent,toPass,

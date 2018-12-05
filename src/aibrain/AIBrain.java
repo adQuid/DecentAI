@@ -81,7 +81,7 @@ public class AIBrain {
 			Score latestScore = runPath(gameCloner.cloneGame(trueGame), lastIdea.getPlan()).getScore();
 			Score assumedScore = lastIdea.getScore().withoutFirstRound();
 			if(latestScore.totalScore().compareTo(assumedScore.totalScore()) < 0) {
-				addLog("this plan got worse: "+latestScore.totalScore()+" vs "+assumedScore);
+				addLog("this plan got worse: "+latestScore+" vs "+assumedScore);
 				lastIdea = runIterations(trueGame, maxTtl);
 			} else {
 				addLog("this plan is just as good or better: "+latestScore.totalScore()+" vs "+assumedScore);				
@@ -89,14 +89,14 @@ public class AIBrain {
 				//now we add a new final step to keep the same length
 				HypotheticalResult appendResult = runIterations(runGame(trueGame,lastIdea.getPlan()),maxTtl/2 + 1);
 				
-				//more debug
+				/*//more debug
 				addLog("what I got in mind...");
 				for(Reasoning current: appendResult.getPlan().getReasonings()) {
 					addLog(">"+current.toString());
-				}
+				}*/
 				
 				//push the new action onto the end, and adjust score appropriately
-				lastIdea.appendActionsEnd(appendResult.getImmediateActions(),appendResult.getPlan().getReasonings().get(0));
+				lastIdea.appendActionsEnd(appendResult.getImmediateActions());
 				lastIdea.setScore(runPath(gameCloner.cloneGame(trueGame), lastIdea.getPlan()).getScore());
 				
 				//just in case, let's see if there are any last minute opportunities or problems that came up just this turn
@@ -136,8 +136,12 @@ public class AIBrain {
 		
 		//pure debugging here
 		addLog("Reasoning this turn:");
-		for(Reasoning current: lastIdea.getPlan().getReasonings()) {
-			addLog(">"+current.toString());
+		for(List<Action> current: lastIdea.getPlan().getPlannedActions()) {
+			String toAdd = ">adding actions ";
+			for(Action action: current) {
+				toAdd += action.toString() + ", ";
+			}
+			addLog(toAdd);
 		}
 		
 		return lastIdea;
