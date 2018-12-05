@@ -120,7 +120,7 @@ public class Colony {
 	}
 	
 	public List<Action> returnActions(Player player){
-		Empire empire = (Empire)player;
+		Empire empire = game.findMatchingPlayer(player);
 		
 		List<Action> retval = new ArrayList<Action>();
 		
@@ -232,7 +232,7 @@ public class Colony {
 				if(target.defense < 1) {
 					fetchedOwner.addEnergy(target.industry*2);
 					target.industry = Math.max(0, target.industry - 5);
-				}else {
+				}else{
 					if(game.isLive()) {
 						System.out.println("...but it was defended!");
 					}

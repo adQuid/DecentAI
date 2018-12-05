@@ -199,7 +199,7 @@ public class AIBrain {
 				copyGame.setActionsForPlayer(dealToConsider.offers.get(current).getLayer(0), current);
 			}
 		
-		}else {
+		}else{
 			plan = Plan.emptyPlan(forcast);
 		}
 		while(this.ideaGenerator.hasFurtherIdeas(copyGame, self, committedActions, iteration)) {		

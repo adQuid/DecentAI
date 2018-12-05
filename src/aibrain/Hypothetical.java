@@ -106,10 +106,10 @@ class Hypothetical {
 		scoreAccumulator.addLayer(thisLevelResult.getScore().getFirstLayer());
 					
 		parent.applyContingencies(futureGame,this.self,1);
-				
+						
 		//try adding a new action
 		for(List<Action> current: ideas) {
-						
+									
 			Score scoreToPass = new Score(scoreAccumulator);
 			Game branchGame = parent.getCloner().cloneGame(futureGame);
 			List<Action> combinedIdeas = ListUtils.combine(actions.get(0),current);
