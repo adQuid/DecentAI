@@ -117,18 +117,18 @@ public class Game implements aibrain.Game{
 	
 	public void setActionsForPlayer(List<Action> actions, Player empire){
 		Player matchingEmp = findMatchingPlayer(empire);
-		matchingEmp.setActionsThisTurn(actions);
+		((Empire)matchingEmp).setActionsThisTurn(actions);
 	}
 	
 	public void appendActionsForPlayer(List<Action> actions, Player empire){
 		Player matchingEmp = findMatchingPlayer(empire);
-		matchingEmp.getActionsThisTurn().addAll(actions);
+		((Empire)matchingEmp).getActionsThisTurn().addAll(actions);
 	}
 	
 	public void endRound(){
 		for(int phase = 0; phase < 10; phase++) {
 			for(Player curEmpire: empires){
-				for(Action curAction: curEmpire.getActionsThisTurn()){
+				for(Action curAction: ((Empire)curEmpire).getActionsThisTurn()){
 					if(((SpaceGameAction)curAction).getOrder() == phase) {
 						this.map.processActions(curAction);
 					}
@@ -139,7 +139,7 @@ public class Game implements aibrain.Game{
 		this.map.getResourceProfile();
 		this.map.endRound();
 		for(Player current: empires){
-			current.setActionsThisTurn(new ArrayList<Action>());
+			((Empire)current).setActionsThisTurn(new ArrayList<Action>());
 		}
 	}
 	

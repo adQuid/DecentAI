@@ -23,13 +23,13 @@ public class BrainThread implements Runnable{
 		}
 		
 		//debug
-		for(int index = 0; index < Mainmenu.liveGame.getPlayers().get(0).getActionsThisTurn().size(); index++) {
-			SpaceGameAction action = (SpaceGameAction)Mainmenu.liveGame.getPlayers().get(0).getActionsThisTurn().get(index);
+		for(int index = 0; index < ((Empire)Mainmenu.liveGame.getPlayers().get(0)).getActionsThisTurn().size(); index++) {
+			SpaceGameAction action = (SpaceGameAction)((Empire)Mainmenu.liveGame.getPlayers().get(0)).getActionsThisTurn().get(index);
 
-			if(Mainmenu.liveGame.getPlayers().get(1).getActionsThisTurn().size() <= index) {
+			if(((Empire)Mainmenu.liveGame.getPlayers().get(1)).getActionsThisTurn().size() <= index) {
 				System.err.println("empire 0 has a "+action.getType()+" that empire 1 doesn't have");
 			} else {
-				SpaceGameAction action2 = (SpaceGameAction)Mainmenu.liveGame.getPlayers().get(1).getActionsThisTurn().get(index);
+				SpaceGameAction action2 = (SpaceGameAction)((Empire)Mainmenu.liveGame.getPlayers().get(1)).getActionsThisTurn().get(index);
 
 				if(action.getType() != action2.getType()) {
 					System.err.println(action.getType()+" is not "+action2.getType());

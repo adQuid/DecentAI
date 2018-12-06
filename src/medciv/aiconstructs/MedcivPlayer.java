@@ -32,12 +32,10 @@ public class MedcivPlayer implements Player{
 		return retval;
 	}
 	
-	@Override
 	public List<Action> getActionsThisTurn() {
 		return actions;
 	}
 
-	@Override
 	public void setActionsThisTurn(List<Action> actionsThisTurn) {
 		this.actions = actionsThisTurn;
 	}

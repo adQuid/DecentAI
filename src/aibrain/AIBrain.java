@@ -67,47 +67,51 @@ public class AIBrain {
 	 * @return A HypotheticalResult representing the best path found by this Brain.
 	 */
 	public HypotheticalResult runAI(Game sourceGame){
+		this.lastIdea = getNewPlan(sourceGame);
+		return lastIdea;
+	}
+	
+	public HypotheticalResult getNewPlan(Game sourceGame) {
 		
 		this.trueGame = sourceGame.imageForPlayer(self);
+		
+		HypotheticalResult retval = null;
 		
 		if(lastIdea == null) {
 			addLog("I have no plan");
 			lastIdea = runIterations(trueGame, maxTtl);
+			retval = lastIdea;
 		} else {
+			retval = new HypotheticalResult(lastIdea);
+			
 			//we presumably did the first round of the last idea, so lets remove it
-			lastIdea.getPlan().removeActionListFromFront();
+			retval.getPlan().removeActionListFromFront();
 
 			//is my last idea still working?
-			Score latestScore = runPath(gameCloner.cloneGame(trueGame), lastIdea.getPlan()).getScore();
-			Score assumedScore = lastIdea.getScore().withoutFirstRound();
+			Score latestScore = runPath(gameCloner.cloneGame(trueGame), retval.getPlan()).getScore();
+			Score assumedScore = retval.getScore().withoutFirstRound();
 			if(latestScore.totalScore().compareTo(assumedScore.totalScore()) < 0) {
 				addLog("this plan got worse: "+latestScore+" vs "+assumedScore);
-				lastIdea = runIterations(trueGame, maxTtl);
+				retval = runIterations(trueGame, maxTtl);
 			} else {
 				addLog("this plan is just as good or better: "+latestScore.totalScore()+" vs "+assumedScore);				
 				
 				//now we add a new final step to keep the same length
-				HypotheticalResult appendResult = runIterations(runGame(trueGame,lastIdea.getPlan()),maxTtl/2 + 1);
-				
-				/*//more debug
-				addLog("what I got in mind...");
-				for(Reasoning current: appendResult.getPlan().getReasonings()) {
-					addLog(">"+current.toString());
-				}*/
-				
+				HypotheticalResult appendResult = runIterations(runGame(trueGame,retval.getPlan()),maxTtl/2 + 1);
+								
 				//push the new action onto the end, and adjust score appropriately
-				lastIdea.appendActionsEnd(appendResult.getImmediateActions());
-				lastIdea.setScore(runPath(gameCloner.cloneGame(trueGame), lastIdea.getPlan()).getScore());
+				retval.appendActionsEnd(appendResult.getImmediateActions());
+				retval.setScore(runPath(gameCloner.cloneGame(trueGame), retval.getPlan()).getScore());
 				
 				//just in case, let's see if there are any last minute opportunities or problems that came up just this turn
-				HypotheticalResult opportunityResult = immediateIteration(trueGame, lastIdea.getImmediateActions(), lastIdea.getPlan());
+				HypotheticalResult opportunityResult = immediateIteration(trueGame, retval.getImmediateActions(), retval.getPlan());
 				
 				if(opportunityResult != null) {
 					addLog("...but I'm ammending the immedate actions with:");
 					for(Action current: opportunityResult.getImmediateActions()) {
 						addLog(current.toString());
 					}
-					lastIdea.getPlan().getPlannedActions().set(0, opportunityResult.getImmediateActions());
+					retval.getPlan().getPlannedActions().set(0, opportunityResult.getImmediateActions());
 				}
 			}	
 		}
@@ -116,18 +120,18 @@ public class AIBrain {
 		boolean shouldContinue = true;
 		while(shouldContinue) {
 			shouldContinue = false;
-			innerLoop: for(int index=0; index < lastIdea.getImmediateActions().size(); index++) { //in case people duplicate actions I want to remove by index
+			innerLoop: for(int index=0; index < retval.getImmediateActions().size(); index++) { //in case people duplicate actions I want to remove by index
 							
-				List<Action> ammendedActions = new ArrayList<Action>(lastIdea.getImmediateActions());
+				List<Action> ammendedActions = new ArrayList<Action>(retval.getImmediateActions());
 				ammendedActions.remove(index);
 				
-				Plan ammendedPlan = new Plan(lastIdea.getPlan());
+				Plan ammendedPlan = new Plan(retval.getPlan());
 				ammendedPlan.getPlannedActions().set(0, ammendedActions);
 				
 				HypotheticalResult ammendedResult = runPath(trueGame, ammendedPlan);
-				if(ammendedResult.getScore().totalScore().compareTo(lastIdea.getScore().totalScore()) >= 0) {
+				if(ammendedResult.getScore().totalScore().compareTo(retval.getScore().totalScore()) >= 0) {
 					//this is safe because I immediately get out of the loop
-					lastIdea.getPlan().getPlannedActions().set(0, ammendedResult.getImmediateActions());
+					retval.getPlan().getPlannedActions().set(0, ammendedResult.getImmediateActions());
 					shouldContinue = true;
 					break innerLoop;
 				}
@@ -136,7 +140,7 @@ public class AIBrain {
 		
 		//pure debugging here
 		addLog("Reasoning this turn:");
-		for(List<Action> current: lastIdea.getPlan().getPlannedActions()) {
+		for(List<Action> current: retval.getPlan().getPlannedActions()) {
 			String toAdd = ">adding actions ";
 			for(Action action: current) {
 				toAdd += action.toString() + ", ";
@@ -144,7 +148,7 @@ public class AIBrain {
 			addLog(toAdd);
 		}
 		
-		return lastIdea;
+		return retval;
 	}
 	
 	/**
@@ -156,13 +160,11 @@ public class AIBrain {
 	 */
 	public BigDecimal evaluateDeal(Game sourceGame, Deal deal) {
 		//if I don't know what I'm doing without the deal, figure it out real quick
-		if(lastIdea == null) {
-			runAI(sourceGame);
-		}
+		HypotheticalResult baseCase = getNewPlan(sourceGame);
 		
 		HypotheticalResult resultWithDeal = runIterations(sourceGame, maxTtl, deal);
 		
-		if(lastIdea.getScore().totalScore().compareTo(new BigDecimal(0)) == 0) {
+		if(baseCase.getScore().totalScore().compareTo(new BigDecimal(0)) == 0) {
 			if(resultWithDeal.getScore().totalScore().compareTo(new BigDecimal(0)) > 0) {
 				return new BigDecimal(1);
 			} else if (resultWithDeal.getScore().totalScore().compareTo(new BigDecimal(0)) < 0) {
@@ -172,11 +174,11 @@ public class AIBrain {
 			}
 		} else {
 			//value of deal is (score with deal - base) / (abs(base))
-			BigDecimal scoreDifference = resultWithDeal.getScore().totalScore().subtract(lastIdea.getScore().totalScore());
+			BigDecimal scoreDifference = resultWithDeal.getScore().totalScore().subtract(baseCase.getScore().totalScore());
 		
 			//debug
-			System.out.println(resultWithDeal.getScore()+" vs "+lastIdea.getScore());
-			return scoreDifference.divide(lastIdea.getScore().totalScore().abs(),new MathContext(Score.PRECISION));		
+			System.out.println(resultWithDeal.getScore()+" vs "+baseCase.getScore());
+			return scoreDifference.divide(baseCase.getScore().totalScore().abs(),new MathContext(Score.PRECISION));		
 		}
 	}
 	

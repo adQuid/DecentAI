@@ -43,6 +43,11 @@ public class HypotheticalResult {
 		this.plan.addActionListToEnd(actions);
 	}
 	
+	HypotheticalResult(HypotheticalResult other){
+		this.score = new Score(other.score);
+		this.plan = new Plan(other.plan);		
+	}
+	
 	public Score getScore() {
 		return score;
 	}
