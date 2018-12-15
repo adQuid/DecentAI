@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import medciv.aiconstructs.MedcivPlayer;
 import medciv.ui.DiplomacyUI;
 import medciv.ui.MainUI;
+import medciv.ui.MessageBox;
 
 public class OfferDealActionListener implements ActionListener{
 
@@ -17,7 +18,7 @@ public class OfferDealActionListener implements ActionListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		System.out.println("Evaluation: "+MainUI.getBrainForPlayer(player).evaluateDeal(MainUI.liveGame, DiplomacyUI.getDeal()));
+		MessageBox.display("Evaluation: "+MainUI.getBrainForPlayer(player).evaluateDeal(MainUI.liveGame, DiplomacyUI.getDeal()));
 		
 	}
 }
