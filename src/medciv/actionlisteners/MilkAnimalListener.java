@@ -19,7 +19,7 @@ public class MilkAnimalListener implements ActionListener{
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {
-		if(!cow.willBeMilkedThisTurn()) {
+		if(!cow.willBeMilkedThisTurn(MainUI.liveGame)) {
 			MedcivAction milkAction = cow.milkAction(MainUI.liveGame.getSelectedVillager());
 			
 			if(MainUI.liveGame.getSelectedVillager().canAffordAction(milkAction)) {

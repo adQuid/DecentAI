@@ -177,7 +177,7 @@ public class Villager{
 		return starving;
 	}
 	
-	public List<Action> returnActions(){
+	public List<Action> returnPossibleActions(){
 		List<Action> retval = new ArrayList<Action>();
 		
 		for(Item current: ownedItems) {

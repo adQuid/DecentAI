@@ -60,7 +60,7 @@ public class Eggs extends Edible{
 
 	@Override
 	public void focusOnItem() {
-		MainUI.addItemOptions("Milk", new JButton("Consume"));
+		MainUI.addItemOptions("Milk", new JButton("No Actions"));
 	}
 
 	@Override

@@ -20,12 +20,11 @@ public class TendAnimalListener implements ActionListener{
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {
-		if(!livestock.isTendedToThisTurn()) {
+		if(!livestock.willBeTendedToThisTurn(MainUI.liveGame)) {
 			MedcivAction tendAction = livestock.tendAction(MainUI.liveGame.getSelectedVillager());
-			
-			if(MainUI.liveGame.getSelectedVillager().canAffordAction(tendAction)) {
-				MainUI.liveGame.addActionForCurrentPlayer(tendAction);
-			
+
+			if(MainUI.liveGame.addActionForCurrentPlayer(tendAction)) {
+				livestock.setTendedToThisTurn(true);
 				livestock.focusOnItem();
 			}
 		}

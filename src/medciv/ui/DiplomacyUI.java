@@ -119,7 +119,7 @@ public class DiplomacyUI {
 				giveAction = new MedcivAction(new GiveItem(you.getId(),target.getId(),current.getId(),current.toString()),you.getId());
 			}
 			
-			if(!myOffers.contains(giveAction)) {
+			if(!myOffers.contains(giveAction) && !you.getOwner().getActionsThisTurn().contains(giveAction)) {
 				JButton giveItem = new JButton(giveAction.toString());
 				giveItem.addActionListener(new AddDiplomacyActionListener(giveAction,true));
 				selfOffers.add(giveItem);
@@ -163,6 +163,11 @@ public class DiplomacyUI {
 
 	public static void removeActionFromOther(MedcivAction action) {
 		targetOffers.remove(action);
+	}
+	
+	public static void clearAllActions() {
+		myOffers.clear();
+		targetOffers.clear();
 	}
 	
 	public static Deal getDeal() {

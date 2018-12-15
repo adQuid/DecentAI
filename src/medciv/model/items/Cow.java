@@ -29,8 +29,8 @@ public class Cow extends Livestock{
 		super(id, ownerId);
 	}
 	
-	public boolean willBeMilkedThisTurn() {
-		for(Action current: MainUI.liveGame.getSelectedPlayer().getActionsThisTurn()) {
+	public boolean willBeMilkedThisTurn(MedcivGame game) {
+		for(Action current: game.getSelectedPlayer().getActionsThisTurn()) {
 			MedcivAction castAction = (MedcivAction)current;
 			if(castAction.getType().getClass() == MilkAnimal.class &&
 					((MilkAnimal)castAction.getType()).getId() == this.getId()) {
@@ -40,17 +40,6 @@ public class Cow extends Livestock{
 		return false;
 	}
 	
-	public boolean willBeTendedThisTurn() {
-		for(Action current: MainUI.liveGame.getSelectedPlayer().getActionsThisTurn()) {
-			MedcivAction castAction = (MedcivAction)current;
-			if(castAction.getType().getClass() == TendAnimal.class &&
-					((TendAnimal)castAction.getType()).getTargetId() == this.getId()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public boolean isWasMilkedThisTurn() {
 		return wasMilkedThisTurn;
 	}
@@ -86,11 +75,11 @@ public class Cow extends Livestock{
 	@Override
 	public void focusOnItem() {
 		
-		String milkText = willBeMilkedThisTurn()?"Already milked this turn":"Milk";
+		String milkText = willBeMilkedThisTurn(MainUI.liveGame)?"Already milked this turn":"Milk";
 		JButton milkButton = new JButton(milkText);
 		milkButton.addActionListener(new MilkAnimalListener(this));
 		
-		String tendText = willBeTendedThisTurn()?"Already tended to this turn":"Tend to Animal";
+		String tendText = willBeTendedToThisTurn(MainUI.liveGame)?"Already tended to this turn":"Tend to Animal";
 		JButton tendButton = new JButton(tendText);
 		tendButton.addActionListener(new TendAnimalListener(this));
 		

@@ -120,9 +120,18 @@ public class MedcivGame implements Game{
 	}
 	
 	//used by UI
-	public void addActionForCurrentPlayer(MedcivAction action) {
-		selectedPlayer.addActionThisTurn(action);
-		MainUI.displayPlannedActions();
+	public boolean addActionForCurrentPlayer(MedcivAction action) {
+		return addActionForPlayer(action, selectedPlayer);
+	}
+	
+	public boolean addActionForPlayer(MedcivAction action, MedcivPlayer player) {
+		Villager villager = matchingVillager(action.getVillagerId());
+		if(villager.getOwner().equals(player) && villager.canAffordAction(action)) {
+			player.addActionThisTurn(action);
+			MainUI.displayPlannedActions();
+			return true;
+		}
+		return false;
 	}
 	
 	@Override

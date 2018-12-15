@@ -1,11 +1,15 @@
 package medciv.model.items;
 
+import java.util.List;
+
+import aibrain.Action;
 import medciv.aiconstructs.MedcivAction;
 import medciv.model.Item;
 import medciv.model.MedcivGame;
 import medciv.model.Villager;
 import medciv.model.actions.ActionType;
 import medciv.model.actions.TendAnimal;
+import medciv.ui.MainUI;
 
 public abstract class Livestock extends Item{
 
@@ -20,8 +24,15 @@ public abstract class Livestock extends Item{
 		super(id, ownerId);
 	}
 
-	public boolean isTendedToThisTurn() {
-		return tendedToThisTurn;
+	public boolean willBeTendedToThisTurn(MedcivGame game) {
+		for(Action current: game.getSelectedPlayer().getActionsThisTurn()) {
+			MedcivAction castAction = (MedcivAction)current;
+			if(castAction.getType().getClass() == TendAnimal.class &&
+					((TendAnimal)castAction.getType()).getTargetId() == this.getId()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void setTendedToThisTurn(boolean tendedToThisTurn) {
