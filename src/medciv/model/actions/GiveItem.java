@@ -85,6 +85,10 @@ public class GiveItem implements ActionType{
 		return result;
 	}
 
+	public boolean matchingItem(GiveItem other) {
+		return other.getItem() == this.getItem();
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

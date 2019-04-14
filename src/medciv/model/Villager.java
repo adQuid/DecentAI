@@ -18,7 +18,7 @@ public class Villager{
 	private String name;
 	private int location;
 	private List<Item> ownedItems;
-	private int foodToEat = 0;
+	private int foodToEat = 2;
 	private boolean starving = false;
 	
 	public Villager(MedcivGame game, int location, MedcivPlayer owner, String name) {

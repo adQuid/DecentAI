@@ -33,7 +33,8 @@ public class Milk extends Edible{
 	
 	@Override
 	public void endRound(MedcivGame game, Villager owner) {
-		age++;
+		//removing food aging for ease
+		//age++;
 	}
 
 	@Override

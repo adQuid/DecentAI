@@ -39,8 +39,7 @@ public class ItemActionListener implements MouseListener{
 			MedcivPlayer temp = MainUI.liveGame.matchingVillager(item.getOwnerId()).getOwner();
 			MedcivPlayer temp2 = MainUI.liveGame.getSelectedPlayer();
 			System.out.println("debug");
-		}
-		
+		}		
 	}
 
 	@Override

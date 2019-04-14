@@ -29,15 +29,15 @@ public class BaseGameSetup {
 		playerGuy.addItem(new Cow(playerGuy.getId()));
 		playerGuy.addItem(new Cow(playerGuy.getId()));
 		playerGuy.addItem(new Chicken(playerGuy.getId()));
-		playerGuy.addItem(new Eggs(4, 1, playerGuy.getId()));
-		playerGuy.addItem(new Eggs(4, 3, playerGuy.getId()));
-		playerGuy.addItem(new Milk(3, 1, playerGuy.getId()));
+		playerGuy.addItem(new Eggs(4, 0, playerGuy.getId()));
+		playerGuy.addItem(new Eggs(4, 0, playerGuy.getId()));
+		playerGuy.addItem(new Milk(3, 0, playerGuy.getId()));
 		
 		botMan.addItem(new Chicken(botMan.getId()));
 		botMan.addItem(new Chicken(botMan.getId()));
 		botMan.addItem(new Chicken(botMan.getId()));
 		botMan.addItem(new Chicken(botMan.getId()));
-		botMan.addItem(new Eggs(2, 1, botMan.getId()));
+		botMan.addItem(new Eggs(2, 0, botMan.getId()));
 		//botMan.addItem(new Eggs(4, 3, botMan.getId()));
 				
 		retval.getPeople().add(playerGuy);	
